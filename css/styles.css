@@ -1,321 +1,347 @@
-/* ============ RESET / BASE ============ */
+/* ========================================
+   Mundo Alimeythor — réplica fiel
+   Paleta original:
+     #E8578A primario rosa
+     #c9447a rosa oscuro / hover
+     #fde8f1 rosa claro fondo
+     #FBF8F4 crema
+     #4a4a6a texto
+     #1a1a2e títulos
+     #EDBC3B amarillo (highlight)
+   Fuentes: Poppins (texto) + Merriweather (títulos)
+======================================== */
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  color: #2a2a2a;
-  background: #fff;
-  line-height: 1.6;
+  font-family: 'Poppins', -apple-system, sans-serif;
+  background: #efe4dc;
+  color: #4a4a6a;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
 img { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
 
-/* ============ LAYOUT ============ */
-.container {
-  max-width: 1100px;
+/* ====== PHONE / MOBILE-FIXED LAYOUT ====== */
+.phone {
+  max-width: 430px;
   margin: 0 auto;
-  padding: 0 24px;
+  background: #FBF8F4;
+  box-shadow: 0 0 60px rgba(0,0,0,.08);
+  overflow: hidden;
 }
-.container.narrow { max-width: 760px; }
-.center { text-align: center; }
 
-/* ============ HEADER ============ */
+/* ====== HEADER ====== */
 .site-header {
   position: sticky;
   top: 0;
-  background: #fff;
-  border-bottom: 1px solid #f0e5dc;
-  z-index: 100;
-}
-.header-inner {
+  background: #FBF8F4;
+  z-index: 50;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 24px;
+  padding: 12px 18px;
+  border-bottom: 1px solid #f0e3d5;
 }
-.logo-circle {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: #f5a896;
+.logo img { width: 46px; height: auto; }
+.header-right { display: flex; align-items: center; gap: 12px; }
+
+.btn-suscribirme {
+  background: #E8578A;
   color: #fff;
-  font-family: 'Fraunces', serif;
-  font-weight: 700;
-  font-size: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid #2a2a2a;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background .2s;
 }
-.nav-desktop {
-  display: flex;
-  gap: 28px;
-  font-size: 15px;
-  font-weight: 500;
-}
-.nav-desktop a {
-  color: #2a2a2a;
-  transition: color .2s;
-}
-.nav-desktop a:hover, .nav-desktop a.active { color: #d4646b; }
-.header-actions { display: flex; align-items: center; gap: 14px; }
+.btn-suscribirme:hover { background: #c9447a; }
 
 .hamburger {
-  display: none;
   background: none;
   border: none;
+  display: flex;
   flex-direction: column;
   gap: 4px;
   cursor: pointer;
+  padding: 4px;
 }
 .hamburger span {
   width: 22px;
   height: 2px;
-  background: #2a2a2a;
+  background: #1a1a2e;
+  border-radius: 2px;
 }
 
-@media (max-width: 860px) {
-  .nav-desktop { display: none; }
-  .hamburger { display: flex; }
-}
-
-/* ============ BUTTONS ============ */
-.btn {
-  display: inline-block;
-  padding: 14px 28px;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 15px;
-  text-align: center;
-  transition: transform .15s ease, box-shadow .2s ease, background .2s;
-  cursor: pointer;
-  border: none;
-}
-.btn-primary {
-  background: #d4646b;
-  color: #fff;
-}
-.btn-primary:hover { background: #b94f57; }
-.btn-dark {
-  background: #2a2a2a;
-  color: #fff;
-}
-.btn-dark:hover { background: #000; transform: translateY(-1px); }
-.btn-link {
-  color: #2a2a2a;
-  text-decoration: underline;
-  padding: 14px 8px;
-}
-.btn-sm { padding: 9px 18px; font-size: 14px; }
-
-/* ============ HERO ============ */
+/* ====== HERO ====== */
 .hero {
-  background: linear-gradient(180deg, #f7b8a8 0%, #f5a896 100%);
-  padding: 60px 0 40px;
+  background: linear-gradient(180deg, #fde8f1 0%, #fbd7e6 100%);
+  padding: 36px 24px 30px;
   text-align: center;
 }
-.hero-title {
-  font-family: 'Fraunces', serif;
-  font-size: clamp(34px, 5vw, 54px);
-  font-weight: 700;
-  line-height: 1.1;
-  color: #2a2a2a;
-  max-width: 720px;
-  margin: 0 auto 36px;
+.hero h1 {
+  font-family: 'Merriweather', serif;
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 900;
+  color: #1a1a2e;
+  margin-bottom: 24px;
 }
-.hero-highlight {
-  color: #b03a44;
+.hero h1 em {
+  color: #E8578A;
   font-style: italic;
+  font-weight: 900;
 }
-.hero-actions {
+.hero-ctas {
   display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  justify-content: center;
-  margin-bottom: 40px;
-}
-.hero-image {
-  max-width: 360px;
-  margin: 0 auto;
-  background: #fff4ed;
-  border-radius: 18px;
-  min-height: 220px;
-  display: flex;
+  flex-direction: column;
+  gap: 10px;
   align-items: center;
-  justify-content: center;
+  margin-bottom: 26px;
+}
+.hero-img {
+  border-radius: 16px;
   overflow: hidden;
+  box-shadow: 0 8px 24px rgba(232, 87, 138, 0.18);
 }
-.hero-image::before {
-  content: '🎃';
-  font-size: 96px;
-  opacity: .4;
-}
-.hero-image img:not([style*="none"]) + ::before,
-.hero-image:has(img:not([style*="none"]))::before { display: none; }
+.hero-img img { width: 100%; height: auto; }
 
-/* ============ SECTIONS ============ */
-.section { padding: 80px 0; }
-.section-light { background: #fff; }
-.section-cream { background: #fdf6ef; }
+/* ====== BUTTONS ====== */
+.btn-primary {
+  display: inline-block;
+  background: #1a1a2e;
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 13px 24px;
+  border-radius: 999px;
+  letter-spacing: .3px;
+  transition: background .2s, transform .15s;
+}
+.btn-primary:hover { background: #E8578A; transform: translateY(-1px); }
+
+.btn-block {
+  display: block;
+  text-align: center;
+  width: 100%;
+  margin-top: 14px;
+}
+
+.btn-link {
+  color: #1a1a2e;
+  font-weight: 500;
+  font-size: 14px;
+  text-decoration: underline;
+  padding: 6px 0;
+}
+
+/* ====== BLOCKS / SECTIONS ====== */
+.block {
+  padding: 44px 24px;
+}
+.block-cream { background: #FBF8F4; }
+.block-pink { background: #fde8f1; }
 
 .eyebrow {
-  font-size: 13px;
-  letter-spacing: 2px;
-  color: #d4646b;
-  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  letter-spacing: 2.5px;
   text-transform: uppercase;
-  margin-bottom: 14px;
+  color: #E8578A;
+  font-weight: 700;
+  margin-bottom: 12px;
   text-align: center;
 }
-.section-title {
-  font-family: 'Fraunces', serif;
-  font-size: clamp(28px, 4vw, 42px);
-  font-weight: 700;
-  color: #2a2a2a;
-  margin-bottom: 22px;
-  line-height: 1.2;
+
+.block h2 {
+  font-family: 'Merriweather', serif;
+  font-size: 26px;
+  font-weight: 900;
+  color: #1a1a2e;
+  line-height: 1.25;
+  margin-bottom: 18px;
+  text-align: center;
 }
-.section-title.center { text-align: center; }
-.lead {
-  font-size: 17px;
-  color: #4a4a4a;
-  margin-bottom: 28px;
+.block h2.center, .paragraph.center { text-align: center; }
+
+.paragraph {
+  font-size: 15px;
+  color: #4a4a6a;
   line-height: 1.7;
+  margin-bottom: 16px;
+  text-align: center;
 }
-.lead.center { text-align: center; max-width: 640px; margin-left: auto; margin-right: auto; }
 
-#quien { text-align: center; }
-#quien .lead { text-align: left; }
-
-/* ============ ALICIA CARD ============ */
-.alicia-card { text-align: center; }
+/* ====== ALICIA ====== */
 .alicia-photo {
   width: 100%;
-  max-width: 360px;
-  margin: 0 auto 28px;
-  border-radius: 18px;
+  border-radius: 16px;
   overflow: hidden;
-  background: #f5a896;
-  aspect-ratio: 1 / 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  margin: 0 0 22px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
 }
-.alicia-photo::before {
-  content: '👩‍👧';
-  font-size: 96px;
-  opacity: .55;
-}
-.alicia-photo:has(img:not([style*="none"]))::before { display: none; }
+.alicia-photo img { width: 100%; height: auto; display: block; }
 .alicia-tags {
   display: flex;
   flex-wrap: wrap;
+  gap: 14px 18px;
   justify-content: center;
-  gap: 18px;
-  font-size: 14px;
-  color: #6a6a6a;
-  margin-bottom: 24px;
+  font-size: 13px;
+  color: #4a4a6a;
+  margin-bottom: 18px;
+  font-weight: 500;
 }
 
-/* ============ FEATURE LIST ============ */
-.feature-list, .benefits {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 26px;
-  margin-top: 36px;
-}
-.feature-list li, .benefits li {
-  display: flex;
-  gap: 18px;
-  align-items: flex-start;
+/* ====== FEATURES (Qué vas a encontrar) ====== */
+.feature {
   background: #fff;
-  padding: 20px 22px;
-  border-radius: 14px;
-  border: 1px solid #f0e5dc;
+  border-radius: 16px;
+  padding: 22px 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.04);
+  border: 1px solid #f3ebe2;
 }
-.feature-icon, .benefit-icon {
-  font-size: 28px;
-  flex-shrink: 0;
+.feature-icon {
+  font-size: 32px;
+  margin-bottom: 10px;
 }
-.feature-list h3, .benefits h3 {
-  font-family: 'Fraunces', serif;
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 6px;
-  color: #2a2a2a;
-}
-.feature-list p, .benefits p {
-  font-size: 15px;
-  color: #5a5a5a;
-  margin: 0;
-}
-
-/* ============ VALUES GRID ============ */
-.values-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 18px;
-  margin-top: 40px;
-}
-.value-card {
-  background: #fff;
-  border-radius: 14px;
-  padding: 26px 22px;
-  text-align: center;
-  border: 1px solid #f0e5dc;
-}
-.value-icon { font-size: 36px; margin-bottom: 12px; }
-.value-card h4 {
-  font-family: 'Fraunces', serif;
-  font-size: 18px;
-  font-weight: 600;
+.feature h3 {
+  font-family: 'Merriweather', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a2e;
   margin-bottom: 8px;
-  color: #2a2a2a;
+  line-height: 1.3;
 }
-.value-card p {
+.feature p {
   font-size: 14px;
-  color: #5a5a5a;
+  color: #5a5a72;
   line-height: 1.55;
 }
 
-/* ============ TESTIMONIOS ============ */
-.testimonials {
+/* ====== DESTELLOS (Mundo Alimeythor) ====== */
+.destellos {
   display: grid;
-  gap: 20px;
-  margin-top: 36px;
+  gap: 12px;
+  margin-top: 24px;
 }
-.testimonials blockquote {
+.destello {
   background: #fff;
-  border-left: 4px solid #d4646b;
-  padding: 22px 24px;
-  border-radius: 8px;
-  font-style: italic;
-  color: #4a4a4a;
-  font-size: 16px;
+  border-radius: 14px;
+  padding: 18px 18px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  border: 1px solid #f9d8e5;
 }
-.testimonials cite {
+.destello-icon {
+  font-size: 26px;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  background: #fde8f1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.destello h4 {
+  font-family: 'Merriweather', serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 4px;
+}
+.destello p {
+  font-size: 13px;
+  color: #5a5a72;
+  line-height: 1.5;
+}
+
+/* ====== BENEFITS (Por qué unirse) ====== */
+.benefit {
+  display: flex;
+  gap: 14px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 12px;
+  border: 1px solid #f3ebe2;
+}
+.benefit-icon {
+  font-size: 26px;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  background: #FBF8F4;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.benefit h3 {
+  font-family: 'Merriweather', serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 4px;
+}
+.benefit p {
+  font-size: 13px;
+  color: #5a5a72;
+  line-height: 1.5;
+}
+
+/* ====== TESTIMONIOS ====== */
+.testimonial {
+  background: #fff;
+  border-left: 4px solid #E8578A;
+  border-radius: 10px;
+  padding: 18px 18px;
+  margin-bottom: 14px;
+  font-size: 14px;
+  font-style: italic;
+  color: #4a4a6a;
+  line-height: 1.6;
+}
+.testimonial cite {
   display: block;
-  margin-top: 12px;
+  margin-top: 10px;
   font-style: normal;
   font-weight: 600;
-  font-size: 14px;
-  color: #d4646b;
+  font-size: 13px;
+  color: #E8578A;
 }
 
-/* ============ FOOTER ============ */
+/* ====== FOOTER ====== */
 .site-footer {
-  background: #2a2a2a;
-  color: #ccc;
+  background: #1a1a2e;
+  color: #f0e8e8;
   text-align: center;
-  padding: 28px 0;
-  font-size: 14px;
+  padding: 30px 24px;
+}
+.footer-logo {
+  width: 60px;
+  margin: 0 auto 14px;
+  opacity: .95;
+}
+.footer-nav {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+.footer-nav a:hover { color: #E8578A; }
+.site-footer p {
+  font-size: 12px;
+  opacity: .7;
 }
 
-/* ============ RESPONSIVE ============ */
-@media (max-width: 640px) {
-  .section { padding: 56px 0; }
-  .hero { padding: 40px 0 30px; }
-  .feature-list li, .benefits li { flex-direction: row; }
+/* ====== Responsive — wider screens keep the phone frame ====== */
+@media (min-width: 500px) {
+  body { padding: 24px 0; }
+  .phone { border-radius: 24px; }
 }
