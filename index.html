@@ -6,9 +6,470 @@
   <title>Alimeythor — Alimenta Tu Alma</title>
   <link rel="icon" href="assets/favicon.png" />
   <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    /* Guard anti-FOUC: ocultar secciones hasta que GSAP las tome */
+    .js-animations section { visibility: hidden; }
+    .js-animations section.is-revealed,
+    .js-animations section:first-of-type { visibility: visible; }
+
+    /* ===== HERO 3D PARALLAX ===== */
+    .hero { position: relative; overflow: hidden; perspective: 1200px; perspective-origin: 50% 40%; }
+    .hero-inner { position: relative; z-index: 3; transform-style: preserve-3d; will-change: transform; }
+    .hero-layer { position: absolute; inset: 0; pointer-events: none; will-change: transform; }
+    .hero-bg  { z-index: 0; }
+    .hero-mid { z-index: 1; }
+    /* Blobs decorativos de fondo */
+    .blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.45; }
+    .blob-1 { width: 420px; height: 420px; background: #E8578A; top: -120px; left: -100px; }
+    .blob-2 { width: 340px; height: 340px; background: #EDBC3B; bottom: -100px; right: -80px; }
+    .blob-3 { width: 260px; height: 260px; background: #7fc9d8; top: 35%; right: 18%; opacity: 0.35; }
+    /* Sparkles capa media */
+    .sparkle { position: absolute; opacity: 0.75; user-select: none; }
+    .sparkle-1 { top: 14%; left: 10%; font-size: 32px; }
+    .sparkle-2 { top: 62%; left: 6%;  font-size: 22px; }
+    .sparkle-3 { top: 22%; right: 14%; font-size: 28px; }
+    .sparkle-4 { bottom: 18%; right: 8%; font-size: 24px; }
+    /* Tag de capa frontal/UI dentro del hero — will-change activo */
+    .hero [data-parallax] { will-change: transform; }
+    /* En mobile: nada de parallax, todo plano */
+    @media (max-width: 1023px), (hover: none) {
+      .hero-bg, .hero-mid { display: none; }
+      .hero { perspective: none; }
+      .hero-inner { transform-style: flat; }
+    }
+
+    /* ===== HORIZONTAL SCROLL DENTRO DE PIN — 4 DESTELLOS ===== */
+    /* Desktop: pin la sección y translateX el track al hacer scroll vertical.
+       Intensidad intermedia: distancia de pin ≈ 3× viewport height.
+       Mobile: track se apila vertical, sin pin.                                  */
+
+    #mundo .destellos-h-pin {
+      position: relative;
+      margin-top: 4rem;
+    }
+    #mundo .destellos-h-track {
+      display: flex;
+      gap: 2rem;
+      will-change: transform;
+    }
+    #mundo .destello-card-h {
+      flex: 0 0 auto;
+      width: 70vw;
+      max-width: 760px;
+      min-height: 60vh;
+      padding: 3rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      text-align: left;
+    }
+    #mundo .destello-card-h .destello-index {
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      color: #EDBC3B;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    #mundo .destello-card-h .destello-icon {
+      margin-bottom: 1.25rem;
+      transform: scale(1.4);
+      transform-origin: left center;
+    }
+    #mundo .destello-card-h h4 {
+      font-size: clamp(2.4rem, 4vw, 3.6rem);
+      color: #EDBC3B;
+      margin: 0 0 1rem;
+      font-family: 'Merriweather', serif;
+      line-height: 1.05;
+    }
+    #mundo .destello-card-h p {
+      font-size: 1.15rem;
+      line-height: 1.6;
+      max-width: 460px;
+      color: rgba(255,255,255,0.82);
+      margin: 0;
+    }
+    /* Indicador de progreso (barra inferior) */
+    #mundo .destellos-progress {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 220px;
+      height: 4px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 4px;
+      overflow: hidden;
+      z-index: 5;
+    }
+    #mundo .destellos-progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #E8578A, #EDBC3B);
+      border-radius: 4px;
+    }
+
+    /* Desktop específico */
+    @media (min-width: 1024px) {
+      #mundo .destellos-h-pin {
+        height: 100vh;
+        overflow: hidden;
+      }
+      #mundo .destellos-h-track {
+        height: 100vh;
+        align-items: center;
+        padding: 0 8vw;
+      }
+    }
+
+    /* Mobile / tablet: sin pin, stack vertical normal */
+    @media (max-width: 1023px) {
+      #mundo .destellos-h-track {
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 0;
+      }
+      #mundo .destello-card-h {
+        width: 100%;
+        min-height: auto;
+        padding: 1.75rem;
+      }
+      #mundo .destellos-progress { display: none; }
+    }
+    /* Respect reduced-motion: deshabilita pin + horizontal */
+    @media (prefers-reduced-motion: reduce) {
+      #mundo .destellos-h-pin { height: auto !important; }
+      #mundo .destellos-h-track {
+        flex-direction: column !important;
+        gap: 1.5rem !important;
+        transform: none !important;
+      }
+      #mundo .destello-card-h { width: 100% !important; min-height: auto !important; }
+    }
+
+    /* ===== MICROINTERACCIONES ===== */
+
+    /* — BOTONES — */
+    .btn-pill, .btn-pase, .btn-contact {
+      position: relative;
+      overflow: hidden;
+      transition:
+        background-color 0.3s ease,
+        color 0.3s ease,
+        box-shadow 0.4s cubic-bezier(0.2,0.8,0.2,1);
+      will-change: transform;
+    }
+    .btn-pill:hover, .btn-pase:hover, .btn-contact:hover {
+      box-shadow: 0 14px 36px rgba(232, 87, 138, 0.28);
+    }
+    .btn-ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.55);
+      pointer-events: none;
+      width: 20px; height: 20px;
+      transform: translate(-50%, -50%) scale(0);
+      animation: btn-ripple 0.6s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+    @keyframes btn-ripple {
+      to { transform: translate(-50%, -50%) scale(10); opacity: 0; }
+    }
+
+    /* — LINKS: underline animado L→R — */
+    .site-header .nav-desktop a,
+    .footer-nav a {
+      position: relative;
+      transition: color 0.25s ease;
+    }
+    .site-header .nav-desktop a::after,
+    .footer-nav a::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: -4px;
+      height: 2px;
+      background: currentColor;
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
+    }
+    .site-header .nav-desktop a:hover::after,
+    .footer-nav a:hover::after { transform: scaleX(1); }
+
+    /* — Flecha que se desplaza — */
+    .has-arrow .arrow {
+      display: inline-block;
+      transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
+    }
+    .has-arrow:hover .arrow { transform: translateX(8px); }
+
+    /* — IMÁGENES: zoom + saturación — */
+    .hero-img, .quien-img, .alicia-photo, .pricing-photo, .footer-logo-wrap {
+      overflow: hidden;
+      display: block;
+    }
+    .hero-img img,
+    .quien-img img,
+    .alicia-photo img,
+    .pricing-photo img,
+    .footer-logo-wrap img {
+      transition:
+        transform 0.7s cubic-bezier(0.2,0.8,0.2,1),
+        filter 0.5s ease;
+      will-change: transform;
+    }
+    .hero-img:hover img,
+    .quien-img:hover img,
+    .alicia-photo:hover img,
+    .pricing-photo:hover img,
+    .footer-logo-wrap:hover img {
+      transform: scale(1.08);
+      filter: saturate(1.3);
+    }
+
+    /* — CARDS: lift + gradient border animado — */
+    .feature, .destello-card, .extra-card, .benefit, .testimonial-pink {
+      position: relative;
+      transition:
+        transform 0.4s cubic-bezier(0.2,0.8,0.2,1),
+        box-shadow 0.4s ease;
+      will-change: transform;
+    }
+    .feature:hover,
+    .destello-card:hover,
+    .extra-card:hover,
+    .benefit:hover,
+    .testimonial-pink:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 28px 60px rgba(20,20,40,0.18);
+    }
+    .feature::before,
+    .destello-card::before,
+    .extra-card::before,
+    .benefit::before,
+    .testimonial-pink::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 2px;
+      background: linear-gradient(120deg, #E8578A, #EDBC3B, #7fc9d8, #E8578A);
+      background-size: 300% 300%;
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+              mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      animation: card-border 5s linear infinite;
+      pointer-events: none;
+    }
+    .feature:hover::before,
+    .destello-card:hover::before,
+    .extra-card:hover::before,
+    .benefit:hover::before,
+    .testimonial-pink:hover::before { opacity: 1; }
+    @keyframes card-border {
+      0%   { background-position: 0% 50%; }
+      100% { background-position: 300% 50%; }
+    }
+
+    /* — NAVBAR: estados de scroll — */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: transparent;
+      transition:
+        transform 0.45s cubic-bezier(0.2,0.8,0.2,1),
+        background-color 0.35s ease,
+        backdrop-filter 0.35s ease,
+        box-shadow 0.35s ease;
+    }
+    .site-header.is-scrolled {
+      background: rgba(255, 251, 245, 0.85);
+      -webkit-backdrop-filter: blur(14px) saturate(1.2);
+              backdrop-filter: blur(14px) saturate(1.2);
+      box-shadow: 0 10px 30px rgba(20,20,40,0.08);
+    }
+    .site-header.is-hidden { transform: translateY(-100%); }
+
+    /* ===== LIMPIEZA VISUAL: fuera divisores rígidos, más aire, transiciones suaves ===== */
+
+    /* Ocultar líneas divisorias visibles */
+    .divider-pink,
+    .thin-divider {
+      background: transparent !important;
+      border: 0 !important;
+      height: 1.5rem !important;
+      width: auto !important;
+    }
+
+    /* Padding amplio en todas las secciones principales */
+    section,
+    .block,
+    .pricing-section,
+    .final-cta {
+      padding-top: clamp(5rem, 9vw, 9rem) !important;
+      padding-bottom: clamp(5rem, 9vw, 9rem) !important;
+    }
+
+    /* Transiciones suaves entre fondos: gradientes en los bordes en lugar de cortes */
+    .block-white,
+    .block-cream,
+    .block-navy {
+      position: relative;
+    }
+    .block-white::before,
+    .block-cream::before {
+      content: '';
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 120px;
+      pointer-events: none;
+      background: linear-gradient(to bottom, rgba(255,251,245,0.6), transparent);
+    }
+    .block-navy {
+      background: radial-gradient(ellipse at top, #232544 0%, #1a1a2e 70%) !important;
+    }
+    .block-cream {
+      background: linear-gradient(180deg, #fdf6ea 0%, #fbf0db 100%) !important;
+    }
+
+    /* Más aire entre el contenido y los bordes de las secciones */
+    .container { padding-inline: clamp(1.25rem, 4vw, 3rem) !important; }
+
+    /* CARDS: padding amplio, sombras suaves, sin bordes rígidos */
+    .feature,
+    .extra-card,
+    .benefit,
+    .testimonial-pink {
+      border: 0 !important;
+      border-radius: 24px !important;
+      padding: clamp(2rem, 3vw, 2.75rem) !important;
+      background: #fff;
+      box-shadow:
+        0 1px 2px rgba(20,20,40,0.04),
+        0 8px 24px rgba(20,20,40,0.06);
+      transition:
+        transform 0.45s cubic-bezier(0.2,0.8,0.2,1),
+        box-shadow 0.45s ease !important;
+    }
+    .feature:hover,
+    .extra-card:hover,
+    .benefit:hover,
+    .testimonial-pink:hover {
+      box-shadow:
+        0 4px 12px rgba(20,20,40,0.05),
+        0 32px 64px rgba(20,20,40,0.12) !important;
+    }
+    /* Variantes de fondo sutil en lugar de borde */
+    .feature-pink   { background: linear-gradient(180deg, #fff 0%, #fdf2f6 100%); }
+    .feature-yellow { background: linear-gradient(180deg, #fff 0%, #fdf7e6 100%); }
+    .feature-teal   { background: linear-gradient(180deg, #fff 0%, #ecf6f7 100%); }
+
+    .extra-card {
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2), 0 16px 40px rgba(0,0,0,0.18);
+    }
+    .extra-card:hover {
+      background: rgba(255,255,255,0.07);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2), 0 32px 64px rgba(0,0,0,0.28) !important;
+    }
+
+    /* Más espacio entre grids */
+    .features-grid,
+    .extras-grid,
+    .benefits-grid,
+    .testimonials-grid {
+      gap: clamp(1.5rem, 3vw, 2.5rem) !important;
+      margin-top: clamp(2.5rem, 5vw, 4rem) !important;
+    }
+
+    /* Eyebrows con más respiración */
+    .pill-eyebrow {
+      margin-bottom: 1.5rem !important;
+      letter-spacing: 0.18em;
+    }
+
+    /* Pricing section: sin bordes rígidos en la caja amarilla */
+    .yellow-box,
+    .price-box {
+      border: 0 !important;
+      border-radius: 28px !important;
+      box-shadow: 0 4px 12px rgba(232,87,138,0.08), 0 24px 60px rgba(20,20,40,0.10);
+    }
+
+    /* ===== PERFORMANCE: optimizaciones de animación ===== */
+
+    /* card-border animado: solo corre en hover (antes consumía GPU 24/7) */
+    .feature::before,
+    .destello-card::before,
+    .extra-card::before,
+    .benefit::before,
+    .testimonial-pink::before {
+      animation-play-state: paused;
+    }
+    .feature:hover::before,
+    .destello-card:hover::before,
+    .extra-card:hover::before,
+    .benefit:hover::before,
+    .testimonial-pink:hover::before {
+      animation-play-state: running;
+    }
+
+    /* will-change quirúrgico: solo activo durante hover, no permanente */
+    .feature, .destello-card, .extra-card, .benefit, .testimonial-pink {
+      will-change: auto;
+    }
+    .feature:hover, .destello-card:hover, .extra-card:hover, .benefit:hover, .testimonial-pink:hover {
+      will-change: transform, box-shadow;
+    }
+
+    /* Mobile: bajar la intensidad de efectos costosos */
+    @media (max-width: 1023px) {
+      .feature::before, .destello-card::before, .extra-card::before,
+      .benefit::before, .testimonial-pink::before { display: none; }
+      .site-header.is-scrolled {
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+      }
+      .extra-card { backdrop-filter: none; -webkit-backdrop-filter: none; }
+      .feature:hover, .destello-card:hover, .extra-card:hover,
+      .benefit:hover, .testimonial-pink:hover { transform: none; }
+    }
+
+    /* Accesibilidad: respetar prefers-reduced-motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+      }
+      .js-animations section { visibility: visible !important; }
+      .hero-bg, .hero-mid { display: none !important; }
+      .feature::before, .destello-card::before, .extra-card::before,
+      .benefit::before, .testimonial-pink::before { display: none !important; }
+    }
+  </style>
+  <script>document.documentElement.classList.add('js-animations');</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;800;900&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- GSAP + plugins -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+  <!-- Lenis smooth scroll -->
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
 </head>
 <body>
 
@@ -40,21 +501,39 @@
 
   <!-- HERO -->
   <section class="hero">
+    <!-- Capa de fondo (más profunda, se mueve lento) — blobs difuminados -->
+    <div class="hero-layer hero-bg" data-parallax="bg">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+    </div>
+    <!-- Capa media (decorativos) — sparkles -->
+    <div class="hero-layer hero-mid" data-parallax="mid">
+      <span class="sparkle sparkle-1">✨</span>
+      <span class="sparkle sparkle-2">⭐</span>
+      <span class="sparkle sparkle-3">✨</span>
+      <span class="sparkle sparkle-4">💫</span>
+    </div>
+
     <div class="container hero-inner">
       <div class="hero-text">
-        <h1>
+        <!-- Capa frontal: título principal, máximo movimiento -->
+        <h1 data-parallax="front">
           ¿Sentís que las pantallas reemplazan las <span class="pink">emociones reales</span>?
         </h1>
-        <p class="hero-sub">
+        <!-- Capa media: subtítulo acompaña al título -->
+        <p class="hero-sub" data-parallax="mid">
           Descubrí Alimeythor: un malvavisco mágico que acompaña a los niños
           a explorar sus emociones a través de historias, aventuras y magia.
         </p>
-        <div class="hero-ctas">
+        <!-- Capa UI: botones, casi sin movimiento -->
+        <div class="hero-ctas" data-parallax="ui">
           <a href="#quien" class="btn-pill primary lg">Descubrí quién es Alimeythor</a>
           <a href="#pase" class="btn-pill outline-pink lg">Ver el Pase Mágico</a>
         </div>
       </div>
-      <div class="hero-img-wrap">
+      <!-- Imagen del personaje: capa media (acompaña la profundidad sin tirar tanto como el título) -->
+      <div class="hero-img-wrap" data-parallax="mid">
         <div class="hero-img">
           <img src="assets/hero-personaje.png" alt="El Mundo Mágico de Alimeythor" />
         </div>
@@ -167,34 +646,45 @@
       <p class="destellos-title">✨ Los 4 Destellos — Temporada 1</p>
       <p class="destellos-sub italic">Cada destello trabaja una emoción clave, con historias, juegos y experiencias pensadas para su edad.</p>
 
-      <div class="destellos-grid">
-        <div class="destello-dark">
-          <div class="destello-icon">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="#EDBC3B"><circle cx="12" cy="6" r="3"/><path d="M12 10c-3 0-5 2-5 5 0 2 1 4 2 5h6c1-1 2-3 2-5 0-3-2-5-5-5z"/><path d="M7 14l-3 2M17 14l3 2" stroke="#EDBC3B" stroke-width="2" stroke-linecap="round"/></svg>
-          </div>
-          <h4>Calma</h4>
-          <p>Herramientas para encontrar la paz interior en medio del caos cotidiano.</p>
+      <!-- Horizontal scroll dentro de pin: las 4 cards entran de derecha a izquierda
+           mientras la sección está pinneada (~3× viewport). Mobile: stack vertical. -->
+      <div class="destellos-h-pin" data-h-pin>
+        <div class="destellos-h-track" data-h-track>
+          <article class="destello-card-h" data-index="0">
+            <span class="destello-index">Destello 01</span>
+            <div class="destello-icon">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="#EDBC3B"><circle cx="12" cy="6" r="3"/><path d="M12 10c-3 0-5 2-5 5 0 2 1 4 2 5h6c1-1 2-3 2-5 0-3-2-5-5-5z"/><path d="M7 14l-3 2M17 14l3 2" stroke="#EDBC3B" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <h4>Calma</h4>
+            <p>Herramientas simples para que tu hijo encuentre su paz interior en medio del caos cotidiano — respiraciones, mandalas y rituales mágicos.</p>
+          </article>
+          <article class="destello-card-h" data-index="1">
+            <span class="destello-index">Destello 02</span>
+            <div class="destello-icon">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#7fc9d8" stroke-width="2"><circle cx="10" cy="10" r="6"/><path d="M14.5 14.5L20 20" stroke-linecap="round"/></svg>
+            </div>
+            <h4>Curiosidad</h4>
+            <p>Despertar el asombro y las ganas de explorar el mundo con ojos nuevos. Cada pregunta es una aventura por descubrir.</p>
+          </article>
+          <article class="destello-card-h" data-index="2">
+            <span class="destello-index">Destello 03</span>
+            <div class="destello-icon">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="#EDBC3B"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/></svg>
+            </div>
+            <h4>Empatía</h4>
+            <p>Aprender a ponerse en el lugar del otro y construir vínculos genuinos. La emoción que sostiene a una familia entera.</p>
+          </article>
+          <article class="destello-card-h" data-index="3">
+            <span class="destello-index">Destello 04</span>
+            <div class="destello-icon">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="#EDBC3B"><circle cx="12" cy="12" r="8"/><circle cx="9" cy="11" r="1.2" fill="#1a1a2e"/><circle cx="15" cy="11" r="1.2" fill="#1a1a2e"/><path d="M9 15c1 1 4 1 5 0" stroke="#1a1a2e" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M5 7c0-1 1-3 3-3M19 7c0-1-1-3-3-3" stroke="#c9447a" stroke-width="2" fill="none"/></svg>
+            </div>
+            <h4>Valentía</h4>
+            <p>Enfrentar miedos con confianza y atreverse a ser quien uno es. Porque ningún malvavisco mágico nació sabiendo todo.</p>
+          </article>
         </div>
-        <div class="destello-dark">
-          <div class="destello-icon">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#7fc9d8" stroke-width="2"><circle cx="10" cy="10" r="6"/><path d="M14.5 14.5L20 20" stroke-linecap="round"/></svg>
-          </div>
-          <h4>Curiosidad</h4>
-          <p>Despertar el asombro y las ganas de explorar el mundo con ojos nuevos.</p>
-        </div>
-        <div class="destello-dark">
-          <div class="destello-icon">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="#EDBC3B"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/></svg>
-          </div>
-          <h4>Empatía</h4>
-          <p>Aprender a ponerse en el lugar del otro y construir vínculos genuinos.</p>
-        </div>
-        <div class="destello-dark">
-          <div class="destello-icon">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="#EDBC3B"><circle cx="12" cy="12" r="8"/><circle cx="9" cy="11" r="1.2" fill="#1a1a2e"/><circle cx="15" cy="11" r="1.2" fill="#1a1a2e"/><path d="M9 15c1 1 4 1 5 0" stroke="#1a1a2e" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M5 7c0-1 1-3 3-3M19 7c0-1-1-3-3-3" stroke="#c9447a" stroke-width="2" fill="none"/></svg>
-          </div>
-          <h4>Valentía</h4>
-          <p>Enfrentar miedos con confianza y atreverse a ser quien uno es.</p>
+        <div class="destellos-progress" aria-hidden="true">
+          <div class="destellos-progress-bar" data-h-progress></div>
         </div>
       </div>
 
@@ -359,6 +849,458 @@
       </div>
     </div>
   </footer>
+
+  <script>
+    // Registrar plugins de GSAP
+    gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+    // Inicializar Lenis — smooth scroll global (aislado para que un fallo no rompa animaciones)
+    let lenis = null;
+    try {
+      if (typeof Lenis === 'undefined') throw new Error('Lenis no se cargó desde el CDN');
+      lenis = new Lenis({
+        duration: 1.2,                                              // 1.2s
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),   // exponencial out
+        smooth: true,                                               // smooth scroll activo
+        direction: 'vertical',                                      // dirección vertical
+        gestureDirection: 'vertical',
+        smoothWheel: true,                                          // afecta a la rueda del mouse
+        wheelMultiplier: 1,
+        smoothTouch: false,                                         // mobile usa scroll nativo
+        touchMultiplier: 2,
+      });
+
+      // Sincronización Lenis ↔ GSAP ticker / ScrollTrigger
+      lenis.on('scroll', ScrollTrigger.update);
+      gsap.ticker.add((time) => lenis.raf(time * 1000));
+      gsap.ticker.lagSmoothing(0);
+    } catch (err) {
+      console.warn('⚠️ Lenis no inicializó, se usa scroll nativo:', err.message);
+    }
+
+    // Test rápido
+    console.log('✅ GSAP cargado — versión:', gsap.version);
+    console.log('✅ ScrollTrigger:', typeof ScrollTrigger !== 'undefined' ? 'OK' : 'FAIL');
+    console.log('✅ ScrollToPlugin:', gsap.plugins?.scrollTo ? 'OK' : (typeof ScrollToPlugin !== 'undefined' ? 'OK' : 'FAIL'));
+    console.log('✅ Lenis:', lenis ? 'OK' : 'FAIL');
+
+    // ============================================
+    //   REVEAL ANIMATIONS — con lazy init y a11y
+    // ============================================
+
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isMobile       = window.matchMedia('(max-width: 1023px)').matches;
+
+    // Lazy-load para imágenes que no son above-the-fold (cheap win)
+    document.querySelectorAll('img').forEach((img, i) => {
+      if (i === 0) return; // hero image: eager
+      if (!img.hasAttribute('loading')) img.setAttribute('loading', 'lazy');
+      if (!img.hasAttribute('decoding')) img.setAttribute('decoding', 'async');
+    });
+
+    // Helper: divide texto en <span class="word-anim"> (solo desktop / no reduced motion)
+    function splitWords(el) {
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+      const textNodes = [];
+      while (walker.nextNode()) textNodes.push(walker.currentNode);
+      textNodes.forEach((tn) => {
+        if (!tn.textContent.trim()) return;
+        const frag = document.createDocumentFragment();
+        tn.textContent.split(/(\s+)/).forEach((part) => {
+          if (part === '') return;
+          if (/^\s+$/.test(part)) {
+            frag.appendChild(document.createTextNode(part));
+          } else {
+            const span = document.createElement('span');
+            span.className = 'word-anim';
+            span.style.display = 'inline-block';
+            span.textContent = part;
+            frag.appendChild(span);
+          }
+        });
+        tn.parentNode.replaceChild(frag, tn);
+      });
+      return el.querySelectorAll('.word-anim');
+    }
+
+    const sections = document.querySelectorAll('section');
+
+    if (prefersReduced) {
+      // a11y: usuarios con reduced-motion ven todo estático e instantáneo
+      sections.forEach(s => gsap.set(s, { clearProps: 'all' }));
+      document.documentElement.classList.remove('js-animations');
+    } else {
+      // Estado inicial barato: solo `autoAlpha + y` en cada sección.
+      // El setup pesado (split, child gsap.set, timeline) se difiere hasta el primer enter.
+      sections.forEach((section) => {
+        if (section.dataset.animate === 'false') return;
+        gsap.set(section, { autoAlpha: 0, y: 60, willChange: 'transform, opacity' });
+      });
+
+      const builtTimelines = new WeakMap();
+
+      function buildTimeline(section) {
+        const extraDelay = parseFloat(section.dataset.delay) || 0;
+        const tl = gsap.timeline({ paused: true, delay: extraDelay });
+
+        // En mobile: animación más simple (sin word-split, sin clip-path)
+        if (isMobile) {
+          tl.to(section, { autoAlpha: 1, y: 0, duration: 0.8, ease: 'power3.out' });
+          const ctas = section.querySelectorAll('.btn-pill, .btn-pase, .btn-contact');
+          if (ctas.length) {
+            gsap.set(ctas, { autoAlpha: 0, y: 12 });
+            tl.to(ctas, { autoAlpha: 1, y: 0, duration: 0.4, stagger: 0.06, ease: 'power2.out' }, '-=0.3');
+          }
+          // Limpia will-change al terminar para liberar GPU
+          tl.eventCallback('onComplete', () => { section.style.willChange = 'auto'; });
+          return tl;
+        }
+
+        // Desktop: versión completa
+        const headings = section.querySelectorAll('h1, h2, h3, h4');
+        const headingWords = [];
+        headings.forEach((h) => headingWords.push(...splitWords(h)));
+        const paragraphs = section.querySelectorAll('p');
+        const images     = section.querySelectorAll('img');
+        const ctas       = section.querySelectorAll('.btn-pill, .btn-pase, .btn-contact');
+
+        if (headingWords.length) gsap.set(headingWords, { autoAlpha: 0, y: 20 });
+        if (paragraphs.length)   gsap.set(paragraphs,   { autoAlpha: 0 });
+        if (images.length)       gsap.set(images,       { autoAlpha: 0, scale: 0.95, clipPath: 'inset(100% 0% 0% 0%)' });
+        if (ctas.length)         gsap.set(ctas,         { autoAlpha: 0, scale: 0.9 });
+
+        tl.to(section, { autoAlpha: 1, y: 0, duration: 1, ease: 'power3.out' });
+        if (headingWords.length) tl.to(headingWords, { autoAlpha: 1, y: 0, duration: 0.6, ease: 'power3.out', stagger: 0.03 }, '-=0.8');
+        if (paragraphs.length)   tl.to(paragraphs,   { autoAlpha: 1, duration: 0.8, ease: 'power2.out', stagger: 0.1 }, '-=0.4');
+        if (images.length)       tl.to(images,       { autoAlpha: 1, scale: 1, clipPath: 'inset(0% 0% 0% 0%)', duration: 1.1, ease: 'power3.out', stagger: 0.1 }, '-=0.9');
+        if (ctas.length)         tl.to(ctas,         { autoAlpha: 1, scale: 1, duration: 0.6, ease: 'back.out(1.7)', stagger: 0.08 }, '-=0.2');
+
+        // Limpia will-change cuando termina (gana memoria GPU)
+        tl.eventCallback('onComplete', () => { section.style.willChange = 'auto'; });
+        tl.eventCallback('onReverseComplete', () => { section.style.willChange = 'transform, opacity'; });
+
+        return tl;
+      }
+
+      // Lazy: el timeline se construye recién en el primer onEnter,
+      // así las secciones del fondo no consumen CPU al cargar la página.
+      sections.forEach((section) => {
+        if (section.dataset.animate === 'false') return;
+
+        ScrollTrigger.create({
+          trigger: section,
+          start: 'top 80%',
+          end: 'bottom 20%',
+          onEnter:     () => { let t = builtTimelines.get(section); if (!t) { t = buildTimeline(section); builtTimelines.set(section, t); } t.play(); },
+          onEnterBack: () => { let t = builtTimelines.get(section); if (!t) { t = buildTimeline(section); builtTimelines.set(section, t); } t.play(); },
+          onLeave:     () => builtTimelines.get(section)?.reverse(),
+          onLeaveBack: () => builtTimelines.get(section)?.reverse(),
+        });
+      });
+    }
+
+    // Refresca ScrollTrigger cuando todo el layout + fuentes estén listos
+    window.addEventListener('load', () => ScrollTrigger.refresh());
+
+    // ============================================
+    //   ESCALERA: personaje sube/baja según scroll
+    // ============================================
+    (function initLadderCharacter() {
+      // Solo desktop, respeta reduced-motion
+      if (window.matchMedia('(max-width: 1023px)').matches) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const ladder = document.querySelector('.ladder-overlay');
+      if (!ladder) return;
+      const character = ladder.querySelector('.ladder-character');
+      if (!character) return;
+
+      let lastScrollY = 0;
+      let wigglePhase = 0;
+      let isScrolling = false;
+      let scrollTimer = null;
+      let targetY = 0;
+      let currentY = 0;
+      const CHAR_H = 64;
+      const TOP_PAD = 90;     // baja del header
+      const BOTTOM_PAD = 20;
+
+      function maxScroll() {
+        return Math.max(
+          document.documentElement.scrollHeight - window.innerHeight,
+          1
+        );
+      }
+      function trackHeight() {
+        return window.innerHeight - CHAR_H - TOP_PAD - BOTTOM_PAD;
+      }
+
+      function update(scrollY) {
+        const progress = Math.max(0, Math.min(1, scrollY / maxScroll()));
+        targetY = TOP_PAD + progress * trackHeight();
+
+        const delta = scrollY - lastScrollY;
+        if (Math.abs(delta) > 0.4) {
+          isScrolling = true;
+          // El wiggle avanza con el delta de scroll (y se invierte al subir)
+          wigglePhase += delta * 0.06;
+          clearTimeout(scrollTimer);
+          scrollTimer = setTimeout(() => { isScrolling = false; }, 180);
+        }
+        lastScrollY = scrollY;
+      }
+
+      function tick() {
+        // Interpolación suave hacia el target (lerp)
+        currentY += (targetY - currentY) * 0.18;
+        const rot = isScrolling ? Math.sin(wigglePhase) * 7 : 0;
+        character.style.transform =
+          `translate(-50%, ${currentY}px) rotate(${rot}deg)`;
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+
+      // Hook a Lenis si está activo, fallback a scroll nativo
+      if (typeof lenis !== 'undefined' && lenis) {
+        lenis.on('scroll', ({ scroll }) => update(scroll));
+      } else {
+        window.addEventListener('scroll',
+          () => update(window.scrollY),
+          { passive: true }
+        );
+      }
+
+      // Estado inicial
+      update(window.scrollY || 0);
+      currentY = targetY;
+
+      // Recalcular en resize
+      window.addEventListener('resize', () => update(lastScrollY));
+    })();
+
+    // ============================================
+    //   HERO — 3D PARALLAX (mouse + scroll)
+    // ============================================
+    (function initHeroParallax() {
+      const hero = document.querySelector('.hero');
+      if (!hero) return;
+
+      // Solo desktop con puntero fino: mobile/touch usa versión estática
+      const isDesktop = window.matchMedia('(min-width: 1024px)').matches
+                     && window.matchMedia('(hover: hover)').matches;
+      if (!isDesktop) return;
+      // Accesibilidad: si el usuario pide menos movimiento, no inicializamos parallax
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      // Configuración por capa: máximo desplazamiento por mouse, factor scroll, profundidad Z
+      const layers = [
+        { sel: '[data-parallax="bg"]',    mouseMax: 20, scrollY: -30, tz: -200 },
+        { sel: '[data-parallax="mid"]',   mouseMax: 40, scrollY: -45, tz: -100 },
+        { sel: '[data-parallax="front"]', mouseMax: 60, scrollY: -60, tz:    0 },
+        { sel: '[data-parallax="ui"]',    mouseMax:  5, scrollY: -10, tz:   50 },
+      ];
+
+      layers.forEach((layer) => {
+        const els = hero.querySelectorAll(layer.sel);
+        if (!els.length) return;
+
+        // Profundidad 3D inicial
+        gsap.set(els, { z: layer.tz, transformPerspective: 1200 });
+
+        // Scroll parallax — yPercent escalado por scrub
+        gsap.to(els, {
+          yPercent: layer.scrollY,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: hero,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: true,
+          },
+        });
+
+        // Mouse parallax — quickTo hace el lerp/suavizado interno (~0.1)
+        layer._setX = gsap.quickTo(els, 'x', { duration: 0.6, ease: 'power3.out' });
+        layer._setY = gsap.quickTo(els, 'y', { duration: 0.6, ease: 'power3.out' });
+      });
+
+      // Listener de mouse: normaliza posición a [-1, 1] y dispara los setters
+      hero.addEventListener('mousemove', (e) => {
+        const r = hero.getBoundingClientRect();
+        const nx = ((e.clientX - r.left) / r.width  - 0.5) * 2;
+        const ny = ((e.clientY - r.top)  / r.height - 0.5) * 2;
+        layers.forEach((l) => {
+          if (l._setX) l._setX(nx * l.mouseMax);
+          if (l._setY) l._setY(ny * l.mouseMax);
+        });
+      });
+
+      // Al salir el mouse: volver al centro suavemente
+      hero.addEventListener('mouseleave', () => {
+        layers.forEach((l) => {
+          if (l._setX) l._setX(0);
+          if (l._setY) l._setY(0);
+        });
+      });
+
+      // Rotación 3D sutil al scrollear (máximo 5deg rotateX)
+      gsap.to('.hero-inner', {
+        rotateX: 5,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: hero,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true,
+        },
+      });
+    })();
+
+    // ============================================
+    //   HORIZONTAL SCROLL DENTRO DE PIN — #mundo 4 destellos
+    //   • Sección pinneada ≈ 3× viewport (intensidad intermedia)
+    //   • scrub: true → la posición horizontal sigue el scroll
+    //   • Mobile / reduced-motion: sin pin, stack vertical (CSS)
+    //   • Lenis: ya está sincronizado con ScrollTrigger.update arriba
+    // ============================================
+    const destellosMM = gsap.matchMedia();
+
+    destellosMM.add(
+      {
+        isDesktop: '(min-width: 1024px) and (prefers-reduced-motion: no-preference)',
+      },
+      (context) => {
+        if (!context.conditions.isDesktop) return;
+
+        const pin   = document.querySelector('[data-h-pin]');
+        const track = document.querySelector('[data-h-track]');
+        const bar   = document.querySelector('[data-h-progress]');
+        if (!pin || !track) return;
+
+        // Distancia horizontal = ancho real del track − viewport
+        // getDistance se llama en cada refresh para soportar resize / fuentes que tarden.
+        const getDistance = () => Math.max(0, track.scrollWidth - window.innerWidth);
+
+        const tween = gsap.to(track, {
+          x: () => -getDistance(),
+          ease: 'none',
+          scrollTrigger: {
+            trigger: pin,
+            pin: true,
+            pinSpacing: true,
+            anticipatePin: 1,
+            start: 'top top',
+            // Intensidad intermedia: ~3× viewport de pin
+            end: () => '+=' + (getDistance() + window.innerHeight * 0.5),
+            scrub: 0.6,
+            invalidateOnRefresh: true,
+            onUpdate: (self) => {
+              if (bar) bar.style.width = (self.progress * 100).toFixed(2) + '%';
+            },
+          },
+        });
+
+        // Refresh tras carga de imágenes y fonts (evita medir mal el scrollWidth)
+        const refresh = () => ScrollTrigger.refresh();
+        window.addEventListener('load', refresh, { once: true });
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(refresh).catch(() => {});
+        }
+
+        return () => {
+          tween.scrollTrigger && tween.scrollTrigger.kill();
+          tween.kill();
+          gsap.set(track, { clearProps: 'transform' });
+          if (bar) bar.style.width = '0%';
+        };
+      }
+    );
+
+    // ============================================
+    //   MICROINTERACCIONES
+    // ============================================
+    (function initMicroInteractions() {
+      const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // 1) Wrappear flechas "→" para poder animarlas
+      document.querySelectorAll('a, button').forEach((el) => {
+        if (el.children.length === 0 && /→/.test(el.textContent)) {
+          el.classList.add('has-arrow');
+          el.innerHTML = el.innerHTML.replace(/→/g, '<span class="arrow">→</span>');
+        }
+      });
+
+      const buttons = document.querySelectorAll('.btn-pill, .btn-pase, .btn-contact');
+
+      buttons.forEach((btn) => {
+        // 2) Magnético: el botón se inclina hacia el cursor (solo desktop, no en reduced-motion)
+        if (isFinePointer && !reducedMotion) {
+          btn.addEventListener('mousemove', (e) => {
+            const r = btn.getBoundingClientRect();
+            const x = e.clientX - r.left - r.width / 2;
+            const y = e.clientY - r.top  - r.height / 2;
+            gsap.to(btn, {
+              x: x * 0.25,
+              y: y * 0.35,
+              scale: 1.05,
+              duration: 0.4,
+              ease: 'power3.out',
+              overwrite: 'auto',
+            });
+          });
+          btn.addEventListener('mouseleave', () => {
+            gsap.to(btn, {
+              x: 0, y: 0, scale: 1,
+              duration: 0.6,
+              ease: 'elastic.out(1, 0.5)',
+              overwrite: 'auto',
+            });
+          });
+        }
+
+        // 3) Ripple en el click
+        btn.addEventListener('click', (e) => {
+          const r = btn.getBoundingClientRect();
+          const ripple = document.createElement('span');
+          ripple.className = 'btn-ripple';
+          ripple.style.left = (e.clientX - r.left) + 'px';
+          ripple.style.top  = (e.clientY - r.top)  + 'px';
+          btn.appendChild(ripple);
+          setTimeout(() => ripple.remove(), 650);
+        });
+      });
+
+      // 4) NAVBAR: show/hide + transparente / blur
+      const header = document.querySelector('.site-header');
+      const hero = document.querySelector('.hero');
+      if (header) {
+        let lastScroll = 0;
+        const getHeroH = () => (hero ? hero.offsetHeight : 600);
+
+        function updateHeader(scrollY) {
+          // Estilo blur / transparente
+          if (scrollY > getHeroH() * 0.5) header.classList.add('is-scrolled');
+          else header.classList.remove('is-scrolled');
+
+          // Hide al scrollear hacia abajo, show al scrollear hacia arriba
+          if (scrollY > lastScroll && scrollY > 120) {
+            header.classList.add('is-hidden');
+          } else {
+            header.classList.remove('is-hidden');
+          }
+          lastScroll = scrollY;
+        }
+
+        // Si Lenis está activo, usar su evento; si no, scroll nativo
+        if (typeof lenis !== 'undefined' && lenis) {
+          lenis.on('scroll', ({ scroll }) => updateHeader(scroll));
+        } else {
+          window.addEventListener('scroll', () => updateHeader(window.scrollY), { passive: true });
+        }
+      }
+    })();
+  </script>
 
 </body>
 </html>
