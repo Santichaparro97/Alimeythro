@@ -633,7 +633,7 @@
   </section>
 
   <!-- ¿QUÉ ES MUNDO ALIMEYTHOR? - DARK NAVY -->
-  <section id="mundo" class="block block-navy">
+  <section id="mundo" class="block block-navy" data-animate="false">
     <div class="container center">
       <span class="pill-eyebrow eyebrow-dark">LA PLATAFORMA</span>
       <h2 class="big white">
@@ -1165,56 +1165,61 @@
     // ============================================
     const destellosMM = gsap.matchMedia();
 
-    destellosMM.add(
-      {
-        isDesktop: '(min-width: 1024px) and (prefers-reduced-motion: no-preference)',
-      },
-      (context) => {
-        if (!context.conditions.isDesktop) return;
-
-        const pin   = document.querySelector('[data-h-pin]');
-        const track = document.querySelector('[data-h-track]');
-        const bar   = document.querySelector('[data-h-progress]');
-        if (!pin || !track) return;
-
-        // Distancia horizontal = ancho real del track − viewport
-        // getDistance se llama en cada refresh para soportar resize / fuentes que tarden.
-        const getDistance = () => Math.max(0, track.scrollWidth - window.innerWidth);
-
-        const tween = gsap.to(track, {
-          x: () => -getDistance(),
-          ease: 'none',
-          scrollTrigger: {
-            trigger: pin,
-            pin: true,
-            pinSpacing: true,
-            anticipatePin: 1,
-            start: 'top top',
-            // Intensidad intermedia: ~3× viewport de pin
-            end: () => '+=' + (getDistance() + window.innerHeight * 0.5),
-            scrub: 0.6,
-            invalidateOnRefresh: true,
-            onUpdate: (self) => {
-              if (bar) bar.style.width = (self.progress * 100).toFixed(2) + '%';
-            },
-          },
-        });
-
-        // Refresh tras carga de imágenes y fonts (evita medir mal el scrollWidth)
-        const refresh = () => ScrollTrigger.refresh();
-        window.addEventListener('load', refresh, { once: true });
-        if (document.fonts && document.fonts.ready) {
-          document.fonts.ready.then(refresh).catch(() => {});
-        }
-
-        return () => {
-          tween.scrollTrigger && tween.scrollTrigger.kill();
-          tween.kill();
-          gsap.set(track, { clearProps: 'transform' });
-          if (bar) bar.style.width = '0%';
-        };
+    // Sintaxis string (compatible con GSAP 3.11+ de manera más amplia)
+    destellosMM.add('(min-width: 1024px) and (prefers-reduced-motion: no-preference)', () => {
+      const pin   = document.querySelector('[data-h-pin]');
+      const track = document.querySelector('[data-h-track]');
+      const bar   = document.querySelector('[data-h-progress]');
+      if (!pin || !track) {
+        console.warn('⚠️ Scroll-jacking: no se encontraron elementos del track horizontal');
+        return;
       }
-    );
+
+      // Distancia horizontal = ancho real del track − viewport.
+      // Función para que invalidateOnRefresh la recalcule en resize/load de fuentes.
+      const getDistance = () => Math.max(0, track.scrollWidth - window.innerWidth);
+
+      const tween = gsap.to(track, {
+        x: () => -getDistance(),
+        ease: 'none',
+        scrollTrigger: {
+          trigger: pin,
+          pin: true,
+          pinSpacing: true,
+          anticipatePin: 1,
+          start: 'top top',
+          // Intensidad intermedia: ~3× viewport de pin
+          end: () => '+=' + (getDistance() + window.innerHeight * 0.5),
+          scrub: 0.6,
+          invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            if (bar) bar.style.width = (self.progress * 100).toFixed(2) + '%';
+          },
+        },
+      });
+
+      // Forzar un refresh inicial (las secciones previas con autoAlpha:0 pueden
+      // desfasar los cálculos hasta que se revelan). 100ms después de mount.
+      const initialRefresh = setTimeout(() => ScrollTrigger.refresh(), 100);
+
+      // También refrescar tras window load y carga de fuentes
+      const onWinLoad = () => ScrollTrigger.refresh();
+      window.addEventListener('load', onWinLoad, { once: true });
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(onWinLoad).catch(() => {});
+      }
+
+      console.log('✅ Scroll-jacking destellos: track', track.scrollWidth + 'px, dist', getDistance() + 'px');
+
+      return () => {
+        clearTimeout(initialRefresh);
+        window.removeEventListener('load', onWinLoad);
+        tween.scrollTrigger && tween.scrollTrigger.kill();
+        tween.kill();
+        gsap.set(track, { clearProps: 'transform' });
+        if (bar) bar.style.width = '0%';
+      };
+    });
 
     // ============================================
     //   MICROINTERACCIONES
