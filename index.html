@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;800;900&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -24,10 +24,13 @@
         <a href="#">Masterclass</a>
         <a href="#">Recursos Gratuitos</a>
         <a href="#mundo">Mundo Alimeythor</a>
-        <a href="#" class="btn-pill outline">Ingresar</a>
+        <a href="#">Ingresar</a>
       </nav>
-      <div class="header-right-mobile">
-        <a href="#pase" class="btn-pill primary">Suscribirme</a>
+      <div class="header-actions">
+        <a href="#" class="cart-btn" aria-label="Carrito">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a1a2e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        </a>
+        <a href="#" class="btn-contact">Contactame</a>
         <button class="hamburger" aria-label="Menu">
           <span></span><span></span><span></span>
         </button>
@@ -40,52 +43,72 @@
     <div class="container hero-inner">
       <div class="hero-text">
         <h1>
-          ¿Sentís que las pantallas reemplazan las
-          <em>emociones reales</em>?
+          ¿Sentís que las pantallas reemplazan las <span class="pink">emociones reales</span>?
         </h1>
         <p class="hero-sub">
           Descubrí Alimeythor: un malvavisco mágico que acompaña a los niños
           a explorar sus emociones a través de historias, aventuras y magia.
         </p>
         <div class="hero-ctas">
-          <a href="#quien" class="btn-primary">Conocé quién es Alimeythor</a>
-          <a href="#" class="btn-link">Ver y Leer Muestra ›</a>
+          <a href="#quien" class="btn-pill primary lg">Descubrí quién es Alimeythor</a>
+          <a href="#pase" class="btn-pill outline-pink lg">Ver el Pase Mágico</a>
         </div>
       </div>
-      <div class="hero-img">
-        <img src="assets/hero-personaje.png" alt="Alimeythor — personaje" />
+      <div class="hero-img-wrap">
+        <div class="hero-img">
+          <img src="assets/hero-personaje.png" alt="El Mundo Mágico de Alimeythor" />
+        </div>
+        <p class="hero-caption">✨ El Mundo Mágico de Alimeythor</p>
       </div>
     </div>
   </section>
 
-  <!-- QUIEN ES -->
-  <section id="quien" class="block block-cream">
-    <div class="container narrow center">
-      <p class="eyebrow">🫧 PRESENTANDO</p>
-      <h2>¿Quién es Alimeythor?</h2>
-      <p class="paragraph">
-        Un personaje nacido de una historia familiar real, creado para acompañar
-        desafíos cotidianos con ternura, humor y magia. Alimeythor es un malvavisco
-        mágico que vive en un mundo colorido donde cada aventura enseña una emoción:
-        calma, curiosidad, empatía y valentía.
-      </p>
-      <a href="#" class="btn-primary">CONOCER MÁS SOBRE SU HISTORIA</a>
+  <!-- ¿QUIÉN ES? -->
+  <section id="quien" class="block block-white">
+    <div class="container two-col-quien">
+      <div class="quien-text">
+        <span class="pill-eyebrow">EL PERSONAJE</span>
+        <h2 class="left"><span class="bubble">🫧</span> ¿Quién es Alimeythor?</h2>
+        <div class="divider-pink"></div>
+        <p class="paragraph left">
+          Un personaje nacido de una historia familiar real, creado para acompañar
+          desafíos cotidianos con ternura, humor y magia.
+        </p>
+        <p class="paragraph left">
+          Alimeythor es un malvavisco mágico que vive en un mundo colorido donde cada
+          aventura enseña una emoción: calma, curiosidad, empatía y valentía.
+        </p>
+        <a href="#" class="btn-pill primary lg">CONOCER MÁS SOBRE SU HISTORIA</a>
+      </div>
+      <div class="quien-img">
+        <img src="assets/logo-full.png" alt="Logo Alimeythor — Alimenta Tu Alma" />
+      </div>
     </div>
   </section>
 
   <!-- SOY ALICIA -->
-  <section id="alicia" class="block block-pink">
-    <div class="container two-col">
+  <section id="alicia" class="block block-cream">
+    <div class="container two-col-alicia">
       <div class="alicia-photo">
-        <img src="assets/alicia-libros.jpg" alt="Alicia con sus libros" />
+        <img src="assets/alicia-libros.jpg" alt="Alicia con su libro Alimeythor" />
       </div>
       <div class="alicia-text">
-        <p class="eyebrow left">LA CREADORA</p>
+        <span class="pill-eyebrow">LA CREADORA</span>
         <h2 class="left">Soy Alicia</h2>
+        <div class="divider-pink"></div>
         <div class="alicia-tags">
-          <span>📍 La Pampa</span>
-          <span>👩 Madre</span>
-          <span>📖 Argentina</span>
+          <span class="tag">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#E8578A"><path d="M12 2L2 22h20L12 2z"/></svg>
+            Lic. en Enfermería
+          </span>
+          <span class="tag">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#E8578A"><path d="M12 1l3 6 6 .5-4.5 4 1.5 6.5L12 14l-6 4 1.5-6.5L3 7.5 9 7z"/></svg>
+            Madre de 4
+          </span>
+          <span class="tag">
+            <span class="flag-ar"></span>
+            Argentina
+          </span>
         </div>
         <p class="paragraph left">
           Mujer Argentina, Madre de cuatro hijos, abuela. Trabaje en el área de salud
@@ -94,28 +117,35 @@
           hijos desde pequeños. Utilizando la tecnología como herramienta para trabajar
           valores y acompañar la crianza.
         </p>
-        <a href="#" class="btn-primary">CONOCÉ SU HISTORIA COMPLETA</a>
+        <a href="#" class="btn-pill primary lg">CONOCÉ MI HISTORIA COMPLETA →</a>
       </div>
     </div>
   </section>
 
-  <!-- QUE VAS A ENCONTRAR -->
-  <section class="block block-cream">
-    <div class="container">
-      <h2 class="center">Qué vas a encontrar en este mundo</h2>
+  <!-- QUÉ VAS A ENCONTRAR -->
+  <section class="block block-white">
+    <div class="container center">
+      <span class="pill-eyebrow">EL MUNDO</span>
+      <h2 class="big">Qué vas a encontrar<br/>en este mundo</h2>
       <div class="features-grid">
-        <article class="feature">
-          <div class="feature-icon">📖</div>
+        <article class="feature feature-pink">
+          <div class="feature-icon">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#5b8def" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
           <h3>El e-book "Misión de Vida y Búsqueda de Opciones"</h3>
           <p>Una guía práctica para acompañar a tus hijos en el camino de descubrir quiénes son y qué los mueve.</p>
         </article>
-        <article class="feature">
-          <div class="feature-icon">✏️</div>
+        <article class="feature feature-yellow">
+          <div class="feature-icon">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="#EDBC3B"><path d="M12 2l1.5 6.5L20 10l-6.5 1.5L12 18l-1.5-6.5L4 10l6.5-1.5z"/><circle cx="19" cy="5" r="1.5"/><circle cx="5" cy="19" r="1.5"/></svg>
+          </div>
           <h3>Mini cuentos exclusivos para miembros</h3>
           <p>Historias breves y mágicas diseñadas para leer juntos en familia, en cualquier momento del día.</p>
         </article>
-        <article class="feature">
-          <div class="feature-icon">🎨</div>
+        <article class="feature feature-teal">
+          <div class="feature-icon">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#2bb7a3" stroke-width="2"><path d="M12 22a10 10 0 1 1 10-10c0 2-1.5 3-3 3h-2a2 2 0 0 0-2 2v1a2 2 0 0 1-3 2 10 10 0 0 1 0 2z"/><circle cx="7.5" cy="10.5" r="1.5" fill="#e8578a" stroke="none"/><circle cx="12" cy="7" r="1.5" fill="#EDBC3B" stroke="none"/><circle cx="16.5" cy="10.5" r="1.5" fill="#2bb7a3" stroke="none"/></svg>
+          </div>
           <h3>Talleres para disfrutar en familia</h3>
           <p>Actividades interactivas que convierten el tiempo en casa en momentos de conexión y aprendizaje.</p>
         </article>
@@ -123,25 +153,49 @@
     </div>
   </section>
 
-  <!-- MUNDO ALIMEYTHOR -->
-  <section id="mundo" class="block block-pink">
-    <div class="container">
-      <h2 class="center">¿Qué es Mundo Alimeythor?</h2>
-      <p class="paragraph center narrow-text">
-        Mundo Alimeythor no es solo una plataforma. Es un plan de entrenamiento
-        para el corazón y la mente de los niños. Un espacio donde la magia y las
-        emociones van de la mano, pero no solos, sino juntos en familia.
+  <!-- ¿QUÉ ES MUNDO ALIMEYTHOR? - DARK NAVY -->
+  <section id="mundo" class="block block-navy">
+    <div class="container center">
+      <span class="pill-eyebrow eyebrow-dark">LA PLATAFORMA</span>
+      <h2 class="big white">
+        <span class="star">💫</span> ¿Qué es Mundo Alimeythor?
+      </h2>
+      <p class="paragraph center light italic narrow-text">
+        Mundo Alimeythor no es solo una plataforma. Es un plan de entrenamiento para el corazón y la mente de los niños. Un espacio donde la magia y las emociones van de la mano, pero no solos, sino juntos en familia.
       </p>
-      <p class="paragraph center"><strong>Los 4 Destellos — Temporada 1</strong></p>
+      <div class="thin-divider"></div>
+      <p class="destellos-title">✨ Los 4 Destellos — Temporada 1</p>
+      <p class="destellos-sub italic">Cada destello trabaja una emoción clave, con historias, juegos y experiencias pensadas para su edad.</p>
 
       <div class="destellos-grid">
-        <div class="destello"><div class="destello-icon">🧘</div><h4>Calma</h4><p>Herramientas para encontrar la paz interior en medio del caos cotidiano.</p></div>
-        <div class="destello"><div class="destello-icon">🔍</div><h4>Curiosidad</h4><p>Despertar el asombro y las ganas de explorar el mundo con ojos nuevos.</p></div>
-        <div class="destello"><div class="destello-icon">💗</div><h4>Empatía</h4><p>Aprender a ponerse en el lugar del otro y construir vínculos genuinos.</p></div>
-        <div class="destello"><div class="destello-icon">🦁</div><h4>Valentía</h4><p>Enfrentar miedos con confianza y atreverse a ser quien uno es.</p></div>
-        <div class="destello"><div class="destello-icon">🎨</div><h4>Zona de Relajación</h4><p>Mandalas · Libros para colorear · Historias guiadas · Materiales descargables.</p></div>
-        <div class="destello"><div class="destello-icon">✍️</div><h4>Blog</h4><p>Un espacio para que vos también crezcas, reflexiones y compartas el camino.</p></div>
-        <div class="destello"><div class="destello-icon">🎂</div><h4>Saludo de cumpleaños</h4><p>Porque cada niño merece sentirse visto y celebrado en su día especial.</p></div>
+        <div class="destello-dark">
+          <div class="destello-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="#EDBC3B"><circle cx="12" cy="6" r="3"/><path d="M12 10c-3 0-5 2-5 5 0 2 1 4 2 5h6c1-1 2-3 2-5 0-3-2-5-5-5z"/><path d="M7 14l-3 2M17 14l3 2" stroke="#EDBC3B" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <h4>Calma</h4>
+          <p>Herramientas para encontrar la paz interior en medio del caos cotidiano.</p>
+        </div>
+        <div class="destello-dark">
+          <div class="destello-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#7fc9d8" stroke-width="2"><circle cx="10" cy="10" r="6"/><path d="M14.5 14.5L20 20" stroke-linecap="round"/></svg>
+          </div>
+          <h4>Curiosidad</h4>
+          <p>Despertar el asombro y las ganas de explorar el mundo con ojos nuevos.</p>
+        </div>
+        <div class="destello-dark">
+          <div class="destello-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="#EDBC3B"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/></svg>
+          </div>
+          <h4>Empatía</h4>
+          <p>Aprender a ponerse en el lugar del otro y construir vínculos genuinos.</p>
+        </div>
+        <div class="destello-dark">
+          <div class="destello-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="#EDBC3B"><circle cx="12" cy="12" r="8"/><circle cx="9" cy="11" r="1.2" fill="#1a1a2e"/><circle cx="15" cy="11" r="1.2" fill="#1a1a2e"/><path d="M9 15c1 1 4 1 5 0" stroke="#1a1a2e" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M5 7c0-1 1-3 3-3M19 7c0-1-1-3-3-3" stroke="#c9447a" stroke-width="2" fill="none"/></svg>
+          </div>
+          <h4>Valentía</h4>
+          <p>Enfrentar miedos con confianza y atreverse a ser quien uno es.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -176,18 +230,9 @@
     <div class="container">
       <h2 class="center">Lo que dicen las familias</h2>
       <div class="testimonials-grid">
-        <blockquote class="testimonial">
-          "REEMPLAZAR CON TESTIMONIO REAL DE UNA FAMILIA"
-          <cite>— Nombre, mamá de X años</cite>
-        </blockquote>
-        <blockquote class="testimonial">
-          "REEMPLAZAR CON TESTIMONIO REAL DE UNA FAMILIA"
-          <cite>— Nombre, mamá de X años</cite>
-        </blockquote>
-        <blockquote class="testimonial">
-          "REEMPLAZAR CON TESTIMONIO REAL DE UNA FAMILIA"
-          <cite>— Nombre, mamá de X años</cite>
-        </blockquote>
+        <blockquote class="testimonial">"REEMPLAZAR CON TESTIMONIO REAL DE UNA FAMILIA"<cite>— Nombre, mamá de X años</cite></blockquote>
+        <blockquote class="testimonial">"REEMPLAZAR CON TESTIMONIO REAL DE UNA FAMILIA"<cite>— Nombre, mamá de X años</cite></blockquote>
+        <blockquote class="testimonial">"REEMPLAZAR CON TESTIMONIO REAL DE UNA FAMILIA"<cite>— Nombre, mamá de X años</cite></blockquote>
       </div>
     </div>
   </section>
@@ -195,11 +240,9 @@
   <!-- COMUNIDAD + PASE MÁGICO -->
   <section id="pase" class="block block-cream">
     <div class="container pricing-grid">
-
       <div class="pricing-photo">
-        <img src="assets/alicia-aula.jpeg" alt="Alicia leyendo con niños en el aula" />
+        <img src="assets/alicia-aula.jpeg" alt="Alicia leyendo con niños" />
       </div>
-
       <div class="card-community">
         <span class="badge-gratis">GRATIS</span>
         <h3>🤝 Comunidad y Talleres</h3>
@@ -212,7 +255,6 @@
         </ul>
         <a href="#" class="btn-pill primary block">QUIERO UNIRME</a>
       </div>
-
       <div class="card-pase">
         <span class="badge-acceso">ACCESO COMPLETO</span>
         <h3>🔓 Pase Mágico<br/>Temporada 1</h3>
@@ -230,7 +272,6 @@
         <a href="#" class="btn-pill cta block">🎁 Obtener el Pase Mágico</a>
         <a href="#" class="link-light">¿Todavía no estás seguro/a? Probá gratis →</a>
       </div>
-
     </div>
   </section>
 
