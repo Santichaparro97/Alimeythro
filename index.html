@@ -7,10 +7,8 @@
   <link rel="icon" href="assets/favicon.png" />
   <link rel="stylesheet" href="css/styles.css" />
   <style>
-    /* Guard anti-FOUC: ocultar secciones hasta que GSAP las tome */
-    .js-animations section { visibility: hidden; }
-    .js-animations section.is-revealed,
-    .js-animations section:first-of-type { visibility: visible; }
+    /* Guard anti-FOUC quirúrgico: solo los reveals con data-reveal-hidden esperan a GSAP */
+    .js-animations [data-reveal-hidden] { opacity: 0; }
 
     /* ===== HERO 3D PARALLAX ===== */
     .hero { position: relative; overflow: hidden; perspective: 1200px; perspective-origin: 50% 40%; }
@@ -38,118 +36,51 @@
       .hero-inner { transform-style: flat; }
     }
 
-    /* ===== HORIZONTAL SCROLL DENTRO DE PIN — 4 DESTELLOS ===== */
-    /* Desktop: pin la sección y translateX el track al hacer scroll vertical.
-       Intensidad intermedia: distancia de pin ≈ 3× viewport height.
-       Mobile: track se apila vertical, sin pin.                                  */
-
-    #mundo .destellos-h-pin {
-      position: relative;
-      margin-top: 4rem;
+    /* ===== 4 DESTELLOS — grid simple de 4 columnas (como la imagen) ===== */
+    #mundo .destellos-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      max-width: 1240px;
+      margin: 3rem auto 0;
     }
-    #mundo .destellos-h-track {
-      display: flex;
-      gap: 2rem;
-      will-change: transform;
-    }
-    #mundo .destello-card-h {
-      flex: 0 0 auto;
-      width: 70vw;
-      max-width: 760px;
-      min-height: 60vh;
-      padding: 3rem;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 20px;
-      backdrop-filter: blur(8px);
+    #mundo .destellos-grid .destello {
+      background: #232645;
+      border: 1px solid #2c2f55;
+      border-radius: 18px;
+      padding: 2.4rem 1.5rem;
+      text-align: center;
       display: flex;
       flex-direction: column;
+      align-items: center;
+    }
+    #mundo .destellos-grid .destello-icon {
+      width: 56px;
+      height: 56px;
+      margin-bottom: 1.1rem;
+      display: flex;
+      align-items: center;
       justify-content: center;
-      align-items: flex-start;
-      text-align: left;
     }
-    #mundo .destello-card-h .destello-index {
-      font-size: 0.8rem;
-      letter-spacing: 0.2em;
-      color: #EDBC3B;
-      text-transform: uppercase;
-      margin-bottom: 1rem;
+    #mundo .destellos-grid .destello h4 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0 0 0.7rem;
     }
-    #mundo .destello-card-h .destello-icon {
-      margin-bottom: 1.25rem;
-      transform: scale(1.4);
-      transform-origin: left center;
-    }
-    #mundo .destello-card-h h4 {
-      font-size: clamp(2.4rem, 4vw, 3.6rem);
-      color: #EDBC3B;
-      margin: 0 0 1rem;
-      font-family: 'Merriweather', serif;
-      line-height: 1.05;
-    }
-    #mundo .destello-card-h p {
-      font-size: 1.15rem;
-      line-height: 1.6;
-      max-width: 460px;
-      color: rgba(255,255,255,0.82);
+    #mundo .destellos-grid .destello p {
+      font-size: 0.85rem;
+      line-height: 1.55;
+      color: #a8acc2;
       margin: 0;
+      max-width: 220px;
     }
-    /* Indicador de progreso (barra inferior) */
-    #mundo .destellos-progress {
-      position: absolute;
-      bottom: 32px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 220px;
-      height: 4px;
-      background: rgba(255,255,255,0.12);
-      border-radius: 4px;
-      overflow: hidden;
-      z-index: 5;
-    }
-    #mundo .destellos-progress-bar {
-      width: 0%;
-      height: 100%;
-      background: linear-gradient(90deg, #E8578A, #EDBC3B);
-      border-radius: 4px;
-    }
-
-    /* Desktop específico */
-    @media (min-width: 1024px) {
-      #mundo .destellos-h-pin {
-        height: 100vh;
-        overflow: hidden;
-      }
-      #mundo .destellos-h-track {
-        height: 100vh;
-        align-items: center;
-        padding: 0 8vw;
-      }
-    }
-
-    /* Mobile / tablet: sin pin, stack vertical normal */
     @media (max-width: 1023px) {
-      #mundo .destellos-h-track {
-        flex-direction: column;
-        gap: 1.5rem;
-        padding: 0;
-      }
-      #mundo .destello-card-h {
-        width: 100%;
-        min-height: auto;
-        padding: 1.75rem;
-      }
-      #mundo .destellos-progress { display: none; }
+      #mundo .destellos-grid { grid-template-columns: repeat(2, 1fr); }
     }
-    /* Respect reduced-motion: deshabilita pin + horizontal */
-    @media (prefers-reduced-motion: reduce) {
-      #mundo .destellos-h-pin { height: auto !important; }
-      #mundo .destellos-h-track {
-        flex-direction: column !important;
-        gap: 1.5rem !important;
-        transform: none !important;
-      }
-      #mundo .destello-card-h { width: 100% !important; min-height: auto !important; }
+    @media (max-width: 600px) {
+      #mundo .destellos-grid { grid-template-columns: 1fr; }
     }
 
     /* ===== MICROINTERACCIONES ===== */
@@ -458,6 +389,79 @@
       .feature::before, .destello-card::before, .extra-card::before,
       .benefit::before, .testimonial-pink::before { display: none !important; }
     }
+
+    /* ===== MUNDO QUE SE CONSTRUYE — animaciones tiernas ===== */
+
+    /* Letras del hero <h1> animadas */
+    .hero h1 .anim-letter {
+      display: inline-block;
+      will-change: transform;
+    }
+
+    /* Partículas mágicas flotantes — viven en el fondo de cada bloque */
+    .magic-particles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .magic-particle {
+      position: absolute;
+      pointer-events: none;
+      user-select: none;
+      will-change: transform;
+      text-shadow: 0 0 8px currentColor;
+      font-family: 'Segoe UI Symbol', sans-serif;
+    }
+    /* Asegurar que el contenido viva por encima de las partículas */
+    .block > .container { position: relative; z-index: 2; }
+
+    /* Trail de brillos al scrollear */
+    .scroll-sparkle {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      will-change: transform, opacity;
+      text-shadow: 0 0 6px currentColor;
+      font-family: 'Segoe UI Symbol', sans-serif;
+    }
+
+    /* Divisores SVG ondulados entre secciones */
+    .svg-divider {
+      display: block;
+      width: 100%;
+      height: 80px;
+      pointer-events: none;
+      position: relative;
+      z-index: 4;
+      margin: -40px 0;
+    }
+    .svg-divider svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+    .svg-divider path {
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      will-change: stroke-dashoffset;
+    }
+    .svg-divider-pink path { stroke: rgba(232, 87, 138, 0.55); }
+    .svg-divider-gold path { stroke: rgba(237, 188, 59, 0.6); }
+    .svg-divider-teal path { stroke: rgba(127, 201, 216, 0.55); }
+
+    /* Mobile: cortamos efectos costosos */
+    @media (max-width: 768px) {
+      .magic-particles, .scroll-sparkle { display: none !important; }
+      .svg-divider { height: 50px; margin: -20px 0; }
+    }
+
+    /* Reduced motion: nada de partículas/brillos/dibujos */
+    @media (prefers-reduced-motion: reduce) {
+      .magic-particles, .scroll-sparkle, .svg-divider { display: none !important; }
+    }
   </style>
   <script>document.documentElement.classList.add('js-animations');</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -632,8 +636,15 @@
     </div>
   </section>
 
+  <!-- Divisor SVG ondulado: features → mundo -->
+  <div class="svg-divider svg-divider-pink" aria-hidden="true">
+    <svg viewBox="0 0 1200 80" preserveAspectRatio="none">
+      <path d="M 0 40 Q 100 10 200 40 T 400 40 T 600 40 T 800 40 T 1000 40 T 1200 40" />
+    </svg>
+  </div>
+
   <!-- ¿QUÉ ES MUNDO ALIMEYTHOR? - DARK NAVY -->
-  <section id="mundo" class="block block-navy" data-animate="false">
+  <section id="mundo" class="block block-navy">
     <div class="container center">
       <span class="pill-eyebrow eyebrow-dark">LA PLATAFORMA</span>
       <h2 class="big white">
@@ -646,46 +657,36 @@
       <p class="destellos-title">✨ Los 4 Destellos — Temporada 1</p>
       <p class="destellos-sub italic">Cada destello trabaja una emoción clave, con historias, juegos y experiencias pensadas para su edad.</p>
 
-      <!-- Horizontal scroll dentro de pin: las 4 cards entran de derecha a izquierda
-           mientras la sección está pinneada (~3× viewport). Mobile: stack vertical. -->
-      <div class="destellos-h-pin" data-h-pin>
-        <div class="destellos-h-track" data-h-track>
-          <article class="destello-card-h" data-index="0">
-            <span class="destello-index">Destello 01</span>
-            <div class="destello-icon">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="#EDBC3B"><circle cx="12" cy="6" r="3"/><path d="M12 10c-3 0-5 2-5 5 0 2 1 4 2 5h6c1-1 2-3 2-5 0-3-2-5-5-5z"/><path d="M7 14l-3 2M17 14l3 2" stroke="#EDBC3B" stroke-width="2" stroke-linecap="round"/></svg>
-            </div>
-            <h4>Calma</h4>
-            <p>Herramientas simples para que tu hijo encuentre su paz interior en medio del caos cotidiano — respiraciones, mandalas y rituales mágicos.</p>
-          </article>
-          <article class="destello-card-h" data-index="1">
-            <span class="destello-index">Destello 02</span>
-            <div class="destello-icon">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#7fc9d8" stroke-width="2"><circle cx="10" cy="10" r="6"/><path d="M14.5 14.5L20 20" stroke-linecap="round"/></svg>
-            </div>
-            <h4>Curiosidad</h4>
-            <p>Despertar el asombro y las ganas de explorar el mundo con ojos nuevos. Cada pregunta es una aventura por descubrir.</p>
-          </article>
-          <article class="destello-card-h" data-index="2">
-            <span class="destello-index">Destello 03</span>
-            <div class="destello-icon">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="#EDBC3B"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/></svg>
-            </div>
-            <h4>Empatía</h4>
-            <p>Aprender a ponerse en el lugar del otro y construir vínculos genuinos. La emoción que sostiene a una familia entera.</p>
-          </article>
-          <article class="destello-card-h" data-index="3">
-            <span class="destello-index">Destello 04</span>
-            <div class="destello-icon">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="#EDBC3B"><circle cx="12" cy="12" r="8"/><circle cx="9" cy="11" r="1.2" fill="#1a1a2e"/><circle cx="15" cy="11" r="1.2" fill="#1a1a2e"/><path d="M9 15c1 1 4 1 5 0" stroke="#1a1a2e" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M5 7c0-1 1-3 3-3M19 7c0-1-1-3-3-3" stroke="#c9447a" stroke-width="2" fill="none"/></svg>
-            </div>
-            <h4>Valentía</h4>
-            <p>Enfrentar miedos con confianza y atreverse a ser quien uno es. Porque ningún malvavisco mágico nació sabiendo todo.</p>
-          </article>
-        </div>
-        <div class="destellos-progress" aria-hidden="true">
-          <div class="destellos-progress-bar" data-h-progress></div>
-        </div>
+      <!-- 4 Destellos — grid simple en una fila (igual a la imagen) -->
+      <div class="destellos-grid">
+        <article class="destello">
+          <div class="destello-icon">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="#EDBC3B"><circle cx="12" cy="5" r="2.5"/><path d="M12 8.5c-2.7 0-4.5 1.8-4.5 4.5 0 1.7 0.8 3.3 1.6 4.5h5.8c0.8-1.2 1.6-2.8 1.6-4.5 0-2.7-1.8-4.5-4.5-4.5z"/><path d="M7.5 16l-3 1.5M16.5 16l3 1.5" stroke="#EDBC3B" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>
+          </div>
+          <h4>Calma</h4>
+          <p>Herramientas para encontrar la paz interior en medio del caos cotidiano.</p>
+        </article>
+        <article class="destello">
+          <div class="destello-icon">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#a8b0c8" stroke-width="2"><circle cx="10" cy="10" r="6"/><path d="M14.5 14.5L20 20" stroke-linecap="round"/></svg>
+          </div>
+          <h4>Curiosidad</h4>
+          <p>Despertar el asombro y las ganas de explorar el mundo con ojos nuevos.</p>
+        </article>
+        <article class="destello">
+          <div class="destello-icon">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="#EDBC3B"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/></svg>
+          </div>
+          <h4>Empatía</h4>
+          <p>Aprender a ponerse en el lugar del otro y construir vínculos genuinos.</p>
+        </article>
+        <article class="destello">
+          <div class="destello-icon">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="#EDBC3B"><circle cx="12" cy="12" r="8"/><circle cx="9" cy="11" r="1.2" fill="#1a1a2e"/><circle cx="15" cy="11" r="1.2" fill="#1a1a2e"/><path d="M9 15c1 1 4 1 5 0" stroke="#1a1a2e" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M5 7c0-1 1-3 3-3M19 7c0-1-1-3-3-3" stroke="#c9447a" stroke-width="2" fill="none"/></svg>
+          </div>
+          <h4>Valentía</h4>
+          <p>Enfrentar miedos con confianza y atreverse a ser quien uno es.</p>
+        </article>
       </div>
 
       <div class="extras-grid">
@@ -713,6 +714,13 @@
       </div>
     </div>
   </section>
+
+  <!-- Divisor SVG ondulado: mundo → beneficios -->
+  <div class="svg-divider svg-divider-gold" aria-hidden="true">
+    <svg viewBox="0 0 1200 80" preserveAspectRatio="none">
+      <path d="M 0 40 Q 150 70 300 40 T 600 40 T 900 40 T 1200 40" />
+    </svg>
+  </div>
 
   <!-- POR QUE UNIRSE -->
   <section class="block block-cream">
@@ -747,6 +755,13 @@
       </div>
     </div>
   </section>
+
+  <!-- Divisor SVG ondulado: beneficios → testimonios -->
+  <div class="svg-divider svg-divider-teal" aria-hidden="true">
+    <svg viewBox="0 0 1200 80" preserveAspectRatio="none">
+      <path d="M 0 40 Q 200 5 400 40 T 800 40 T 1200 40" />
+    </svg>
+  </div>
 
   <!-- TESTIMONIOS -->
   <section class="block block-white">
@@ -885,122 +900,505 @@
     console.log('✅ Lenis:', lenis ? 'OK' : 'FAIL');
 
     // ============================================
-    //   REVEAL ANIMATIONS — con lazy init y a11y
+    //   MUNDO QUE SE CONSTRUYE — animaciones tiernas y mágicas
     // ============================================
 
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const isMobile       = window.matchMedia('(max-width: 1023px)').matches;
+    // ---- 1) CONFIG GLOBAL ----
+    const ANIM = {
+      isMobile:  window.matchMedia('(max-width: 768px)').matches,
+      isTablet:  window.matchMedia('(max-width: 1023px)').matches,
+      reduced:   window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+      finePtr:   window.matchMedia('(hover: hover) and (pointer: fine)').matches,
+    };
+    // Multiplicador de stagger: mobile usa la mitad para que se sienta ligero
+    const SM = ANIM.isMobile ? 0.5 : 1;
 
-    // Lazy-load para imágenes que no son above-the-fold (cheap win)
+    // Lazy-load para imágenes que no son above-the-fold
     document.querySelectorAll('img').forEach((img, i) => {
       if (i === 0) return; // hero image: eager
-      if (!img.hasAttribute('loading')) img.setAttribute('loading', 'lazy');
+      if (!img.hasAttribute('loading'))  img.setAttribute('loading', 'lazy');
       if (!img.hasAttribute('decoding')) img.setAttribute('decoding', 'async');
     });
 
-    // Helper: divide texto en <span class="word-anim"> (solo desktop / no reduced motion)
-    function splitWords(el) {
-      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
-      const textNodes = [];
-      while (walker.nextNode()) textNodes.push(walker.currentNode);
-      textNodes.forEach((tn) => {
-        if (!tn.textContent.trim()) return;
-        const frag = document.createDocumentFragment();
-        tn.textContent.split(/(\s+)/).forEach((part) => {
-          if (part === '') return;
-          if (/^\s+$/.test(part)) {
-            frag.appendChild(document.createTextNode(part));
-          } else {
-            const span = document.createElement('span');
-            span.className = 'word-anim';
-            span.style.display = 'inline-block';
-            span.textContent = part;
-            frag.appendChild(span);
+    // Helper: divide cualquier elemento en letras animables (respeta hijos como <span class="pink">)
+    function splitIntoLetters(rootEl) {
+      const out = [];
+      function walk(node) {
+        [...node.childNodes].forEach((c) => {
+          if (c.nodeType === Node.TEXT_NODE) {
+            const txt = c.textContent;
+            const frag = document.createDocumentFragment();
+            [...txt].forEach((ch) => {
+              if (ch === ' ' || ch === '\n') {
+                frag.appendChild(document.createTextNode(ch));
+                return;
+              }
+              const s = document.createElement('span');
+              s.className = 'anim-letter';
+              s.textContent = ch;
+              frag.appendChild(s);
+              out.push(s);
+            });
+            c.parentNode.replaceChild(frag, c);
+          } else if (c.nodeType === Node.ELEMENT_NODE) {
+            walk(c);
           }
         });
-        tn.parentNode.replaceChild(frag, tn);
-      });
-      return el.querySelectorAll('.word-anim');
+      }
+      walk(rootEl);
+      return out;
     }
 
-    const sections = document.querySelectorAll('section');
+    // Helper: ScrollTrigger one-shot (once: true)
+    function whenInView(trigger, fn, start = 'top 80%') {
+      if (!trigger) return;
+      ScrollTrigger.create({ trigger, start, once: true, onEnter: fn });
+    }
 
-    if (prefersReduced) {
-      // a11y: usuarios con reduced-motion ven todo estático e instantáneo
-      sections.forEach(s => gsap.set(s, { clearProps: 'all' }));
-      document.documentElement.classList.remove('js-animations');
-    } else {
-      // Estado inicial barato: solo `autoAlpha + y` en cada sección.
-      // El setup pesado (split, child gsap.set, timeline) se difiere hasta el primer enter.
-      sections.forEach((section) => {
-        if (section.dataset.animate === 'false') return;
-        gsap.set(section, { autoAlpha: 0, y: 60, willChange: 'transform, opacity' });
-      });
+    // ============================================
+    //   2) HERO IDLE — el hero ya está visible, solo respira
+    // ============================================
+    (function initHeroIdle() {
+      if (ANIM.reduced) return;
+      const hero = document.querySelector('.hero');
+      if (!hero) return;
 
-      const builtTimelines = new WeakMap();
-
-      function buildTimeline(section) {
-        const extraDelay = parseFloat(section.dataset.delay) || 0;
-        const tl = gsap.timeline({ paused: true, delay: extraDelay });
-
-        // En mobile: animación más simple (sin word-split, sin clip-path)
-        if (isMobile) {
-          tl.to(section, { autoAlpha: 1, y: 0, duration: 0.8, ease: 'power3.out' });
-          const ctas = section.querySelectorAll('.btn-pill, .btn-pase, .btn-contact');
-          if (ctas.length) {
-            gsap.set(ctas, { autoAlpha: 0, y: 12 });
-            tl.to(ctas, { autoAlpha: 1, y: 0, duration: 0.4, stagger: 0.06, ease: 'power2.out' }, '-=0.3');
-          }
-          // Limpia will-change al terminar para liberar GPU
-          tl.eventCallback('onComplete', () => { section.style.willChange = 'auto'; });
-          return tl;
+      // Wave letra-por-letra muy lento en el <h1>
+      const h1 = hero.querySelector('h1');
+      if (h1 && !ANIM.isMobile) {
+        const letters = splitIntoLetters(h1);
+        if (letters.length) {
+          gsap.to(letters, {
+            y: -6,
+            duration: 2.4,
+            ease: 'sine.inOut',
+            repeat: -1,
+            yoyo: true,
+            stagger: { each: 0.045, from: 'start' },
+          });
         }
-
-        // Desktop: versión completa
-        const headings = section.querySelectorAll('h1, h2, h3, h4');
-        const headingWords = [];
-        headings.forEach((h) => headingWords.push(...splitWords(h)));
-        const paragraphs = section.querySelectorAll('p');
-        const images     = section.querySelectorAll('img');
-        const ctas       = section.querySelectorAll('.btn-pill, .btn-pase, .btn-contact');
-
-        if (headingWords.length) gsap.set(headingWords, { autoAlpha: 0, y: 20 });
-        if (paragraphs.length)   gsap.set(paragraphs,   { autoAlpha: 0 });
-        if (images.length)       gsap.set(images,       { autoAlpha: 0, scale: 0.95, clipPath: 'inset(100% 0% 0% 0%)' });
-        if (ctas.length)         gsap.set(ctas,         { autoAlpha: 0, scale: 0.9 });
-
-        tl.to(section, { autoAlpha: 1, y: 0, duration: 1, ease: 'power3.out' });
-        if (headingWords.length) tl.to(headingWords, { autoAlpha: 1, y: 0, duration: 0.6, ease: 'power3.out', stagger: 0.03 }, '-=0.8');
-        if (paragraphs.length)   tl.to(paragraphs,   { autoAlpha: 1, duration: 0.8, ease: 'power2.out', stagger: 0.1 }, '-=0.4');
-        if (images.length)       tl.to(images,       { autoAlpha: 1, scale: 1, clipPath: 'inset(0% 0% 0% 0%)', duration: 1.1, ease: 'power3.out', stagger: 0.1 }, '-=0.9');
-        if (ctas.length)         tl.to(ctas,         { autoAlpha: 1, scale: 1, duration: 0.6, ease: 'back.out(1.7)', stagger: 0.08 }, '-=0.2');
-
-        // Limpia will-change cuando termina (gana memoria GPU)
-        tl.eventCallback('onComplete', () => { section.style.willChange = 'auto'; });
-        tl.eventCallback('onReverseComplete', () => { section.style.willChange = 'transform, opacity'; });
-
-        return tl;
       }
 
-      // Lazy: el timeline se construye recién en el primer onEnter,
-      // así las secciones del fondo no consumen CPU al cargar la página.
-      sections.forEach((section) => {
-        if (section.dataset.animate === 'false') return;
+      // Float suave en la imagen del personaje (respiro de nube)
+      const heroImg = hero.querySelector('.hero-img-wrap');
+      if (heroImg) {
+        gsap.to(heroImg, {
+          y: -14, duration: 3.4, ease: 'sine.inOut', repeat: -1, yoyo: true,
+        });
+      }
 
-        ScrollTrigger.create({
-          trigger: section,
-          start: 'top 80%',
-          end: 'bottom 20%',
-          onEnter:     () => { let t = builtTimelines.get(section); if (!t) { t = buildTimeline(section); builtTimelines.set(section, t); } t.play(); },
-          onEnterBack: () => { let t = builtTimelines.get(section); if (!t) { t = buildTimeline(section); builtTimelines.set(section, t); } t.play(); },
-          onLeave:     () => builtTimelines.get(section)?.reverse(),
-          onLeaveBack: () => builtTimelines.get(section)?.reverse(),
+      // Sway aleatorio en sparkles decorativos del hero
+      hero.querySelectorAll('.sparkle').forEach((sp, i) => {
+        gsap.to(sp, {
+          y: 'random(-18, 18)',
+          x: 'random(-12, 12)',
+          rotation: 'random(-20, 20)',
+          duration: gsap.utils.random(3.5, 5.5),
+          ease: 'sine.inOut',
+          repeat: -1,
+          yoyo: true,
+          delay: i * 0.4,
+        });
+      });
+
+      // Pulse muy suave en el CTA primario del hero cada ~3s
+      const cta = hero.querySelector('.btn-pill.primary');
+      if (cta) {
+        gsap.to(cta, {
+          scale: 1.045,
+          duration: 1.1,
+          ease: 'sine.inOut',
+          repeat: -1,
+          yoyo: true,
+          repeatDelay: 1.4,
+        });
+      }
+    })();
+
+    // ============================================
+    //   3) REVEALS POR SECCIÓN — ScrollTrigger once:true
+    // ============================================
+
+    // 3.A) "Piezas del cielo" — para #quien y .final-cta
+    function revealSkyPieces(section) {
+      if (!section || ANIM.reduced) return;
+      const container = section.querySelector('.container') || section;
+      const targets = container.children;
+      if (!targets.length) return;
+      gsap.set(targets, {
+        autoAlpha: 0, y: -80, rotation: -12, scale: 0.88,
+        transformOrigin: '50% 0%',
+      });
+      whenInView(section, () => {
+        gsap.to(targets, {
+          autoAlpha: 1, y: 0, rotation: 0, scale: 1,
+          duration: 1.2,
+          ease: 'elastic.out(1, 0.55)',
+          stagger: 0.15 * SM,
+          clearProps: 'willChange',
         });
       });
     }
 
-    // Refresca ScrollTrigger cuando todo el layout + fuentes estén listos
+    // 3.B) Texto línea por línea + foto con clip circular — para #alicia
+    function revealLinesAndCircle(section) {
+      if (!section || ANIM.reduced) return;
+      const textBits = section.querySelectorAll('.pill-eyebrow, h2, .divider-pink, .alicia-tags, .paragraph');
+      const photo = section.querySelector('.alicia-photo, .quien-img');
+      const ctas  = section.querySelectorAll('.btn-pill, .btn-pase');
+
+      gsap.set(textBits, { autoAlpha: 0, x: -40 });
+      if (photo) gsap.set(photo, { clipPath: 'circle(0% at 50% 50%)' });
+      gsap.set(ctas, { autoAlpha: 0, scale: 0.7, rotation: -25 });
+
+      whenInView(section, () => {
+        const tl = gsap.timeline();
+        if (photo) {
+          tl.to(photo, { clipPath: 'circle(75% at 50% 50%)', duration: 1.4, ease: 'power3.out' }, 0);
+        }
+        tl.to(textBits, {
+          autoAlpha: 1, x: 0,
+          duration: 0.9, ease: 'power2.out',
+          stagger: 0.12 * SM,
+        }, 0.2);
+        tl.to(ctas, {
+          autoAlpha: 1, scale: 1, rotation: 0,
+          duration: 0.8, ease: 'back.out(1.6)',
+          stagger: 0.1 * SM,
+        }, '-=0.4');
+      });
+    }
+
+    // 3.C) #quien: dos columnas (texto + imagen) — variante con clip circular
+    function revealQuien(section) {
+      if (!section || ANIM.reduced) return;
+      const text  = section.querySelectorAll('.pill-eyebrow, h2, .divider-pink, .paragraph');
+      const photo = section.querySelector('.quien-img');
+      const ctas  = section.querySelectorAll('.btn-pill');
+
+      gsap.set(text, { autoAlpha: 0, y: -60, rotation: -8 });
+      if (photo) gsap.set(photo, { clipPath: 'circle(0% at 50% 50%)' });
+      gsap.set(ctas, { autoAlpha: 0, scale: 0.6 });
+
+      whenInView(section, () => {
+        const tl = gsap.timeline();
+        if (photo) tl.to(photo, { clipPath: 'circle(75% at 50% 50%)', duration: 1.4, ease: 'power3.out' }, 0);
+        tl.to(text, {
+          autoAlpha: 1, y: 0, rotation: 0,
+          duration: 1.1, ease: 'elastic.out(1, 0.6)',
+          stagger: 0.15 * SM,
+        }, 0.1);
+        tl.to(ctas, {
+          autoAlpha: 1, scale: 1,
+          duration: 0.7, ease: 'back.out(1.7)',
+        }, '-=0.4');
+      });
+    }
+
+    // 3.D) Cards pop-up secuenciales — para features y benefits
+    //   Cada card se arma: fondo → icono → título → texto
+    function revealCardsGrid(section, cardSelector) {
+      if (!section || ANIM.reduced) return;
+      const cards = section.querySelectorAll(cardSelector);
+      if (!cards.length) return;
+
+      const header = section.querySelectorAll(':scope > .container > .pill-eyebrow, :scope > .container > h2');
+      gsap.set(header, { autoAlpha: 0, y: 30 });
+
+      cards.forEach((card) => {
+        const icon  = card.querySelector('.feature-icon, .benefit-icon, .extra-icon, svg');
+        const title = card.querySelector('h3, h4');
+        const text  = card.querySelector('p');
+        gsap.set(card, { autoAlpha: 0, scale: 0, transformOrigin: '50% 50%' });
+        if (icon)  gsap.set(icon,  { autoAlpha: 0, clipPath: 'inset(100% 0% 0% 0%)' });
+        if (title) gsap.set(title, { autoAlpha: 0, x: -25 });
+        if (text)  gsap.set(text,  { autoAlpha: 0 });
+      });
+
+      whenInView(section, () => {
+        const tl = gsap.timeline();
+        tl.to(header, {
+          autoAlpha: 1, y: 0,
+          duration: 0.8, ease: 'power2.out',
+          stagger: 0.12,
+        });
+        cards.forEach((card, idx) => {
+          const icon  = card.querySelector('.feature-icon, .benefit-icon, .extra-icon, svg');
+          const title = card.querySelector('h3, h4');
+          const text  = card.querySelector('p');
+          // Tiempo de entrada de cada card (delay 0.4s entre cards)
+          const at = idx === 0 ? '+=0.1' : `+=${0.4 * SM - 0.6}`;
+          tl.to(card, {
+            autoAlpha: 1, scale: 1,
+            duration: 0.7, ease: 'back.out(1.4)',
+          }, at);
+          if (icon)  tl.to(icon,  { autoAlpha: 1, clipPath: 'inset(0% 0% 0% 0%)', duration: 0.5, ease: 'power2.out' }, '<+0.2');
+          if (title) tl.to(title, { autoAlpha: 1, x: 0, duration: 0.5, ease: 'power2.out' }, '<+0.15');
+          if (text)  tl.to(text,  { autoAlpha: 1, duration: 0.55, ease: 'power2.out' }, '<+0.15');
+        });
+      });
+    }
+
+    // 3.E) Burbujas de diálogo — testimonios
+    function revealBubbles(section) {
+      if (!section || ANIM.reduced) return;
+      const header = section.querySelectorAll(':scope > .container > .pill-eyebrow, :scope > .container > h2');
+      const bubbles = section.querySelectorAll('.testimonial-pink');
+      gsap.set(header, { autoAlpha: 0, y: 30 });
+      gsap.set(bubbles, { autoAlpha: 0, scale: 0, transformOrigin: '50% 90%' });
+
+      whenInView(section, () => {
+        const tl = gsap.timeline();
+        tl.to(header, { autoAlpha: 1, y: 0, duration: 0.8, ease: 'power2.out', stagger: 0.12 });
+        tl.to(bubbles, {
+          autoAlpha: 1, scale: 1,
+          duration: 1, ease: 'back.out(1.7)',
+          stagger: 0.3 * SM,
+        }, '-=0.3');
+      });
+    }
+
+    // 3.F) #mundo — header (NO toca el pin horizontal) + extras como cards
+    function revealMundo(section) {
+      if (!section || ANIM.reduced) return;
+      const headerEls = section.querySelectorAll(':scope > .container > .pill-eyebrow, :scope > .container > h2, :scope > .container > .paragraph, :scope > .container > .destellos-title, :scope > .container > .destellos-sub');
+      gsap.set(headerEls, { autoAlpha: 0, y: 40, scale: 0.95 });
+      whenInView(section, () => {
+        gsap.to(headerEls, {
+          autoAlpha: 1, y: 0, scale: 1,
+          duration: 1, ease: 'power3.out',
+          stagger: 0.12 * SM,
+        });
+      });
+
+      // Extras (Zona de Relajación, Blog, Cumpleaños) como cards pop-up
+      const extras = section.querySelectorAll('.extra-card');
+      if (extras.length) {
+        extras.forEach((c) => {
+          const icon  = c.querySelector('.extra-icon, svg');
+          const title = c.querySelector('h4');
+          const text  = c.querySelector('p');
+          gsap.set(c, { autoAlpha: 0, scale: 0.7, y: 30 });
+          if (icon)  gsap.set(icon,  { autoAlpha: 0, rotation: -180, scale: 0.5 });
+          if (title) gsap.set(title, { autoAlpha: 0, x: -20 });
+          if (text)  gsap.set(text,  { autoAlpha: 0 });
+        });
+        whenInView(section.querySelector('.extras-grid') || section, () => {
+          const tl = gsap.timeline();
+          extras.forEach((c, idx) => {
+            const icon  = c.querySelector('.extra-icon, svg');
+            const title = c.querySelector('h4');
+            const text  = c.querySelector('p');
+            const at = idx === 0 ? 0 : `+=${0.4 * SM - 0.55}`;
+            tl.to(c, { autoAlpha: 1, scale: 1, y: 0, duration: 0.8, ease: 'back.out(1.5)' }, at);
+            if (icon)  tl.to(icon,  { autoAlpha: 1, rotation: 0, scale: 1, duration: 0.7, ease: 'back.out(1.8)' }, '<+0.15');
+            if (title) tl.to(title, { autoAlpha: 1, x: 0, duration: 0.5, ease: 'power2.out' }, '<+0.15');
+            if (text)  tl.to(text,  { autoAlpha: 1, duration: 0.55, ease: 'power2.out' }, '<+0.15');
+          });
+        }, 'top 75%');
+      }
+    }
+
+    // 3.G) Pricing — foto con clip circular + caja con bounce + checks uno a uno
+    function revealPricing(section) {
+      if (!section || ANIM.reduced) return;
+      const photo  = section.querySelector('.pricing-photo');
+      const box    = section.querySelector('.yellow-box');
+      const titles = section.querySelectorAll('.comunidad-title, .pase-title, .card-sub-dark, .badge-gratis, .badge-acceso');
+      const price  = section.querySelector('.price-box');
+      const checks = section.querySelectorAll('.check-list li');
+      const ctas   = section.querySelectorAll('.btn-pill, .btn-pase, .link-light');
+
+      if (photo) gsap.set(photo, { clipPath: 'circle(0% at 50% 50%)' });
+      if (box)   gsap.set(box,   { autoAlpha: 0, scale: 0.9, y: 40 });
+      gsap.set(titles, { autoAlpha: 0, x: -30 });
+      if (price) gsap.set(price, { autoAlpha: 0, scale: 0.7 });
+      gsap.set(checks, { autoAlpha: 0, x: -20 });
+      gsap.set(ctas,   { autoAlpha: 0, scale: 0.6 });
+
+      whenInView(section, () => {
+        const tl = gsap.timeline();
+        if (photo) tl.to(photo, { clipPath: 'circle(75% at 50% 50%)', duration: 1.4, ease: 'power3.out' }, 0);
+        if (box)   tl.to(box,   { autoAlpha: 1, scale: 1, y: 0, duration: 1, ease: 'back.out(1.3)' }, 0.2);
+        tl.to(titles, { autoAlpha: 1, x: 0, duration: 0.7, ease: 'power2.out', stagger: 0.1 * SM }, 0.6);
+        if (price) tl.to(price, { autoAlpha: 1, scale: 1, duration: 0.8, ease: 'back.out(1.6)' }, 0.8);
+        tl.to(checks, { autoAlpha: 1, x: 0, duration: 0.5, ease: 'power2.out', stagger: 0.08 * SM }, 1);
+        tl.to(ctas, { autoAlpha: 1, scale: 1, duration: 0.7, ease: 'back.out(1.7)', stagger: 0.12 * SM }, 1.2);
+      });
+    }
+
+    // 3.H) Footer — slide desde abajo con stagger
+    function revealFooter() {
+      const footer = document.querySelector('.site-footer');
+      if (!footer || ANIM.reduced) return;
+      const items = footer.querySelectorAll('.footer-logo-wrap, .footer-nav a, .footer-copy, .footer-bottom-inner > span');
+      gsap.set(items, { autoAlpha: 0, y: 40 });
+      whenInView(footer, () => {
+        gsap.to(items, {
+          autoAlpha: 1, y: 0,
+          duration: 0.9, ease: 'power2.out',
+          stagger: 0.1 * SM,
+        });
+      });
+    }
+
+    // ---- Aplicar reveals al HTML real ----
+    if (!ANIM.reduced) {
+      revealQuien(document.querySelector('#quien'));
+      revealLinesAndCircle(document.querySelector('#alicia'));
+
+      // Features (block-white con .features-grid) y testimonios (block-white con .testimonials-grid)
+      document.querySelectorAll('section.block-white').forEach((sec) => {
+        if (sec.id === 'quien') return;
+        if (sec.querySelector('.features-grid'))     revealCardsGrid(sec, '.feature');
+        else if (sec.querySelector('.testimonials-grid')) revealBubbles(sec);
+      });
+
+      // Benefits (block-cream con .benefits-grid) — excluyendo #alicia
+      document.querySelectorAll('section.block-cream').forEach((sec) => {
+        if (sec.id === 'alicia') return;
+        if (sec.querySelector('.benefits-grid')) revealCardsGrid(sec, '.benefit');
+      });
+
+      revealMundo(document.querySelector('#mundo'));
+      revealPricing(document.querySelector('#pase'));
+      revealSkyPieces(document.querySelector('.final-cta'));
+      revealFooter();
+    }
+
+    // Refrescar ScrollTrigger cuando el layout y las fuentes estén listos
     window.addEventListener('load', () => ScrollTrigger.refresh());
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => ScrollTrigger.refresh()).catch(() => {});
+    }
+
+    // ============================================
+    //   4) PARTÍCULAS MÁGICAS FLOTANTES — solo desktop
+    // ============================================
+    (function initParticles() {
+      if (ANIM.reduced || ANIM.isMobile) return;
+
+      // Paleta por tipo de bloque, acorde a la web infantil
+      const palettes = {
+        'block-white': ['#E8578A', '#EDBC3B', '#7fc9d8'],
+        'block-cream': ['#E8578A', '#EDBC3B'],
+        'block-navy':  ['#EDBC3B', '#7fc9d8', '#ffffff'],
+      };
+      const shapes = ['★', '✦', '✨', '♥', '•'];
+
+      document.querySelectorAll('.block').forEach((block) => {
+        const cls = [...block.classList].find((c) => palettes[c]);
+        if (!cls) return;
+        const colors = palettes[cls];
+
+        const wrap = document.createElement('div');
+        wrap.className = 'magic-particles';
+        wrap.setAttribute('aria-hidden', 'true');
+        if (getComputedStyle(block).position === 'static') block.style.position = 'relative';
+        block.insertBefore(wrap, block.firstChild);
+
+        const count = 8;
+        for (let i = 0; i < count; i++) {
+          const p = document.createElement('span');
+          p.className = 'magic-particle';
+          p.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+          p.style.color = colors[Math.floor(Math.random() * colors.length)];
+          p.style.left = (Math.random() * 95) + '%';
+          p.style.top  = (Math.random() * 95) + '%';
+          p.style.fontSize = (10 + Math.random() * 14) + 'px';
+          p.style.opacity = (0.3 + Math.random() * 0.2).toString();
+          wrap.appendChild(p);
+
+          // Movimiento lento, aleatorio — 10 a 20s por ciclo
+          gsap.to(p, {
+            x: gsap.utils.random(-60, 60),
+            y: gsap.utils.random(-80, 80),
+            rotation: gsap.utils.random(-180, 180),
+            duration: gsap.utils.random(10, 20),
+            ease: 'sine.inOut',
+            repeat: -1,
+            yoyo: true,
+            delay: Math.random() * 4,
+          });
+        }
+      });
+    })();
+
+    // ============================================
+    //   5) TRAIL DE BRILLOS EN SCROLL — solo desktop
+    // ============================================
+    (function initSparkleTrail() {
+      if (ANIM.reduced || ANIM.isMobile) return;
+
+      let lastSpawn = 0;
+      const COOLDOWN_MIN = 2000;   // mínimo 2s entre brillos
+      const COOLDOWN_VAR = 1000;   // hasta 3s
+
+      function spawnSparkle() {
+        const s = document.createElement('span');
+        s.className = 'scroll-sparkle';
+        s.textContent = Math.random() > 0.5 ? '✦' : '✨';
+        // Zonas evitando bordes muy expuestos al contenido principal
+        s.style.left = (10 + Math.random() * 80) + 'vw';
+        s.style.top  = (15 + Math.random() * 70) + 'vh';
+        s.style.color = Math.random() > 0.5 ? '#EDBC3B' : '#ffffff';
+        s.style.fontSize = (8 + Math.random() * 6) + 'px';
+        document.body.appendChild(s);
+
+        gsap.fromTo(s,
+          { scale: 0, opacity: 0, rotation: 0 },
+          {
+            scale: 1, opacity: 0.9, rotation: 180,
+            duration: 0.45, ease: 'back.out(2)',
+            onComplete() {
+              gsap.to(s, {
+                scale: 0, opacity: 0,
+                duration: 0.55, ease: 'power2.in',
+                onComplete: () => s.remove(),
+              });
+            },
+          });
+      }
+
+      function onScroll() {
+        const now = performance.now();
+        if (now - lastSpawn > COOLDOWN_MIN + Math.random() * COOLDOWN_VAR) {
+          lastSpawn = now;
+          spawnSparkle();
+        }
+      }
+
+      // Hook a Lenis si está activo, fallback a scroll nativo
+      if (typeof lenis !== 'undefined' && lenis) {
+        lenis.on('scroll', onScroll);
+      } else {
+        window.addEventListener('scroll', onScroll, { passive: true });
+      }
+    })();
+
+    // ============================================
+    //   6) LÍNEAS SVG QUE SE DIBUJAN
+    // ============================================
+    (function initSvgLines() {
+      if (ANIM.reduced) return;
+      document.querySelectorAll('.svg-divider path').forEach((path) => {
+        const len = path.getTotalLength();
+        path.style.strokeDasharray = len;
+        path.style.strokeDashoffset = len;
+        ScrollTrigger.create({
+          trigger: path.closest('.svg-divider'),
+          start: 'top 90%',
+          once: true,
+          onEnter: () => {
+            gsap.to(path, {
+              strokeDashoffset: 0,
+              duration: 1.5,
+              ease: 'power2.inOut',
+            });
+          },
+        });
+      });
+    })();
 
     // ============================================
     //   ESCALERA: personaje sube/baja según scroll
@@ -1156,70 +1554,7 @@
       });
     })();
 
-    // ============================================
-    //   HORIZONTAL SCROLL DENTRO DE PIN — #mundo 4 destellos
-    //   • Sección pinneada ≈ 3× viewport (intensidad intermedia)
-    //   • scrub: true → la posición horizontal sigue el scroll
-    //   • Mobile / reduced-motion: sin pin, stack vertical (CSS)
-    //   • Lenis: ya está sincronizado con ScrollTrigger.update arriba
-    // ============================================
-    const destellosMM = gsap.matchMedia();
-
-    // Sintaxis string (compatible con GSAP 3.11+ de manera más amplia)
-    destellosMM.add('(min-width: 1024px) and (prefers-reduced-motion: no-preference)', () => {
-      const pin   = document.querySelector('[data-h-pin]');
-      const track = document.querySelector('[data-h-track]');
-      const bar   = document.querySelector('[data-h-progress]');
-      if (!pin || !track) {
-        console.warn('⚠️ Scroll-jacking: no se encontraron elementos del track horizontal');
-        return;
-      }
-
-      // Distancia horizontal = ancho real del track − viewport.
-      // Función para que invalidateOnRefresh la recalcule en resize/load de fuentes.
-      const getDistance = () => Math.max(0, track.scrollWidth - window.innerWidth);
-
-      const tween = gsap.to(track, {
-        x: () => -getDistance(),
-        ease: 'none',
-        scrollTrigger: {
-          trigger: pin,
-          pin: true,
-          pinSpacing: true,
-          anticipatePin: 1,
-          start: 'top top',
-          // Intensidad intermedia: ~3× viewport de pin
-          end: () => '+=' + (getDistance() + window.innerHeight * 0.5),
-          scrub: 0.6,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            if (bar) bar.style.width = (self.progress * 100).toFixed(2) + '%';
-          },
-        },
-      });
-
-      // Forzar un refresh inicial (las secciones previas con autoAlpha:0 pueden
-      // desfasar los cálculos hasta que se revelan). 100ms después de mount.
-      const initialRefresh = setTimeout(() => ScrollTrigger.refresh(), 100);
-
-      // También refrescar tras window load y carga de fuentes
-      const onWinLoad = () => ScrollTrigger.refresh();
-      window.addEventListener('load', onWinLoad, { once: true });
-      if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(onWinLoad).catch(() => {});
-      }
-
-      console.log('✅ Scroll-jacking destellos: track', track.scrollWidth + 'px, dist', getDistance() + 'px');
-
-      return () => {
-        clearTimeout(initialRefresh);
-        window.removeEventListener('load', onWinLoad);
-        tween.scrollTrigger && tween.scrollTrigger.kill();
-        tween.kill();
-        gsap.set(track, { clearProps: 'transform' });
-        if (bar) bar.style.width = '0%';
-      };
-    });
+    // (Scroll-jacking removido — #mundo ahora usa un grid simple de 4 columnas)
 
     // ============================================
     //   MICROINTERACCIONES
