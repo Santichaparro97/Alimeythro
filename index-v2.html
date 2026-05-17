@@ -1,0 +1,2077 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alimeythor — Alimenta Tu Alma</title>
+  <link rel="icon" href="assets/favicon.png" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <!-- PASO 1: JetBrains Mono para tags holográficos -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* Guard anti-FOUC quirúrgico: solo los reveals con data-reveal-hidden esperan a GSAP */
+    .js-animations [data-reveal-hidden] { opacity: 0; }
+
+    /* ===== HERO 3D PARALLAX ===== */
+    .hero { position: relative; overflow: hidden; perspective: 1200px; perspective-origin: 50% 40%; }
+    .hero-inner { position: relative; z-index: 3; transform-style: preserve-3d; will-change: transform; }
+    .hero-layer { position: absolute; inset: 0; pointer-events: none; will-change: transform; }
+    .hero-bg  { z-index: 0; }
+    .hero-mid { z-index: 1; }
+    /* Blobs decorativos de fondo */
+    .blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.45; }
+    .blob-1 { width: 420px; height: 420px; background: #E8578A; top: -120px; left: -100px; }
+    .blob-2 { width: 340px; height: 340px; background: #EDBC3B; bottom: -100px; right: -80px; }
+    .blob-3 { width: 260px; height: 260px; background: #7fc9d8; top: 35%; right: 18%; opacity: 0.35; }
+    /* Sparkles capa media */
+    .sparkle { position: absolute; opacity: 0.75; user-select: none; }
+    .sparkle-1 { top: 14%; left: 10%; font-size: 32px; }
+    .sparkle-2 { top: 62%; left: 6%;  font-size: 22px; }
+    .sparkle-3 { top: 22%; right: 14%; font-size: 28px; }
+    .sparkle-4 { bottom: 18%; right: 8%; font-size: 24px; }
+    /* Tag de capa frontal/UI dentro del hero — will-change activo */
+    .hero [data-parallax] { will-change: transform; }
+    /* En mobile: nada de parallax, todo plano */
+    @media (max-width: 1023px), (hover: none) {
+      .hero-bg, .hero-mid { display: none; }
+      .hero { perspective: none; }
+      .hero-inner { transform-style: flat; }
+    }
+
+    /* ===== 4 DESTELLOS — grid simple de 4 columnas (como la imagen) ===== */
+    #mundo .destellos-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      max-width: 1240px;
+      margin: 3rem auto 0;
+    }
+    #mundo .destellos-grid .destello {
+      background: #232645;
+      border: 1px solid #2c2f55;
+      border-radius: 18px;
+      padding: 2.4rem 1.5rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #mundo .destellos-grid .destello-icon {
+      width: 56px;
+      height: 56px;
+      margin-bottom: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #mundo .destellos-grid .destello h4 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0 0 0.7rem;
+    }
+    #mundo .destellos-grid .destello p {
+      font-size: 0.85rem;
+      line-height: 1.55;
+      color: #a8acc2;
+      margin: 0;
+      max-width: 220px;
+    }
+    @media (max-width: 1023px) {
+      #mundo .destellos-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      #mundo .destellos-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ===== MICROINTERACCIONES ===== */
+
+    /* — BOTONES — */
+    .btn-pill, .btn-pase, .btn-contact {
+      position: relative;
+      overflow: hidden;
+      transition:
+        background-color 0.3s ease,
+        color 0.3s ease,
+        box-shadow 0.4s cubic-bezier(0.2,0.8,0.2,1);
+      will-change: transform;
+    }
+    .btn-pill:hover, .btn-pase:hover, .btn-contact:hover {
+      box-shadow: 0 14px 36px rgba(232, 87, 138, 0.28);
+    }
+    .btn-ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.55);
+      pointer-events: none;
+      width: 20px; height: 20px;
+      transform: translate(-50%, -50%) scale(0);
+      animation: btn-ripple 0.6s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+    @keyframes btn-ripple {
+      to { transform: translate(-50%, -50%) scale(10); opacity: 0; }
+    }
+
+    /* — LINKS: underline animado L→R — */
+    .site-header .nav-desktop a,
+    .footer-nav a {
+      position: relative;
+      transition: color 0.25s ease;
+    }
+    .site-header .nav-desktop a::after,
+    .footer-nav a::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: -4px;
+      height: 2px;
+      background: currentColor;
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
+    }
+    .site-header .nav-desktop a:hover::after,
+    .footer-nav a:hover::after { transform: scaleX(1); }
+
+    /* — Flecha que se desplaza — */
+    .has-arrow .arrow {
+      display: inline-block;
+      transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
+    }
+    .has-arrow:hover .arrow { transform: translateX(8px); }
+
+    /* — IMÁGENES: zoom + saturación — */
+    .hero-img, .quien-img, .alicia-photo, .pricing-photo, .footer-logo-wrap {
+      overflow: hidden;
+      display: block;
+    }
+    .hero-img img,
+    .quien-img img,
+    .alicia-photo img,
+    .pricing-photo img,
+    .footer-logo-wrap img {
+      transition:
+        transform 0.7s cubic-bezier(0.2,0.8,0.2,1),
+        filter 0.5s ease;
+      will-change: transform;
+    }
+    .hero-img:hover img,
+    .quien-img:hover img,
+    .alicia-photo:hover img,
+    .pricing-photo:hover img,
+    .footer-logo-wrap:hover img {
+      transform: scale(1.08);
+      filter: saturate(1.3);
+    }
+
+    /* — CARDS: lift + gradient border animado — */
+    .feature, .destello-card, .extra-card, .benefit, .testimonial-pink {
+      position: relative;
+      transition:
+        transform 0.4s cubic-bezier(0.2,0.8,0.2,1),
+        box-shadow 0.4s ease;
+      will-change: transform;
+    }
+    .feature:hover,
+    .destello-card:hover,
+    .extra-card:hover,
+    .benefit:hover,
+    .testimonial-pink:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 28px 60px rgba(20,20,40,0.18);
+    }
+    .feature::before,
+    .destello-card::before,
+    .extra-card::before,
+    .benefit::before,
+    .testimonial-pink::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 2px;
+      background: linear-gradient(120deg, #E8578A, #EDBC3B, #7fc9d8, #E8578A);
+      background-size: 300% 300%;
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+              mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      animation: card-border 5s linear infinite;
+      pointer-events: none;
+    }
+    .feature:hover::before,
+    .destello-card:hover::before,
+    .extra-card:hover::before,
+    .benefit:hover::before,
+    .testimonial-pink:hover::before { opacity: 1; }
+    @keyframes card-border {
+      0%   { background-position: 0% 50%; }
+      100% { background-position: 300% 50%; }
+    }
+
+    /* — NAVBAR: estados de scroll — */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: transparent;
+      transition:
+        transform 0.45s cubic-bezier(0.2,0.8,0.2,1),
+        background-color 0.35s ease,
+        backdrop-filter 0.35s ease,
+        box-shadow 0.35s ease;
+    }
+    .site-header.is-scrolled {
+      background: rgba(255, 251, 245, 0.85);
+      -webkit-backdrop-filter: blur(14px) saturate(1.2);
+              backdrop-filter: blur(14px) saturate(1.2);
+      box-shadow: 0 10px 30px rgba(20,20,40,0.08);
+    }
+    .site-header.is-hidden { transform: translateY(-100%); }
+
+    /* ===== LIMPIEZA VISUAL: fuera divisores rígidos, más aire, transiciones suaves ===== */
+
+    /* Ocultar líneas divisorias visibles */
+    .divider-pink,
+    .thin-divider {
+      background: transparent !important;
+      border: 0 !important;
+      height: 1.5rem !important;
+      width: auto !important;
+    }
+
+    /* Padding amplio en todas las secciones principales */
+    section,
+    .block,
+    .pricing-section,
+    .final-cta {
+      padding-top: clamp(5rem, 9vw, 9rem) !important;
+      padding-bottom: clamp(5rem, 9vw, 9rem) !important;
+    }
+
+    /* Transiciones suaves entre fondos: gradientes en los bordes en lugar de cortes */
+    .block-white,
+    .block-cream,
+    .block-navy {
+      position: relative;
+    }
+    .block-white::before,
+    .block-cream::before {
+      content: '';
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 120px;
+      pointer-events: none;
+      background: linear-gradient(to bottom, rgba(255,251,245,0.6), transparent);
+    }
+    .block-navy {
+      background: radial-gradient(ellipse at top, #232544 0%, #1a1a2e 70%) !important;
+    }
+    .block-cream {
+      background: linear-gradient(180deg, #fdf6ea 0%, #fbf0db 100%) !important;
+    }
+
+    /* Más aire entre el contenido y los bordes de las secciones */
+    .container { padding-inline: clamp(1.25rem, 4vw, 3rem) !important; }
+
+    /* CARDS: padding amplio, sombras suaves, sin bordes rígidos */
+    .feature,
+    .extra-card,
+    .benefit,
+    .testimonial-pink {
+      border: 0 !important;
+      border-radius: 24px !important;
+      padding: clamp(2rem, 3vw, 2.75rem) !important;
+      background: #fff;
+      box-shadow:
+        0 1px 2px rgba(20,20,40,0.04),
+        0 8px 24px rgba(20,20,40,0.06);
+      transition:
+        transform 0.45s cubic-bezier(0.2,0.8,0.2,1),
+        box-shadow 0.45s ease !important;
+    }
+    .feature:hover,
+    .extra-card:hover,
+    .benefit:hover,
+    .testimonial-pink:hover {
+      box-shadow:
+        0 4px 12px rgba(20,20,40,0.05),
+        0 32px 64px rgba(20,20,40,0.12) !important;
+    }
+    /* Variantes de fondo sutil en lugar de borde */
+    .feature-pink   { background: linear-gradient(180deg, #fff 0%, #fdf2f6 100%); }
+    .feature-yellow { background: linear-gradient(180deg, #fff 0%, #fdf7e6 100%); }
+    .feature-teal   { background: linear-gradient(180deg, #fff 0%, #ecf6f7 100%); }
+
+    .extra-card {
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2), 0 16px 40px rgba(0,0,0,0.18);
+    }
+    .extra-card:hover {
+      background: rgba(255,255,255,0.07);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2), 0 32px 64px rgba(0,0,0,0.28) !important;
+    }
+
+    /* Más espacio entre grids */
+    .features-grid,
+    .extras-grid,
+    .benefits-grid,
+    .testimonials-grid {
+      gap: clamp(1.5rem, 3vw, 2.5rem) !important;
+      margin-top: clamp(2.5rem, 5vw, 4rem) !important;
+    }
+
+    /* Eyebrows con más respiración */
+    .pill-eyebrow {
+      margin-bottom: 1.5rem !important;
+      letter-spacing: 0.18em;
+    }
+
+    /* Pricing section: sin bordes rígidos en la caja amarilla */
+    .yellow-box,
+    .price-box {
+      border: 0 !important;
+      border-radius: 28px !important;
+      box-shadow: 0 4px 12px rgba(232,87,138,0.08), 0 24px 60px rgba(20,20,40,0.10);
+    }
+
+    /* ===== PERFORMANCE: optimizaciones de animación ===== */
+
+    /* card-border animado: solo corre en hover (antes consumía GPU 24/7) */
+    .feature::before,
+    .destello-card::before,
+    .extra-card::before,
+    .benefit::before,
+    .testimonial-pink::before {
+      animation-play-state: paused;
+    }
+    .feature:hover::before,
+    .destello-card:hover::before,
+    .extra-card:hover::before,
+    .benefit:hover::before,
+    .testimonial-pink:hover::before {
+      animation-play-state: running;
+    }
+
+    /* will-change quirúrgico: solo activo durante hover, no permanente */
+    .feature, .destello-card, .extra-card, .benefit, .testimonial-pink {
+      will-change: auto;
+    }
+    .feature:hover, .destello-card:hover, .extra-card:hover, .benefit:hover, .testimonial-pink:hover {
+      will-change: transform, box-shadow;
+    }
+
+    /* Mobile: bajar la intensidad de efectos costosos */
+    @media (max-width: 1023px) {
+      .feature::before, .destello-card::before, .extra-card::before,
+      .benefit::before, .testimonial-pink::before { display: none; }
+      .site-header.is-scrolled {
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+      }
+      .extra-card { backdrop-filter: none; -webkit-backdrop-filter: none; }
+      .feature:hover, .destello-card:hover, .extra-card:hover,
+      .benefit:hover, .testimonial-pink:hover { transform: none; }
+    }
+
+    /* Accesibilidad: respetar prefers-reduced-motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+      }
+      .js-animations section { visibility: visible !important; }
+      .hero-bg, .hero-mid { display: none !important; }
+      .feature::before, .destello-card::before, .extra-card::before,
+      .benefit::before, .testimonial-pink::before { display: none !important; }
+    }
+
+    /* ===== MUNDO QUE SE CONSTRUYE — animaciones tiernas ===== */
+
+    /* Letras del hero <h1> animadas */
+    .hero h1 .anim-letter {
+      display: inline-block;
+      will-change: transform;
+    }
+
+    /* Partículas mágicas flotantes — viven en el fondo de cada bloque */
+    .magic-particles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .magic-particle {
+      position: absolute;
+      pointer-events: none;
+      user-select: none;
+      will-change: transform;
+      text-shadow: 0 0 8px currentColor;
+      font-family: 'Segoe UI Symbol', sans-serif;
+    }
+    /* Asegurar que el contenido viva por encima de las partículas */
+    .block > .container { position: relative; z-index: 2; }
+
+    /* Trail de brillos al scrollear */
+    .scroll-sparkle {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      will-change: transform, opacity;
+      text-shadow: 0 0 6px currentColor;
+      font-family: 'Segoe UI Symbol', sans-serif;
+    }
+
+    /* Divisores SVG ondulados entre secciones */
+    .svg-divider {
+      display: block;
+      width: 100%;
+      height: 80px;
+      pointer-events: none;
+      position: relative;
+      z-index: 4;
+      margin: -40px 0;
+    }
+    .svg-divider svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+    .svg-divider path {
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      will-change: stroke-dashoffset;
+    }
+    .svg-divider-pink path { stroke: rgba(232, 87, 138, 0.55); }
+    .svg-divider-gold path { stroke: rgba(237, 188, 59, 0.6); }
+    .svg-divider-teal path { stroke: rgba(127, 201, 216, 0.55); }
+
+    /* Mobile: cortamos efectos costosos */
+    @media (max-width: 768px) {
+      .magic-particles, .scroll-sparkle { display: none !important; }
+      .svg-divider { height: 50px; margin: -20px 0; }
+    }
+
+    /* Reduced motion: nada de partículas/brillos/dibujos */
+    @media (prefers-reduced-motion: reduce) {
+      .magic-particles, .scroll-sparkle, .svg-divider { display: none !important; }
+    }
+
+    /* =====================================================================
+       PASO 1 — PIN HERO + MUNDO (estructura y estilos, SIN scroll animation)
+       Inspirado en david-hckh.com — capa cálida (hero actual) sobre capa
+       nocturna holográfica con personaje, pedestal, grid 3D y tags.
+       ===================================================================== */
+
+    /* --- Contenedor pineable --- */
+    .pin-container { position: relative; }
+    .pin-stage {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .night-layer,
+    .warm-layer {
+      position: absolute;
+      inset: 0;
+    }
+    .night-layer { z-index: 1; }
+    .warm-layer  { z-index: 10; }
+
+    /* Aseguramos que el hero dentro de warm-layer ocupe 100% */
+    .warm-layer > .hero { width: 100%; height: 100%; }
+
+    /* --- NIGHT LAYER: fondo nocturno con gradiente vertical --- */
+    .night-layer {
+      background: linear-gradient(180deg, #1a1a2e 0%, #232645 100%);
+      color: #FFF3D6;
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    /* --- Starfield --- */
+    .starfield {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 6px rgba(255,255,255,0.8);
+      animation: twinkle 3s ease-in-out infinite;
+      opacity: 0.6;
+    }
+    .star.big { width: 3px; height: 3px; }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; transform: scale(0.8); }
+      50%      { opacity: 1;   transform: scale(1.2); }
+    }
+
+    /* --- Grid 3D dorado en perspectiva --- */
+    .magic-grid {
+      position: absolute;
+      bottom: -20%;
+      left: 50%;
+      transform: translateX(-50%) perspective(900px) rotateX(65deg);
+      width: 200%;
+      height: 700px;
+      background-image:
+        linear-gradient(rgba(237,188,59,0.3) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(237,188,59,0.3) 1px, transparent 1px);
+      background-size: 60px 60px;
+      -webkit-mask-image: radial-gradient(ellipse 60% 80% at 50% 0%, black 0%, transparent 70%);
+              mask-image: radial-gradient(ellipse 60% 80% at 50% 0%, black 0%, transparent 70%);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* --- Cono de luz detrás del personaje --- */
+    .light-cone {
+      position: absolute;
+      top: 18%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 280px;
+      height: 480px;
+      clip-path: polygon(15% 100%, 85% 100%, 65% 0%, 35% 0%);
+      background: linear-gradient(to top, rgba(237,188,59,0.4), rgba(237,188,59,0));
+      opacity: 0.7;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    /* --- Pedestal (dos discos elípticos + anillo dashed rotando) --- */
+    .pedestal {
+      position: absolute;
+      left: 50%;
+      bottom: 18%;
+      transform: translateX(-50%);
+      z-index: 4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .pedestal-disc {
+      width: 240px;
+      height: 50px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, #2a2d52 0%, #14152a 80%);
+      border: 2px solid #EDBC3B;
+      box-shadow: 0 0 40px rgba(237,188,59,0.5);
+      position: relative;
+    }
+    .pedestal-disc.small {
+      width: 220px;
+      height: 46px;
+    }
+    .pedestal-ring {
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 260px;
+      height: 60px;
+      border: 1px dashed #EDBC3B;
+      border-radius: 50%;
+      animation: spin 30s linear infinite;
+      opacity: 0.8;
+    }
+    @keyframes spin {
+      from { transform: translateX(-50%) rotate(0deg); }
+      to   { transform: translateX(-50%) rotate(360deg); }
+    }
+
+    /* --- Contador "000" --- */
+    .counter {
+      position: absolute;
+      left: 50%;
+      bottom: 11%;
+      transform: translateX(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 26px;
+      color: #EDBC3B;
+      letter-spacing: 0.15em;
+      text-shadow: 0 0 12px rgba(237,188,59,0.8);
+      z-index: 5;
+    }
+
+    /* --- Character stage (placeholders del personaje) --- */
+    .character-stage {
+      position: absolute;
+      top: 18%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 280px;
+      height: 480px;
+      z-index: 5;
+    }
+    #character-solid,
+    #character-wireframe {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      padding: 12px;
+      border-radius: 12px;
+    }
+    #character-solid {
+      background: #FFF3D6;
+      color: #1a1a2e;
+      font-weight: 700;
+    }
+    #character-wireframe {
+      background: transparent;
+      border: 1px dashed #EDBC3B;
+      color: #EDBC3B;
+    }
+    #scan-line {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 4px;
+      background: #FFE08A;
+      box-shadow:
+        0 0 20px #EDBC3B,
+        0 0 40px #EDBC3B,
+        0 0 60px #EDBC3B;
+      z-index: 6;
+      pointer-events: none;
+    }
+    /* Viewfinder: 4 L-corners doradas */
+    #viewfinder {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    #viewfinder span {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-color: #EDBC3B;
+      border-style: solid;
+      border-width: 0;
+    }
+    #viewfinder .vf-tl { top: 0;    left: 0;    border-top-width: 2px;    border-left-width: 2px;  }
+    #viewfinder .vf-tr { top: 0;    right: 0;   border-top-width: 2px;    border-right-width: 2px; }
+    #viewfinder .vf-bl { bottom: 0; left: 0;    border-bottom-width: 2px; border-left-width: 2px;  }
+    #viewfinder .vf-br { bottom: 0; right: 0;   border-bottom-width: 2px; border-right-width: 2px; }
+
+    /* --- Tags holográficos flotantes --- */
+    .holo-tag {
+      position: absolute;
+      border-radius: 12px;
+      padding: 12px 18px;
+      border: 1px solid #EDBC3B;
+      background: rgba(35,38,69,0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow:
+        0 0 16px rgba(237,188,59,0.35),
+        inset 0 0 8px rgba(237,188,59,0.08);
+      color: #FFF3D6;
+      font-family: 'JetBrains Mono', monospace;
+      z-index: 7;
+    }
+    .tag-name {
+      top: 25%;
+      left: calc(50% - 280px);
+    }
+    .tag-name .tag-title {
+      font-weight: 700;
+      font-size: 16px;
+      color: #FFF3D6;
+      display: block;
+    }
+    .tag-name .tag-sub {
+      font-weight: 400;
+      font-size: 11px;
+      color: #FFE08A;
+      display: block;
+      margin-top: 4px;
+    }
+    .tag-description {
+      top: 45%;
+      left: calc(50% - 360px);
+      max-width: 280px;
+      font-size: 11px;
+      line-height: 1.5;
+      color: #FFF3D6;
+    }
+    .tag-features {
+      top: 40%;
+      right: calc(50% - 360px);
+      max-width: 240px;
+    }
+    .tag-features .tag-header {
+      font-weight: 700;
+      font-size: 13px;
+      color: #FFF3D6;
+      display: block;
+      margin-bottom: 6px;
+    }
+    .tag-features ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-size: 11px;
+      line-height: 1.6;
+      color: #FFE08A;
+    }
+    .tag-features ul li::before {
+      content: "• ";
+      color: #EDBC3B;
+    }
+
+    /* --- SVG líneas de conexión --- */
+    #connection-lines {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 6;
+    }
+    #connection-lines path {
+      stroke: #EDBC3B;
+      stroke-width: 1;
+      fill: none;
+      opacity: 0.7;
+      filter: drop-shadow(0 0 4px rgba(237,188,59,0.7));
+    }
+  </style>
+  <script>document.documentElement.classList.add('js-animations');</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;800;900&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- GSAP + plugins -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+  <!-- Lenis smooth scroll -->
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">
+        <img src="assets/logo.png" alt="Alimeythor" />
+      </a>
+      <nav class="nav-desktop">
+        <a href="index.html" class="active">Home</a>
+        <a href="#alicia">Soy Alicia</a>
+        <a href="#">Masterclass</a>
+        <a href="#">Recursos Gratuitos</a>
+        <a href="#mundo">Mundo Alimeythor</a>
+        <a href="#">Ingresar</a>
+      </nav>
+      <div class="header-actions">
+        <a href="#" class="cart-btn" aria-label="Carrito">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a1a2e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        </a>
+        <a href="#" class="btn-contact">Contactame</a>
+        <button class="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================================================================
+       PASO 1 — PIN HERO + MUNDO
+       Envoltorio que mantiene el hero cálido encima y la capa nocturna
+       holográfica debajo. Por ahora ambas capas son visibles en su lugar
+       (sin animación de scroll). La capa nocturna se ve al scrollear
+       después del hero porque .pin-stage tiene 100vh.
+       =================================================================== -->
+  <div id="hero-mundo-pin" class="pin-container">
+    <div class="pin-stage">
+
+      <!-- ===== NIGHT LAYER (holográfica, debajo) ===== -->
+      <div class="night-layer">
+        <!-- Starfield: 50 estrellas -->
+        <div class="starfield" aria-hidden="true">
+          <span class="star" style="top:5%;  left:8%;  animation-delay:0.2s;"></span>
+          <span class="star" style="top:12%; left:22%; animation-delay:1.4s;"></span>
+          <span class="star big" style="top:7%;  left:38%; animation-delay:0.6s;"></span>
+          <span class="star" style="top:18%; left:55%; animation-delay:2.1s;"></span>
+          <span class="star" style="top:9%;  left:70%; animation-delay:0.9s;"></span>
+          <span class="star" style="top:14%; left:84%; animation-delay:1.8s;"></span>
+          <span class="star" style="top:22%; left:92%; animation-delay:0.4s;"></span>
+          <span class="star big" style="top:3%;  left:48%; animation-delay:2.6s;"></span>
+          <span class="star" style="top:26%; left:5%;  animation-delay:1.1s;"></span>
+          <span class="star" style="top:31%; left:18%; animation-delay:2.3s;"></span>
+          <span class="star" style="top:28%; left:34%; animation-delay:0.7s;"></span>
+          <span class="star" style="top:35%; left:64%; animation-delay:1.6s;"></span>
+          <span class="star" style="top:30%; left:78%; animation-delay:0.3s;"></span>
+          <span class="star big" style="top:25%; left:90%; animation-delay:2.0s;"></span>
+          <span class="star" style="top:40%; left:3%;  animation-delay:1.3s;"></span>
+          <span class="star" style="top:42%; left:15%; animation-delay:0.5s;"></span>
+          <span class="star" style="top:38%; left:88%; animation-delay:2.4s;"></span>
+          <span class="star" style="top:46%; left:96%; animation-delay:0.8s;"></span>
+          <span class="star" style="top:48%; left:10%; animation-delay:1.9s;"></span>
+          <span class="star" style="top:52%; left:2%;  animation-delay:0.6s;"></span>
+          <span class="star" style="top:55%; left:20%; animation-delay:2.7s;"></span>
+          <span class="star big" style="top:50%; left:82%; animation-delay:1.0s;"></span>
+          <span class="star" style="top:58%; left:94%; animation-delay:2.2s;"></span>
+          <span class="star" style="top:60%; left:6%;  animation-delay:0.4s;"></span>
+          <span class="star" style="top:63%; left:24%; animation-delay:1.7s;"></span>
+          <span class="star" style="top:65%; left:88%; animation-delay:0.9s;"></span>
+          <span class="star" style="top:67%; left:78%; animation-delay:2.5s;"></span>
+          <span class="star" style="top:11%; left:60%; animation-delay:0.1s;"></span>
+          <span class="star" style="top:16%; left:12%; animation-delay:1.5s;"></span>
+          <span class="star" style="top:20%; left:75%; animation-delay:2.8s;"></span>
+          <span class="star big" style="top:33%; left:48%; animation-delay:0.7s;"></span>
+          <span class="star" style="top:36%; left:8%;  animation-delay:1.2s;"></span>
+          <span class="star" style="top:44%; left:52%; animation-delay:2.0s;"></span>
+          <span class="star" style="top:47%; left:72%; animation-delay:0.5s;"></span>
+          <span class="star" style="top:54%; left:40%; animation-delay:1.4s;"></span>
+          <span class="star" style="top:57%; left:60%; animation-delay:2.3s;"></span>
+          <span class="star" style="top:62%; left:35%; animation-delay:0.8s;"></span>
+          <span class="star big" style="top:68%; left:14%; animation-delay:1.8s;"></span>
+          <span class="star" style="top:70%; left:55%; animation-delay:0.3s;"></span>
+          <span class="star" style="top:72%; left:80%; animation-delay:2.6s;"></span>
+          <span class="star" style="top:74%; left:30%; animation-delay:1.1s;"></span>
+          <span class="star" style="top:8%;  left:80%; animation-delay:2.9s;"></span>
+          <span class="star" style="top:13%; left:46%; animation-delay:0.6s;"></span>
+          <span class="star" style="top:24%; left:42%; animation-delay:1.6s;"></span>
+          <span class="star" style="top:29%; left:68%; animation-delay:2.4s;"></span>
+          <span class="star" style="top:41%; left:30%; animation-delay:0.2s;"></span>
+          <span class="star" style="top:45%; left:18%; animation-delay:1.9s;"></span>
+          <span class="star" style="top:51%; left:66%; animation-delay:2.7s;"></span>
+          <span class="star big" style="top:59%; left:50%; animation-delay:0.4s;"></span>
+          <span class="star" style="top:66%; left:42%; animation-delay:1.3s;"></span>
+        </div>
+
+        <!-- Grid 3D dorado en perspectiva -->
+        <div class="magic-grid" aria-hidden="true"></div>
+
+        <!-- Cono de luz detrás del personaje -->
+        <div class="light-cone" aria-hidden="true"></div>
+
+        <!-- Character stage: placeholders del personaje -->
+        <div class="character-stage">
+          <div id="character-solid">PERSONAJE MAGO PARADO PNG AQUÍ</div>
+          <div id="character-wireframe">WIREFRAME MAGO PNG AQUÍ</div>
+          <div id="scan-line"></div>
+          <div id="viewfinder" aria-hidden="true">
+            <span class="vf-tl"></span>
+            <span class="vf-tr"></span>
+            <span class="vf-bl"></span>
+            <span class="vf-br"></span>
+          </div>
+        </div>
+
+        <!-- Pedestal -->
+        <div class="pedestal" aria-hidden="true">
+          <div class="pedestal-disc">
+            <div class="pedestal-ring"></div>
+          </div>
+          <div class="pedestal-disc small"></div>
+        </div>
+
+        <!-- Contador "000" -->
+        <span class="counter">000</span>
+
+        <!-- Tags holográficos -->
+        <div class="holo-tag tag-name">
+          <span class="tag-title">Alimeythor</span>
+          <span class="tag-sub">🌙 Mundo Mágico</span>
+        </div>
+
+        <div class="holo-tag tag-description">
+          Un mundo donde las emociones se transforman en magia, los miedos en
+          valentía y las pantallas en momentos en familia.
+        </div>
+
+        <div class="holo-tag tag-features">
+          <span class="tag-header">Los 4 Destellos</span>
+          <ul>
+            <li>Calma</li>
+            <li>Curiosidad</li>
+            <li>Empatía</li>
+            <li>Valentía</li>
+          </ul>
+        </div>
+
+        <!-- Líneas SVG de conexión tag → personaje -->
+        <svg id="connection-lines" viewBox="0 0 1440 900" preserveAspectRatio="none" aria-hidden="true">
+          <!-- tag-name (arriba-izq) → cabeza del personaje -->
+          <path class="line-name" d="M 480 240 C 600 240, 640 280, 720 280" />
+          <!-- tag-description (medio-izq) → torso -->
+          <path class="line-description" d="M 400 440 C 560 440, 620 460, 720 460" />
+          <!-- tag-features (medio-der) → torso -->
+          <path class="line-features" d="M 1040 400 C 880 400, 820 440, 720 440" />
+        </svg>
+      </div>
+
+      <!-- ===== WARM LAYER (hero actual, encima) ===== -->
+      <div class="warm-layer">
+  <!-- HERO -->
+  <section class="hero">
+    <!-- Capa de fondo (más profunda, se mueve lento) — blobs difuminados -->
+    <div class="hero-layer hero-bg" data-parallax="bg">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+    </div>
+    <!-- Capa media (decorativos) — sparkles -->
+    <div class="hero-layer hero-mid" data-parallax="mid">
+      <span class="sparkle sparkle-1">✨</span>
+      <span class="sparkle sparkle-2">⭐</span>
+      <span class="sparkle sparkle-3">✨</span>
+      <span class="sparkle sparkle-4">💫</span>
+    </div>
+
+    <div class="container hero-inner">
+      <div class="hero-text">
+        <!-- Capa frontal: título principal, máximo movimiento -->
+        <h1 data-parallax="front">
+          ¿Sentís que las pantallas reemplazan las <span class="pink">emociones reales</span>?
+        </h1>
+        <!-- Capa media: subtítulo acompaña al título -->
+        <p class="hero-sub" data-parallax="mid">
+          Descubrí Alimeythor: un malvavisco mágico que acompaña a los niños
+          a explorar sus emociones a través de historias, aventuras y magia.
+        </p>
+        <!-- Capa UI: botones, casi sin movimiento -->
+        <div class="hero-ctas" data-parallax="ui">
+          <a href="#quien" class="btn-pill primary lg">Descubrí quién es Alimeythor</a>
+          <a href="#pase" class="btn-pill outline-pink lg">Ver el Pase Mágico</a>
+        </div>
+      </div>
+      <!-- Imagen del personaje: capa media (acompaña la profundidad sin tirar tanto como el título) -->
+      <div class="hero-img-wrap" data-parallax="mid">
+        <div class="hero-img">
+          <img src="assets/hero-personaje.png" alt="El Mundo Mágico de Alimeythor" />
+        </div>
+        <p class="hero-caption">✨ El Mundo Mágico de Alimeythor</p>
+      </div>
+    </div>
+  </section>
+      </div><!-- /.warm-layer -->
+
+    </div><!-- /.pin-stage -->
+  </div><!-- /#hero-mundo-pin -->
+
+  <!-- ¿QUIÉN ES? -->
+  <section id="quien" class="block block-white">
+    <div class="container two-col-quien">
+      <div class="quien-text">
+        <span class="pill-eyebrow">EL PERSONAJE</span>
+        <h2 class="left"><span class="bubble">🫧</span> ¿Quién es Alimeythor?</h2>
+        <div class="divider-pink"></div>
+        <p class="paragraph left">
+          Un personaje nacido de una historia familiar real, creado para acompañar
+          desafíos cotidianos con ternura, humor y magia.
+        </p>
+        <p class="paragraph left">
+          Alimeythor es un malvavisco mágico que vive en un mundo colorido donde cada
+          aventura enseña una emoción: calma, curiosidad, empatía y valentía.
+        </p>
+        <a href="#" class="btn-pill primary lg">CONOCER MÁS SOBRE SU HISTORIA</a>
+      </div>
+      <div class="quien-img">
+        <img src="assets/logo-full.png" alt="Logo Alimeythor — Alimenta Tu Alma" />
+      </div>
+    </div>
+  </section>
+
+  <!-- SOY ALICIA -->
+  <section id="alicia" class="block block-cream">
+    <div class="container two-col-alicia">
+      <div class="alicia-photo">
+        <img src="assets/alicia-libros.jpg" alt="Alicia con su libro Alimeythor" />
+      </div>
+      <div class="alicia-text">
+        <span class="pill-eyebrow">LA CREADORA</span>
+        <h2 class="left">Soy Alicia</h2>
+        <div class="divider-pink"></div>
+        <div class="alicia-tags">
+          <span class="tag">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#E8578A"><path d="M12 2L2 22h20L12 2z"/></svg>
+            Lic. en Enfermería
+          </span>
+          <span class="tag">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#E8578A"><path d="M12 1l3 6 6 .5-4.5 4 1.5 6.5L12 14l-6 4 1.5-6.5L3 7.5 9 7z"/></svg>
+            Madre de 4
+          </span>
+          <span class="tag">
+            <span class="flag-ar"></span>
+            Argentina
+          </span>
+        </div>
+        <p class="paragraph left">
+          Mujer Argentina, Madre de cuatro hijos, abuela. Trabaje en el área de salud
+          por mas de 30 años como Enfermera, acompañando familias en situaciones difíciles.
+          Ahora nació Mundo Alimeythor para construir vínculos duraderos con nuestros
+          hijos desde pequeños. Utilizando la tecnología como herramienta para trabajar
+          valores y acompañar la crianza.
+        </p>
+        <a href="#" class="btn-pill primary lg">CONOCÉ MI HISTORIA COMPLETA →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUÉ VAS A ENCONTRAR -->
+  <section class="block block-white">
+    <div class="container center">
+      <span class="pill-eyebrow">EL MUNDO</span>
+      <h2 class="big">Qué vas a encontrar<br/>en este mundo</h2>
+      <div class="features-grid">
+        <article class="feature feature-pink">
+          <div class="feature-icon">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#5b8def" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <h3>El e-book "Misión de Vida y Búsqueda de Opciones"</h3>
+          <p>Una guía práctica para acompañar a tus hijos en el camino de descubrir quiénes son y qué los mueve.</p>
+        </article>
+        <article class="feature feature-yellow">
+          <div class="feature-icon">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="#EDBC3B"><path d="M12 2l1.5 6.5L20 10l-6.5 1.5L12 18l-1.5-6.5L4 10l6.5-1.5z"/><circle cx="19" cy="5" r="1.5"/><circle cx="5" cy="19" r="1.5"/></svg>
+          </div>
+          <h3>Mini cuentos exclusivos para miembros</h3>
+          <p>Historias breves y mágicas diseñadas para leer juntos en familia, en cualquier momento del día.</p>
+        </article>
+        <article class="feature feature-teal">
+          <div class="feature-icon">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#2bb7a3" stroke-width="2"><path d="M12 22a10 10 0 1 1 10-10c0 2-1.5 3-3 3h-2a2 2 0 0 0-2 2v1a2 2 0 0 1-3 2 10 10 0 0 1 0 2z"/><circle cx="7.5" cy="10.5" r="1.5" fill="#e8578a" stroke="none"/><circle cx="12" cy="7" r="1.5" fill="#EDBC3B" stroke="none"/><circle cx="16.5" cy="10.5" r="1.5" fill="#2bb7a3" stroke="none"/></svg>
+          </div>
+          <h3>Talleres para disfrutar en familia</h3>
+          <p>Actividades interactivas que convierten el tiempo en casa en momentos de conexión y aprendizaje.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Divisor SVG ondulado: features → mundo -->
+  <div class="svg-divider svg-divider-pink" aria-hidden="true">
+    <svg viewBox="0 0 1200 80" preserveAspectRatio="none">
+      <path d="M 0 40 Q 100 10 200 40 T 400 40 T 600 40 T 800 40 T 1000 40 T 1200 40" />
+    </svg>
+  </div>
+
+  <!-- ¿QUÉ ES MUNDO ALIMEYTHOR? - DARK NAVY -->
+  <section id="mundo" class="block block-navy">
+    <div class="container center">
+      <span class="pill-eyebrow eyebrow-dark">LA PLATAFORMA</span>
+      <h2 class="big white">
+        <span class="star">💫</span> ¿Qué es Mundo Alimeythor?
+      </h2>
+      <p class="paragraph center light italic narrow-text">
+        Mundo Alimeythor no es solo una plataforma. Es un plan de entrenamiento para el corazón y la mente de los niños. Un espacio donde la magia y las emociones van de la mano, pero no solos, sino juntos en familia.
+      </p>
+      <div class="thin-divider"></div>
+      <p class="destellos-title">✨ Los 4 Destellos — Temporada 1</p>
+      <p class="destellos-sub italic">Cada destello trabaja una emoción clave, con historias, juegos y experiencias pensadas para su edad.</p>
+
+      <!-- 4 Destellos — grid simple en una fila (igual a la imagen) -->
+      <div class="destellos-grid">
+        <article class="destello">
+          <div class="destello-icon">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="#EDBC3B"><circle cx="12" cy="5" r="2.5"/><path d="M12 8.5c-2.7 0-4.5 1.8-4.5 4.5 0 1.7 0.8 3.3 1.6 4.5h5.8c0.8-1.2 1.6-2.8 1.6-4.5 0-2.7-1.8-4.5-4.5-4.5z"/><path d="M7.5 16l-3 1.5M16.5 16l3 1.5" stroke="#EDBC3B" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>
+          </div>
+          <h4>Calma</h4>
+          <p>Herramientas para encontrar la paz interior en medio del caos cotidiano.</p>
+        </article>
+        <article class="destello">
+          <div class="destello-icon">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#a8b0c8" stroke-width="2"><circle cx="10" cy="10" r="6"/><path d="M14.5 14.5L20 20" stroke-linecap="round"/></svg>
+          </div>
+          <h4>Curiosidad</h4>
+          <p>Despertar el asombro y las ganas de explorar el mundo con ojos nuevos.</p>
+        </article>
+        <article class="destello">
+          <div class="destello-icon">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="#EDBC3B"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/></svg>
+          </div>
+          <h4>Empatía</h4>
+          <p>Aprender a ponerse en el lugar del otro y construir vínculos genuinos.</p>
+        </article>
+        <article class="destello">
+          <div class="destello-icon">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="#EDBC3B"><circle cx="12" cy="12" r="8"/><circle cx="9" cy="11" r="1.2" fill="#1a1a2e"/><circle cx="15" cy="11" r="1.2" fill="#1a1a2e"/><path d="M9 15c1 1 4 1 5 0" stroke="#1a1a2e" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M5 7c0-1 1-3 3-3M19 7c0-1-1-3-3-3" stroke="#c9447a" stroke-width="2" fill="none"/></svg>
+          </div>
+          <h4>Valentía</h4>
+          <p>Enfrentar miedos con confianza y atreverse a ser quien uno es.</p>
+        </article>
+      </div>
+
+      <div class="extras-grid">
+        <div class="extra-card">
+          <div class="extra-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="#EDBC3B"><circle cx="12" cy="6" r="3"/><path d="M12 10c-3 0-5 2-5 5 0 2 1 4 2 5h6c1-1 2-3 2-5 0-3-2-5-5-5z"/><path d="M7 14l-3 2M17 14l3 2" stroke="#EDBC3B" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+          </div>
+          <h4>Zona de Relajación</h4>
+          <p>Mandalas • Libros para colorear • Historias guiadas • Materiales descargables</p>
+        </div>
+        <div class="extra-card">
+          <div class="extra-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#7fc9d8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <h4>Blog</h4>
+          <p>Un espacio para que vos también crezcas, reflexiones y compartas el camino.</p>
+        </div>
+        <div class="extra-card">
+          <div class="extra-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M5 11h14v9H5z" fill="#E8578A"/><path d="M3 20h18" stroke="#1a1a2e" stroke-width="1.5"/><path d="M12 5v6" stroke="#EDBC3B" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="4" r="1.5" fill="#EDBC3B"/></svg>
+          </div>
+          <h4>Saludo de cumpleaños</h4>
+          <p>Porque cada niño merece sentirse visto y celebrado en su día especial.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Divisor SVG ondulado: mundo → beneficios -->
+  <div class="svg-divider svg-divider-gold" aria-hidden="true">
+    <svg viewBox="0 0 1200 80" preserveAspectRatio="none">
+      <path d="M 0 40 Q 150 70 300 40 T 600 40 T 900 40 T 1200 40" />
+    </svg>
+  </div>
+
+  <!-- POR QUE UNIRSE -->
+  <section class="block block-cream">
+    <div class="container center">
+      <span class="pill-eyebrow">LOS BENEFICIOS</span>
+      <h2 class="big">Por qué unirse</h2>
+      <div class="benefits-grid">
+        <article class="benefit">
+          <div class="benefit-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="6" height="14" rx="1" fill="#5b8def"/><rect x="10" y="3" width="6" height="16" rx="1" fill="#E8578A"/><rect x="17" y="7" width="4" height="12" rx="1" fill="#EDBC3B"/></svg>
+          </div>
+          <div><h3>Historias exclusivas</h3><p>Contenido no disponible fuera de la membresía, pensado especialmente para cada etapa.</p></div>
+        </article>
+        <article class="benefit">
+          <div class="benefit-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="#EDBC3B"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/></svg>
+          </div>
+          <div><h3>Acompañamiento emocional simple</h3><p>Sin complicaciones ni tecnicismos — solo herramientas que funcionan en la vida real.</p></div>
+        </article>
+        <article class="benefit">
+          <div class="benefit-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5b8def" stroke-width="2"><circle cx="8" cy="7" r="2.5"/><circle cx="16" cy="7" r="2.5"/><path d="M3 18c0-3 2.5-5 5-5s5 2 5 5M11 18c0-3 2.5-5 5-5s5 2 5 5"/></svg>
+          </div>
+          <div><h3>Lecturas probadas en familia</h3><p>Contenido que ya pasó por hogares reales y generó conexión genuina.</p></div>
+        </article>
+        <article class="benefit">
+          <div class="benefit-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 22V12" stroke="#7a8a3a" stroke-width="2" stroke-linecap="round"/><path d="M12 12c-3 0-6-2-6-5 0-1 1-2 2-2 3 0 4 3 4 7z" fill="#9bc04a"/><path d="M12 12c3 0 6-2 6-5 0-1-1-2-2-2-3 0-4 3-4 7z" fill="#9bc04a"/></svg>
+          </div>
+          <div><h3>Un proyecto vivo que crece cada mes</h3><p>Nuevo contenido mensual para que la magia nunca se detenga.</p></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Divisor SVG ondulado: beneficios → testimonios -->
+  <div class="svg-divider svg-divider-teal" aria-hidden="true">
+    <svg viewBox="0 0 1200 80" preserveAspectRatio="none">
+      <path d="M 0 40 Q 200 5 400 40 T 800 40 T 1200 40" />
+    </svg>
+  </div>
+
+  <!-- TESTIMONIOS -->
+  <section class="block block-white">
+    <div class="container center">
+      <span class="pill-eyebrow">FAMILIAS REALES</span>
+      <h2 class="big">Lo que dicen las familias</h2>
+      <div class="testimonials-grid">
+        <blockquote class="testimonial-pink">
+          <span class="star-icon">★</span>
+          <p class="quote">"REEMPLAZAR CON TESTIMONIO REAL DE UNA FAMILIA"</p>
+          <cite>— Nombre, mamá de X años</cite>
+        </blockquote>
+        <blockquote class="testimonial-pink">
+          <span class="star-icon">★</span>
+          <p class="quote">"REEMPLAZAR CON TESTIMONIO REAL DE UNA FAMILIA"</p>
+          <cite>— Nombre, mamá de X años</cite>
+        </blockquote>
+        <blockquote class="testimonial-pink">
+          <span class="star-icon">★</span>
+          <p class="quote">"REEMPLAZAR CON TESTIMONIO REAL DE UNA FAMILIA"</p>
+          <cite>— Nombre, mamá de X años</cite>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMUNIDAD + PASE MÁGICO -->
+  <section id="pase" class="pricing-section">
+    <div class="pricing-grid">
+      <div class="pricing-photo">
+        <img src="assets/alicia-aula.jpeg" alt="Alicia leyendo con niños" />
+      </div>
+      <div class="yellow-box">
+        <div class="yellow-box-inner">
+          <div class="comunidad-left">
+            <span class="badge-gratis">GRATIS</span>
+            <h3 class="comunidad-title">🥯 Comunidad y Talleres</h3>
+          </div>
+          <div class="pase-nested">
+            <span class="badge-acceso">ACCESO COMPLETO</span>
+            <h3 class="pase-title">🔒 Pase Mágico<br/>Temporada 1</h3>
+            <div class="price-box">
+              <span class="price-tag">PRECIO DE FUNDADORES</span>
+              <div class="price">$60.000</div>
+              <p class="price-sub">pago único · acceso total por 6 meses</p>
+            </div>
+            <ul class="check-list pink-checks">
+              <li>Pago único</li>
+              <li>6 meses de acceso total</li>
+              <li>Beneficios exclusivos para fundadores</li>
+              <li>Contenido que no vuelve a este valor</li>
+            </ul>
+            <a href="#" class="btn-pase">🎁 Obtener el Pase Mágico</a>
+            <a href="#" class="link-light">¿Todavía no estás seguro/a? Probá gratis →</a>
+          </div>
+          <div class="comunidad-bottom">
+            <p class="card-sub-dark italic">Un espacio para crecer, leer y crear junto a Alimeythor.</p>
+            <ul class="check-list pink-checks dark-text">
+              <li>Acceso a mini cuentos</li>
+              <li>Recursos simples para padres</li>
+              <li>Actualizaciones del proyecto</li>
+              <li>Comunidad en formación</li>
+            </ul>
+            <a href="#" class="btn-pill primary">QUIERO UNIRME</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final-cta">
+    <div class="container">
+      <h2>La aventura comienza<br/>con una decisión</h2>
+      <p>Dale a tu hijo/a una experiencia que lo acompañe a descubrir sus emociones, tomar decisiones y conectar con su mundo interior.</p>
+      <div class="cta-buttons">
+        <a href="#" class="btn-pill white">🎁 Obtener el Pase Mágico</a>
+        <a href="#" class="btn-pill outline-white">Probar gratis →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-logo-wrap">
+        <img src="assets/logo.png" alt="Alimeythor" class="footer-logo" />
+      </div>
+      <nav class="footer-nav">
+        <a href="#">¿Quién es?</a>
+        <a href="#mundo">Mundo Alimeythor</a>
+        <a href="#">Contacto</a>
+      </nav>
+      <p class="footer-copy">© 2026 Alimeythor. Todos los derechos reservados.</p>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>Copyright © 2026 Alimeythor</span>
+        <span>Powered by Alimeythor</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Registrar plugins de GSAP
+    gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+    // Inicializar Lenis — smooth scroll global (aislado para que un fallo no rompa animaciones)
+    let lenis = null;
+    try {
+      if (typeof Lenis === 'undefined') throw new Error('Lenis no se cargó desde el CDN');
+      lenis = new Lenis({
+        duration: 1.2,                                              // 1.2s
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),   // exponencial out
+        smooth: true,                                               // smooth scroll activo
+        direction: 'vertical',                                      // dirección vertical
+        gestureDirection: 'vertical',
+        smoothWheel: true,                                          // afecta a la rueda del mouse
+        wheelMultiplier: 1,
+        smoothTouch: false,                                         // mobile usa scroll nativo
+        touchMultiplier: 2,
+      });
+
+      // Sincronización Lenis ↔ GSAP ticker / ScrollTrigger
+      lenis.on('scroll', ScrollTrigger.update);
+      gsap.ticker.add((time) => lenis.raf(time * 1000));
+      gsap.ticker.lagSmoothing(0);
+    } catch (err) {
+      console.warn('⚠️ Lenis no inicializó, se usa scroll nativo:', err.message);
+    }
+
+    // Test rápido
+    console.log('✅ GSAP cargado — versión:', gsap.version);
+    console.log('✅ ScrollTrigger:', typeof ScrollTrigger !== 'undefined' ? 'OK' : 'FAIL');
+    console.log('✅ ScrollToPlugin:', gsap.plugins?.scrollTo ? 'OK' : (typeof ScrollToPlugin !== 'undefined' ? 'OK' : 'FAIL'));
+    console.log('✅ Lenis:', lenis ? 'OK' : 'FAIL');
+
+    // ============================================
+    //   MUNDO QUE SE CONSTRUYE — animaciones tiernas y mágicas
+    // ============================================
+
+    // ---- 1) CONFIG GLOBAL ----
+    const ANIM = {
+      isMobile:  window.matchMedia('(max-width: 768px)').matches,
+      isTablet:  window.matchMedia('(max-width: 1023px)').matches,
+      reduced:   window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+      finePtr:   window.matchMedia('(hover: hover) and (pointer: fine)').matches,
+    };
+    // Multiplicador de stagger: mobile usa la mitad para que se sienta ligero
+    const SM = ANIM.isMobile ? 0.5 : 1;
+
+    // Lazy-load para imágenes que no son above-the-fold
+    document.querySelectorAll('img').forEach((img, i) => {
+      if (i === 0) return; // hero image: eager
+      if (!img.hasAttribute('loading'))  img.setAttribute('loading', 'lazy');
+      if (!img.hasAttribute('decoding')) img.setAttribute('decoding', 'async');
+    });
+
+    // Helper: divide cualquier elemento en letras animables (respeta hijos como <span class="pink">)
+    function splitIntoLetters(rootEl) {
+      const out = [];
+      function walk(node) {
+        [...node.childNodes].forEach((c) => {
+          if (c.nodeType === Node.TEXT_NODE) {
+            const txt = c.textContent;
+            const frag = document.createDocumentFragment();
+            [...txt].forEach((ch) => {
+              if (ch === ' ' || ch === '\n') {
+                frag.appendChild(document.createTextNode(ch));
+                return;
+              }
+              const s = document.createElement('span');
+              s.className = 'anim-letter';
+              s.textContent = ch;
+              frag.appendChild(s);
+              out.push(s);
+            });
+            c.parentNode.replaceChild(frag, c);
+          } else if (c.nodeType === Node.ELEMENT_NODE) {
+            walk(c);
+          }
+        });
+      }
+      walk(rootEl);
+      return out;
+    }
+
+    // Helper: ScrollTrigger one-shot (once: true)
+    function whenInView(trigger, fn, start = 'top 80%') {
+      if (!trigger) return;
+      ScrollTrigger.create({ trigger, start, once: true, onEnter: fn });
+    }
+
+    // ============================================
+    //   2) HERO IDLE — el hero ya está visible, solo respira
+    // ============================================
+    (function initHeroIdle() {
+      if (ANIM.reduced) return;
+      const hero = document.querySelector('.hero');
+      if (!hero) return;
+
+      // Wave letra-por-letra muy lento en el <h1>
+      const h1 = hero.querySelector('h1');
+      if (h1 && !ANIM.isMobile) {
+        const letters = splitIntoLetters(h1);
+        if (letters.length) {
+          gsap.to(letters, {
+            y: -6,
+            duration: 2.4,
+            ease: 'sine.inOut',
+            repeat: -1,
+            yoyo: true,
+            stagger: { each: 0.045, from: 'start' },
+          });
+        }
+      }
+
+      // Float suave en la imagen del personaje (respiro de nube)
+      const heroImg = hero.querySelector('.hero-img-wrap');
+      if (heroImg) {
+        gsap.to(heroImg, {
+          y: -14, duration: 3.4, ease: 'sine.inOut', repeat: -1, yoyo: true,
+        });
+      }
+
+      // Sway aleatorio en sparkles decorativos del hero
+      hero.querySelectorAll('.sparkle').forEach((sp, i) => {
+        gsap.to(sp, {
+          y: 'random(-18, 18)',
+          x: 'random(-12, 12)',
+          rotation: 'random(-20, 20)',
+          duration: gsap.utils.random(3.5, 5.5),
+          ease: 'sine.inOut',
+          repeat: -1,
+          yoyo: true,
+          delay: i * 0.4,
+        });
+      });
+
+      // Pulse muy suave en el CTA primario del hero cada ~3s
+      const cta = hero.querySelector('.btn-pill.primary');
+      if (cta) {
+        gsap.to(cta, {
+          scale: 1.045,
+          duration: 1.1,
+          ease: 'sine.inOut',
+          repeat: -1,
+          yoyo: true,
+          repeatDelay: 1.4,
+        });
+      }
+    })();
+
+    // ============================================
+    //   3) REVEALS POR SECCIÓN — ScrollTrigger once:true
+    // ============================================
+
+    // 3.A) "Piezas del cielo" — para #quien y .final-cta
+    function revealSkyPieces(section) {
+      if (!section || ANIM.reduced) return;
+      const container = section.querySelector('.container') || section;
+      const targets = container.children;
+      if (!targets.length) return;
+      gsap.set(targets, {
+        autoAlpha: 0, y: -80, rotation: -12, scale: 0.88,
+        transformOrigin: '50% 0%',
+      });
+      whenInView(section, () => {
+        gsap.to(targets, {
+          autoAlpha: 1, y: 0, rotation: 0, scale: 1,
+          duration: 1.2,
+          ease: 'elastic.out(1, 0.55)',
+          stagger: 0.15 * SM,
+          clearProps: 'willChange',
+        });
+      });
+    }
+
+    // 3.B) Texto línea por línea + foto con clip circular — para #alicia
+    function revealLinesAndCircle(section) {
+      if (!section || ANIM.reduced) return;
+      const textBits = section.querySelectorAll('.pill-eyebrow, h2, .divider-pink, .alicia-tags, .paragraph');
+      const photo = section.querySelector('.alicia-photo, .quien-img');
+      const ctas  = section.querySelectorAll('.btn-pill, .btn-pase');
+
+      gsap.set(textBits, { autoAlpha: 0, x: -40 });
+      if (photo) gsap.set(photo, { clipPath: 'circle(0% at 50% 50%)' });
+      gsap.set(ctas, { autoAlpha: 0, scale: 0.7, rotation: -25 });
+
+      whenInView(section, () => {
+        const tl = gsap.timeline();
+        if (photo) {
+          tl.to(photo, { clipPath: 'circle(75% at 50% 50%)', duration: 1.4, ease: 'power3.out' }, 0);
+        }
+        tl.to(textBits, {
+          autoAlpha: 1, x: 0,
+          duration: 0.9, ease: 'power2.out',
+          stagger: 0.12 * SM,
+        }, 0.2);
+        tl.to(ctas, {
+          autoAlpha: 1, scale: 1, rotation: 0,
+          duration: 0.8, ease: 'back.out(1.6)',
+          stagger: 0.1 * SM,
+        }, '-=0.4');
+      });
+    }
+
+    // 3.C) #quien: dos columnas (texto + imagen) — variante con clip circular
+    function revealQuien(section) {
+      if (!section || ANIM.reduced) return;
+      const text  = section.querySelectorAll('.pill-eyebrow, h2, .divider-pink, .paragraph');
+      const photo = section.querySelector('.quien-img');
+      const ctas  = section.querySelectorAll('.btn-pill');
+
+      gsap.set(text, { autoAlpha: 0, y: -60, rotation: -8 });
+      if (photo) gsap.set(photo, { clipPath: 'circle(0% at 50% 50%)' });
+      gsap.set(ctas, { autoAlpha: 0, scale: 0.6 });
+
+      whenInView(section, () => {
+        const tl = gsap.timeline();
+        if (photo) tl.to(photo, { clipPath: 'circle(75% at 50% 50%)', duration: 1.4, ease: 'power3.out' }, 0);
+        tl.to(text, {
+          autoAlpha: 1, y: 0, rotation: 0,
+          duration: 1.1, ease: 'elastic.out(1, 0.6)',
+          stagger: 0.15 * SM,
+        }, 0.1);
+        tl.to(ctas, {
+          autoAlpha: 1, scale: 1,
+          duration: 0.7, ease: 'back.out(1.7)',
+        }, '-=0.4');
+      });
+    }
+
+    // 3.D) Cards pop-up secuenciales — para features y benefits
+    //   Cada card se arma: fondo → icono → título → texto
+    function revealCardsGrid(section, cardSelector) {
+      if (!section || ANIM.reduced) return;
+      const cards = section.querySelectorAll(cardSelector);
+      if (!cards.length) return;
+
+      const header = section.querySelectorAll(':scope > .container > .pill-eyebrow, :scope > .container > h2');
+      gsap.set(header, { autoAlpha: 0, y: 30 });
+
+      cards.forEach((card) => {
+        const icon  = card.querySelector('.feature-icon, .benefit-icon, .extra-icon, svg');
+        const title = card.querySelector('h3, h4');
+        const text  = card.querySelector('p');
+        gsap.set(card, { autoAlpha: 0, scale: 0, transformOrigin: '50% 50%' });
+        if (icon)  gsap.set(icon,  { autoAlpha: 0, clipPath: 'inset(100% 0% 0% 0%)' });
+        if (title) gsap.set(title, { autoAlpha: 0, x: -25 });
+        if (text)  gsap.set(text,  { autoAlpha: 0 });
+      });
+
+      whenInView(section, () => {
+        const tl = gsap.timeline();
+        tl.to(header, {
+          autoAlpha: 1, y: 0,
+          duration: 0.8, ease: 'power2.out',
+          stagger: 0.12,
+        });
+        cards.forEach((card, idx) => {
+          const icon  = card.querySelector('.feature-icon, .benefit-icon, .extra-icon, svg');
+          const title = card.querySelector('h3, h4');
+          const text  = card.querySelector('p');
+          // Tiempo de entrada de cada card (delay 0.4s entre cards)
+          const at = idx === 0 ? '+=0.1' : `+=${0.4 * SM - 0.6}`;
+          tl.to(card, {
+            autoAlpha: 1, scale: 1,
+            duration: 0.7, ease: 'back.out(1.4)',
+          }, at);
+          if (icon)  tl.to(icon,  { autoAlpha: 1, clipPath: 'inset(0% 0% 0% 0%)', duration: 0.5, ease: 'power2.out' }, '<+0.2');
+          if (title) tl.to(title, { autoAlpha: 1, x: 0, duration: 0.5, ease: 'power2.out' }, '<+0.15');
+          if (text)  tl.to(text,  { autoAlpha: 1, duration: 0.55, ease: 'power2.out' }, '<+0.15');
+        });
+      });
+    }
+
+    // 3.E) Burbujas de diálogo — testimonios
+    function revealBubbles(section) {
+      if (!section || ANIM.reduced) return;
+      const header = section.querySelectorAll(':scope > .container > .pill-eyebrow, :scope > .container > h2');
+      const bubbles = section.querySelectorAll('.testimonial-pink');
+      gsap.set(header, { autoAlpha: 0, y: 30 });
+      gsap.set(bubbles, { autoAlpha: 0, scale: 0, transformOrigin: '50% 90%' });
+
+      whenInView(section, () => {
+        const tl = gsap.timeline();
+        tl.to(header, { autoAlpha: 1, y: 0, duration: 0.8, ease: 'power2.out', stagger: 0.12 });
+        tl.to(bubbles, {
+          autoAlpha: 1, scale: 1,
+          duration: 1, ease: 'back.out(1.7)',
+          stagger: 0.3 * SM,
+        }, '-=0.3');
+      });
+    }
+
+    // 3.F) #mundo — header (NO toca el pin horizontal) + extras como cards
+    function revealMundo(section) {
+      if (!section || ANIM.reduced) return;
+      const headerEls = section.querySelectorAll(':scope > .container > .pill-eyebrow, :scope > .container > h2, :scope > .container > .paragraph, :scope > .container > .destellos-title, :scope > .container > .destellos-sub');
+      gsap.set(headerEls, { autoAlpha: 0, y: 40, scale: 0.95 });
+      whenInView(section, () => {
+        gsap.to(headerEls, {
+          autoAlpha: 1, y: 0, scale: 1,
+          duration: 1, ease: 'power3.out',
+          stagger: 0.12 * SM,
+        });
+      });
+
+      // Extras (Zona de Relajación, Blog, Cumpleaños) como cards pop-up
+      const extras = section.querySelectorAll('.extra-card');
+      if (extras.length) {
+        extras.forEach((c) => {
+          const icon  = c.querySelector('.extra-icon, svg');
+          const title = c.querySelector('h4');
+          const text  = c.querySelector('p');
+          gsap.set(c, { autoAlpha: 0, scale: 0.7, y: 30 });
+          if (icon)  gsap.set(icon,  { autoAlpha: 0, rotation: -180, scale: 0.5 });
+          if (title) gsap.set(title, { autoAlpha: 0, x: -20 });
+          if (text)  gsap.set(text,  { autoAlpha: 0 });
+        });
+        whenInView(section.querySelector('.extras-grid') || section, () => {
+          const tl = gsap.timeline();
+          extras.forEach((c, idx) => {
+            const icon  = c.querySelector('.extra-icon, svg');
+            const title = c.querySelector('h4');
+            const text  = c.querySelector('p');
+            const at = idx === 0 ? 0 : `+=${0.4 * SM - 0.55}`;
+            tl.to(c, { autoAlpha: 1, scale: 1, y: 0, duration: 0.8, ease: 'back.out(1.5)' }, at);
+            if (icon)  tl.to(icon,  { autoAlpha: 1, rotation: 0, scale: 1, duration: 0.7, ease: 'back.out(1.8)' }, '<+0.15');
+            if (title) tl.to(title, { autoAlpha: 1, x: 0, duration: 0.5, ease: 'power2.out' }, '<+0.15');
+            if (text)  tl.to(text,  { autoAlpha: 1, duration: 0.55, ease: 'power2.out' }, '<+0.15');
+          });
+        }, 'top 75%');
+      }
+    }
+
+    // 3.G) Pricing — foto con clip circular + caja con bounce + checks uno a uno
+    function revealPricing(section) {
+      if (!section || ANIM.reduced) return;
+      const photo  = section.querySelector('.pricing-photo');
+      const box    = section.querySelector('.yellow-box');
+      const titles = section.querySelectorAll('.comunidad-title, .pase-title, .card-sub-dark, .badge-gratis, .badge-acceso');
+      const price  = section.querySelector('.price-box');
+      const checks = section.querySelectorAll('.check-list li');
+      const ctas   = section.querySelectorAll('.btn-pill, .btn-pase, .link-light');
+
+      if (photo) gsap.set(photo, { clipPath: 'circle(0% at 50% 50%)' });
+      if (box)   gsap.set(box,   { autoAlpha: 0, scale: 0.9, y: 40 });
+      gsap.set(titles, { autoAlpha: 0, x: -30 });
+      if (price) gsap.set(price, { autoAlpha: 0, scale: 0.7 });
+      gsap.set(checks, { autoAlpha: 0, x: -20 });
+      gsap.set(ctas,   { autoAlpha: 0, scale: 0.6 });
+
+      whenInView(section, () => {
+        const tl = gsap.timeline();
+        if (photo) tl.to(photo, { clipPath: 'circle(75% at 50% 50%)', duration: 1.4, ease: 'power3.out' }, 0);
+        if (box)   tl.to(box,   { autoAlpha: 1, scale: 1, y: 0, duration: 1, ease: 'back.out(1.3)' }, 0.2);
+        tl.to(titles, { autoAlpha: 1, x: 0, duration: 0.7, ease: 'power2.out', stagger: 0.1 * SM }, 0.6);
+        if (price) tl.to(price, { autoAlpha: 1, scale: 1, duration: 0.8, ease: 'back.out(1.6)' }, 0.8);
+        tl.to(checks, { autoAlpha: 1, x: 0, duration: 0.5, ease: 'power2.out', stagger: 0.08 * SM }, 1);
+        tl.to(ctas, { autoAlpha: 1, scale: 1, duration: 0.7, ease: 'back.out(1.7)', stagger: 0.12 * SM }, 1.2);
+      });
+    }
+
+    // 3.H) Footer — slide desde abajo con stagger
+    function revealFooter() {
+      const footer = document.querySelector('.site-footer');
+      if (!footer || ANIM.reduced) return;
+      const items = footer.querySelectorAll('.footer-logo-wrap, .footer-nav a, .footer-copy, .footer-bottom-inner > span');
+      gsap.set(items, { autoAlpha: 0, y: 40 });
+      whenInView(footer, () => {
+        gsap.to(items, {
+          autoAlpha: 1, y: 0,
+          duration: 0.9, ease: 'power2.out',
+          stagger: 0.1 * SM,
+        });
+      });
+    }
+
+    // ---- Aplicar reveals al HTML real ----
+    if (!ANIM.reduced) {
+      revealQuien(document.querySelector('#quien'));
+      revealLinesAndCircle(document.querySelector('#alicia'));
+
+      // Features (block-white con .features-grid) y testimonios (block-white con .testimonials-grid)
+      document.querySelectorAll('section.block-white').forEach((sec) => {
+        if (sec.id === 'quien') return;
+        if (sec.querySelector('.features-grid'))     revealCardsGrid(sec, '.feature');
+        else if (sec.querySelector('.testimonials-grid')) revealBubbles(sec);
+      });
+
+      // Benefits (block-cream con .benefits-grid) — excluyendo #alicia
+      document.querySelectorAll('section.block-cream').forEach((sec) => {
+        if (sec.id === 'alicia') return;
+        if (sec.querySelector('.benefits-grid')) revealCardsGrid(sec, '.benefit');
+      });
+
+      revealMundo(document.querySelector('#mundo'));
+      revealPricing(document.querySelector('#pase'));
+      revealSkyPieces(document.querySelector('.final-cta'));
+      revealFooter();
+    }
+
+    // Refrescar ScrollTrigger cuando el layout y las fuentes estén listos
+    window.addEventListener('load', () => ScrollTrigger.refresh());
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => ScrollTrigger.refresh()).catch(() => {});
+    }
+
+    // ============================================
+    //   4) PARTÍCULAS MÁGICAS FLOTANTES — solo desktop
+    // ============================================
+    (function initParticles() {
+      if (ANIM.reduced || ANIM.isMobile) return;
+
+      // Paleta por tipo de bloque, acorde a la web infantil
+      const palettes = {
+        'block-white': ['#E8578A', '#EDBC3B', '#7fc9d8'],
+        'block-cream': ['#E8578A', '#EDBC3B'],
+        'block-navy':  ['#EDBC3B', '#7fc9d8', '#ffffff'],
+      };
+      const shapes = ['★', '✦', '✨', '♥', '•'];
+
+      document.querySelectorAll('.block').forEach((block) => {
+        const cls = [...block.classList].find((c) => palettes[c]);
+        if (!cls) return;
+        const colors = palettes[cls];
+
+        const wrap = document.createElement('div');
+        wrap.className = 'magic-particles';
+        wrap.setAttribute('aria-hidden', 'true');
+        if (getComputedStyle(block).position === 'static') block.style.position = 'relative';
+        block.insertBefore(wrap, block.firstChild);
+
+        const count = 8;
+        for (let i = 0; i < count; i++) {
+          const p = document.createElement('span');
+          p.className = 'magic-particle';
+          p.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+          p.style.color = colors[Math.floor(Math.random() * colors.length)];
+          p.style.left = (Math.random() * 95) + '%';
+          p.style.top  = (Math.random() * 95) + '%';
+          p.style.fontSize = (10 + Math.random() * 14) + 'px';
+          p.style.opacity = (0.3 + Math.random() * 0.2).toString();
+          wrap.appendChild(p);
+
+          // Movimiento lento, aleatorio — 10 a 20s por ciclo
+          gsap.to(p, {
+            x: gsap.utils.random(-60, 60),
+            y: gsap.utils.random(-80, 80),
+            rotation: gsap.utils.random(-180, 180),
+            duration: gsap.utils.random(10, 20),
+            ease: 'sine.inOut',
+            repeat: -1,
+            yoyo: true,
+            delay: Math.random() * 4,
+          });
+        }
+      });
+    })();
+
+    // ============================================
+    //   5) TRAIL DE BRILLOS EN SCROLL — solo desktop
+    // ============================================
+    (function initSparkleTrail() {
+      if (ANIM.reduced || ANIM.isMobile) return;
+
+      let lastSpawn = 0;
+      const COOLDOWN_MIN = 2000;   // mínimo 2s entre brillos
+      const COOLDOWN_VAR = 1000;   // hasta 3s
+
+      function spawnSparkle() {
+        const s = document.createElement('span');
+        s.className = 'scroll-sparkle';
+        s.textContent = Math.random() > 0.5 ? '✦' : '✨';
+        // Zonas evitando bordes muy expuestos al contenido principal
+        s.style.left = (10 + Math.random() * 80) + 'vw';
+        s.style.top  = (15 + Math.random() * 70) + 'vh';
+        s.style.color = Math.random() > 0.5 ? '#EDBC3B' : '#ffffff';
+        s.style.fontSize = (8 + Math.random() * 6) + 'px';
+        document.body.appendChild(s);
+
+        gsap.fromTo(s,
+          { scale: 0, opacity: 0, rotation: 0 },
+          {
+            scale: 1, opacity: 0.9, rotation: 180,
+            duration: 0.45, ease: 'back.out(2)',
+            onComplete() {
+              gsap.to(s, {
+                scale: 0, opacity: 0,
+                duration: 0.55, ease: 'power2.in',
+                onComplete: () => s.remove(),
+              });
+            },
+          });
+      }
+
+      function onScroll() {
+        const now = performance.now();
+        if (now - lastSpawn > COOLDOWN_MIN + Math.random() * COOLDOWN_VAR) {
+          lastSpawn = now;
+          spawnSparkle();
+        }
+      }
+
+      // Hook a Lenis si está activo, fallback a scroll nativo
+      if (typeof lenis !== 'undefined' && lenis) {
+        lenis.on('scroll', onScroll);
+      } else {
+        window.addEventListener('scroll', onScroll, { passive: true });
+      }
+    })();
+
+    // ============================================
+    //   6) LÍNEAS SVG QUE SE DIBUJAN
+    // ============================================
+    (function initSvgLines() {
+      if (ANIM.reduced) return;
+      document.querySelectorAll('.svg-divider path').forEach((path) => {
+        const len = path.getTotalLength();
+        path.style.strokeDasharray = len;
+        path.style.strokeDashoffset = len;
+        ScrollTrigger.create({
+          trigger: path.closest('.svg-divider'),
+          start: 'top 90%',
+          once: true,
+          onEnter: () => {
+            gsap.to(path, {
+              strokeDashoffset: 0,
+              duration: 1.5,
+              ease: 'power2.inOut',
+            });
+          },
+        });
+      });
+    })();
+
+    // ============================================
+    //   ESCALERA: personaje sube/baja según scroll
+    // ============================================
+    (function initLadderCharacter() {
+      // Solo desktop, respeta reduced-motion
+      if (window.matchMedia('(max-width: 1023px)').matches) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const ladder = document.querySelector('.ladder-overlay');
+      if (!ladder) return;
+      const character = ladder.querySelector('.ladder-character');
+      if (!character) return;
+
+      let lastScrollY = 0;
+      let wigglePhase = 0;
+      let isScrolling = false;
+      let scrollTimer = null;
+      let targetY = 0;
+      let currentY = 0;
+      const CHAR_H = 64;
+      const TOP_PAD = 90;     // baja del header
+      const BOTTOM_PAD = 20;
+
+      function maxScroll() {
+        return Math.max(
+          document.documentElement.scrollHeight - window.innerHeight,
+          1
+        );
+      }
+      function trackHeight() {
+        return window.innerHeight - CHAR_H - TOP_PAD - BOTTOM_PAD;
+      }
+
+      function update(scrollY) {
+        const progress = Math.max(0, Math.min(1, scrollY / maxScroll()));
+        targetY = TOP_PAD + progress * trackHeight();
+
+        const delta = scrollY - lastScrollY;
+        if (Math.abs(delta) > 0.4) {
+          isScrolling = true;
+          // El wiggle avanza con el delta de scroll (y se invierte al subir)
+          wigglePhase += delta * 0.06;
+          clearTimeout(scrollTimer);
+          scrollTimer = setTimeout(() => { isScrolling = false; }, 180);
+        }
+        lastScrollY = scrollY;
+      }
+
+      function tick() {
+        // Interpolación suave hacia el target (lerp)
+        currentY += (targetY - currentY) * 0.18;
+        const rot = isScrolling ? Math.sin(wigglePhase) * 7 : 0;
+        character.style.transform =
+          `translate(-50%, ${currentY}px) rotate(${rot}deg)`;
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+
+      // Hook a Lenis si está activo, fallback a scroll nativo
+      if (typeof lenis !== 'undefined' && lenis) {
+        lenis.on('scroll', ({ scroll }) => update(scroll));
+      } else {
+        window.addEventListener('scroll',
+          () => update(window.scrollY),
+          { passive: true }
+        );
+      }
+
+      // Estado inicial
+      update(window.scrollY || 0);
+      currentY = targetY;
+
+      // Recalcular en resize
+      window.addEventListener('resize', () => update(lastScrollY));
+    })();
+
+    // ============================================
+    //   HERO — 3D PARALLAX (mouse + scroll)
+    // ============================================
+    (function initHeroParallax() {
+      const hero = document.querySelector('.hero');
+      if (!hero) return;
+
+      // Solo desktop con puntero fino: mobile/touch usa versión estática
+      const isDesktop = window.matchMedia('(min-width: 1024px)').matches
+                     && window.matchMedia('(hover: hover)').matches;
+      if (!isDesktop) return;
+      // Accesibilidad: si el usuario pide menos movimiento, no inicializamos parallax
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      // Configuración por capa: máximo desplazamiento por mouse, factor scroll, profundidad Z
+      const layers = [
+        { sel: '[data-parallax="bg"]',    mouseMax: 20, scrollY: -30, tz: -200 },
+        { sel: '[data-parallax="mid"]',   mouseMax: 40, scrollY: -45, tz: -100 },
+        { sel: '[data-parallax="front"]', mouseMax: 60, scrollY: -60, tz:    0 },
+        { sel: '[data-parallax="ui"]',    mouseMax:  5, scrollY: -10, tz:   50 },
+      ];
+
+      layers.forEach((layer) => {
+        const els = hero.querySelectorAll(layer.sel);
+        if (!els.length) return;
+
+        // Profundidad 3D inicial
+        gsap.set(els, { z: layer.tz, transformPerspective: 1200 });
+
+        // Scroll parallax — yPercent escalado por scrub
+        gsap.to(els, {
+          yPercent: layer.scrollY,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: hero,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: true,
+          },
+        });
+
+        // Mouse parallax — quickTo hace el lerp/suavizado interno (~0.1)
+        layer._setX = gsap.quickTo(els, 'x', { duration: 0.6, ease: 'power3.out' });
+        layer._setY = gsap.quickTo(els, 'y', { duration: 0.6, ease: 'power3.out' });
+      });
+
+      // Listener de mouse: normaliza posición a [-1, 1] y dispara los setters
+      hero.addEventListener('mousemove', (e) => {
+        const r = hero.getBoundingClientRect();
+        const nx = ((e.clientX - r.left) / r.width  - 0.5) * 2;
+        const ny = ((e.clientY - r.top)  / r.height - 0.5) * 2;
+        layers.forEach((l) => {
+          if (l._setX) l._setX(nx * l.mouseMax);
+          if (l._setY) l._setY(ny * l.mouseMax);
+        });
+      });
+
+      // Al salir el mouse: volver al centro suavemente
+      hero.addEventListener('mouseleave', () => {
+        layers.forEach((l) => {
+          if (l._setX) l._setX(0);
+          if (l._setY) l._setY(0);
+        });
+      });
+
+      // Rotación 3D sutil al scrollear (máximo 5deg rotateX)
+      gsap.to('.hero-inner', {
+        rotateX: 5,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: hero,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true,
+        },
+      });
+    })();
+
+    // (Scroll-jacking removido — #mundo ahora usa un grid simple de 4 columnas)
+
+    // ============================================
+    //   MICROINTERACCIONES
+    // ============================================
+    (function initMicroInteractions() {
+      const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // 1) Wrappear flechas "→" para poder animarlas
+      document.querySelectorAll('a, button').forEach((el) => {
+        if (el.children.length === 0 && /→/.test(el.textContent)) {
+          el.classList.add('has-arrow');
+          el.innerHTML = el.innerHTML.replace(/→/g, '<span class="arrow">→</span>');
+        }
+      });
+
+      const buttons = document.querySelectorAll('.btn-pill, .btn-pase, .btn-contact');
+
+      buttons.forEach((btn) => {
+        // 2) Magnético: el botón se inclina hacia el cursor (solo desktop, no en reduced-motion)
+        if (isFinePointer && !reducedMotion) {
+          btn.addEventListener('mousemove', (e) => {
+            const r = btn.getBoundingClientRect();
+            const x = e.clientX - r.left - r.width / 2;
+            const y = e.clientY - r.top  - r.height / 2;
+            gsap.to(btn, {
+              x: x * 0.25,
+              y: y * 0.35,
+              scale: 1.05,
+              duration: 0.4,
+              ease: 'power3.out',
+              overwrite: 'auto',
+            });
+          });
+          btn.addEventListener('mouseleave', () => {
+            gsap.to(btn, {
+              x: 0, y: 0, scale: 1,
+              duration: 0.6,
+              ease: 'elastic.out(1, 0.5)',
+              overwrite: 'auto',
+            });
+          });
+        }
+
+        // 3) Ripple en el click
+        btn.addEventListener('click', (e) => {
+          const r = btn.getBoundingClientRect();
+          const ripple = document.createElement('span');
+          ripple.className = 'btn-ripple';
+          ripple.style.left = (e.clientX - r.left) + 'px';
+          ripple.style.top  = (e.clientY - r.top)  + 'px';
+          btn.appendChild(ripple);
+          setTimeout(() => ripple.remove(), 650);
+        });
+      });
+
+      // 4) NAVBAR: show/hide + transparente / blur
+      const header = document.querySelector('.site-header');
+      const hero = document.querySelector('.hero');
+      if (header) {
+        let lastScroll = 0;
+        const getHeroH = () => (hero ? hero.offsetHeight : 600);
+
+        function updateHeader(scrollY) {
+          // Estilo blur / transparente
+          if (scrollY > getHeroH() * 0.5) header.classList.add('is-scrolled');
+          else header.classList.remove('is-scrolled');
+
+          // Hide al scrollear hacia abajo, show al scrollear hacia arriba
+          if (scrollY > lastScroll && scrollY > 120) {
+            header.classList.add('is-hidden');
+          } else {
+            header.classList.remove('is-hidden');
+          }
+          lastScroll = scrollY;
+        }
+
+        // Si Lenis está activo, usar su evento; si no, scroll nativo
+        if (typeof lenis !== 'undefined' && lenis) {
+          lenis.on('scroll', ({ scroll }) => updateHeader(scroll));
+        } else {
+          window.addEventListener('scroll', () => updateHeader(window.scrollY), { passive: true });
+        }
+      }
+    })();
+  </script>
+
+</body>
+</html>
