@@ -1,0 +1,1717 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alimeythor — Alimenta Tu Alma</title>
+  <link rel="icon" href="assets/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;800;900&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ========================================================
+       RESET + BASE
+    ======================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: auto; overflow-anchor: none; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: #1a1a2e;
+      background: #fff;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    /* Velo del fondo (animable vía variable) */
+    .story-stack__sticky { --veil-opacity: 0; }
+    a { color: inherit; text-decoration: none; }
+    ul { list-style: none; }
+    img { max-width: 100%; display: block; }
+
+    /* ========================================================
+       SISTEMA DE LAYOUT
+       — container: 1100px max, centrado
+       — section-grid: 2 columnas (texto / personaje)
+       — alternancia con .reverse
+    ======================================================== */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    .section {
+      padding: 110px 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .section--white  { background: #fff; }
+    .section--cream  { background: #f7ede0; }
+    .section--navy   { background: #1a1a2e; color: #fff; }
+    .section--final  { background: #E8578A; color: #fff; text-align: center; }
+
+    /* ========================================================
+       TRANSICIONES DE COLOR ENTRE SECCIONES
+       — gradiente de 160px en el tope de cada sección que parte
+         del color de la sección anterior, eliminando el corte rígido.
+    ======================================================== */
+    .section--white + .section--navy {
+      background: linear-gradient(180deg, #ffffff 0%, #1a1a2e 160px, #1a1a2e 100%);
+    }
+    .section--navy + .section--cream {
+      background: linear-gradient(180deg, #1a1a2e 0%, #f7ede0 160px, #f7ede0 100%);
+    }
+    .section--cream + .section--white {
+      background: linear-gradient(180deg, #f7ede0 0%, #ffffff 160px, #ffffff 100%);
+    }
+    .section--white + .section--cream {
+      background: linear-gradient(180deg, #ffffff 0%, #f7ede0 160px, #f7ede0 100%);
+    }
+    .section--cream + .section--final {
+      background: linear-gradient(180deg, #f7ede0 0%, #E8578A 160px, #E8578A 100%);
+    }
+    /* Bottom de la sección final → fade al color del footer */
+    .section--final {
+      background: linear-gradient(180deg, #E8578A 0%, #E8578A calc(100% - 160px), #0f1024 100%);
+    }
+    /* Story-stack (video) → primera sección blanca: fade desde blanco semi-transparente */
+    .story-stack + .section--white {
+      background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, #ffffff 120px, #ffffff 100%);
+    }
+
+    /* Grid 2 columnas: texto + zona del personaje */
+    .section-grid {
+      display: grid;
+      grid-template-columns: 1fr minmax(280px, 340px);
+      gap: 64px;
+      align-items: center;
+      min-height: 480px;
+    }
+    .section-grid.reverse {
+      grid-template-columns: minmax(280px, 340px) 1fr;
+    }
+    .section-grid.reverse .text-block { order: 2; }
+    .section-grid.reverse .char-zone  { order: 1; }
+
+    /* Bloque de texto: centrado vertical Y horizontal dentro de su columna */
+    .text-block {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;             /* centra elementos hijos horizontalmente */
+      text-align: center;              /* centra el texto dentro de cada elemento */
+      gap: 18px;
+    }
+    .text-block .divider { margin-inline: auto; }
+    .text-block p { margin-inline: auto; }
+
+    /* Zona del personaje: espacio reservado, el personaje fijo se posiciona acá */
+    .char-zone {
+      min-height: 380px;
+      position: relative;
+    }
+
+    /* Sección centrada (sin char zone — cards multi-columna) */
+    .section--centered .container { text-align: center; }
+    .section--centered .text-block { align-items: center; text-align: center; max-width: 760px; margin: 0 auto; }
+
+    /* ========================================================
+       TIPOGRAFÍA
+    ======================================================== */
+    .eyebrow {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #E8578A;
+      background: rgba(232, 87, 138, 0.10);
+      padding: 6px 16px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .section--navy .eyebrow { background: rgba(255, 255, 255, 0.08); color: #fbb4cd; }
+
+    h1 {
+      font-size: clamp(36px, 4.5vw, 54px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.6px;
+      color: #1a1a2e;
+    }
+    h2 {
+      font-size: clamp(28px, 3.4vw, 42px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.4px;
+      color: #1a1a2e;
+    }
+    h3 {
+      font-size: 19px;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin-bottom: 6px;
+    }
+    h4 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin-bottom: 8px;
+    }
+    .section--navy h2, .section--navy h3, .section--navy h4 { color: #fff; }
+    .pink { color: #E8578A; }
+    .divider {
+      width: 64px;
+      height: 3px;
+      background: #E8578A;
+      border-radius: 2px;
+      margin: 4px 0 8px;
+    }
+    p {
+      font-size: 16px;
+      color: #6a6a82;
+      line-height: 1.75;
+      max-width: 56ch;
+    }
+    .section--navy p { color: #c8ccdc; }
+    .lead { font-style: italic; }
+
+    /* ========================================================
+       BOTONES
+    ======================================================== */
+    .btn {
+      display: inline-block;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: 0.4px;
+      padding: 14px 28px;
+      border-radius: 999px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.3s ease, background 0.25s ease, color 0.25s ease;
+      white-space: nowrap;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(232, 87, 138, 0.22); }
+    .btn--primary       { background: #E8578A; color: #fff; }
+    .btn--primary:hover { background: #d34277; }
+    .btn--outline       { border-color: #E8578A; color: #E8578A; background: transparent; }
+    .btn--outline:hover { background: #E8578A; color: #fff; }
+    .btn--white         { background: #fff; color: #E8578A; }
+    .btn--outline-w     { border-color: #fff; color: #fff; background: transparent; }
+    .btn--outline-w:hover { background: #fff; color: #E8578A; }
+    .btn-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-top: 8px; }
+
+    /* ========================================================
+       HEADER
+    ======================================================== */
+    .site-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: var(--header-bg, rgba(255,255,255,0.92));
+      border-bottom: 1px solid var(--header-border, rgba(0,0,0,0.06));
+      transform: translateY(0);
+      transition: background 0.4s ease, border-color 0.4s ease, transform 0.35s ease;
+    }
+    .site-header.is-hidden { transform: translateY(-105%); }
+    .header-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 32px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .logo {
+      font-weight: 800; font-size: 22px; letter-spacing: -0.5px;
+      color: var(--header-fg, #1a1a2e);
+      transition: color 0.4s ease;
+    }
+    .nav-desktop { display: flex; gap: 28px; }
+    .nav-desktop a {
+      font-size: 14px; font-weight: 500;
+      color: var(--header-fg-soft, #5a5a72);
+      transition: color 0.4s ease;
+    }
+    .nav-desktop a:hover, .nav-desktop a.active { color: #E8578A; }
+    .header-cta {
+      font-size: 13px; font-weight: 600;
+      padding: 9px 18px; border-radius: 999px;
+      background: var(--header-cta-bg, #1a1a2e);
+      color: var(--header-cta-fg, #fff);
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    /* Temas adaptativos según la sección actual bajo el header */
+    .site-header[data-theme="white"] {
+      --header-bg: #ffffff;
+      --header-border: rgba(0,0,0,0.06);
+      --header-fg: #1a1a2e;
+      --header-fg-soft: #5a5a72;
+      --header-cta-bg: #1a1a2e;
+      --header-cta-fg: #ffffff;
+    }
+    .site-header[data-theme="cream"] {
+      --header-bg: #f7ede0;
+      --header-border: rgba(0,0,0,0.07);
+      --header-fg: #1a1a2e;
+      --header-fg-soft: #5a5a72;
+      --header-cta-bg: #1a1a2e;
+      --header-cta-fg: #ffffff;
+    }
+    .site-header[data-theme="navy"] {
+      --header-bg: #1a1a2e;
+      --header-border: rgba(255,255,255,0.10);
+      --header-fg: #ffffff;
+      --header-fg-soft: #c8ccdc;
+      --header-cta-bg: #E8578A;
+      --header-cta-fg: #ffffff;
+    }
+    .site-header[data-theme="pink"] {
+      --header-bg: #E8578A;
+      --header-border: rgba(255,255,255,0.18);
+      --header-fg: #ffffff;
+      --header-fg-soft: rgba(255,255,255,0.85);
+      --header-cta-bg: #ffffff;
+      --header-cta-fg: #E8578A;
+    }
+    .site-header[data-theme="video"] {
+      --header-bg: rgba(255,255,255,0.65);
+      --header-border: rgba(0,0,0,0.06);
+      --header-fg: #1a1a2e;
+      --header-fg-soft: #5a5a72;
+      --header-cta-bg: #1a1a2e;
+      --header-cta-fg: #ffffff;
+    }
+
+    /* ========================================================
+       TAGS / BADGES (sección Alicia)
+    ======================================================== */
+    .tag-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 4px 0 6px; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(232, 87, 138, 0.10);
+      color: #c9447a;
+    }
+
+    /* ========================================================
+       GRIDS DE CARDS (features, destellos, beneficios, testimonios)
+    ======================================================== */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 48px;
+    }
+    .cards-grid--4 { grid-template-columns: repeat(4, 1fr); }
+    .cards-grid--2 { grid-template-columns: repeat(2, 1fr); max-width: 760px; margin-left: auto; margin-right: auto; }
+
+    .card {
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 18px;
+      padding: 32px 24px;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 18px 36px rgba(0,0,0,0.08); }
+    .section--navy .card { background: #232645; border-color: #2c2f55; color: #fff; }
+    .section--cream .card { background: #fff; }
+    .card-icon {
+      width: 52px; height: 52px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 28px;
+    }
+    .card p  { font-size: 14px; line-height: 1.6; color: #6a6a82; margin: 0 auto; max-width: 220px; }
+    .section--navy .card p { color: #a8acc2; }
+
+    /* Testimonios */
+    .testimonial {
+      background: linear-gradient(135deg, #fde8f1, #fff);
+      border: 1px solid rgba(232,87,138,0.15);
+      border-radius: 20px;
+      padding: 32px;
+      text-align: left;
+    }
+    .testimonial .star { color: #EDBC3B; font-size: 20px; margin-bottom: 12px; display: block; }
+    .testimonial-quote { font-style: italic; color: #1a1a2e; margin-bottom: 14px; font-size: 15px; }
+    .testimonial cite { font-size: 13px; color: #c9447a; font-weight: 600; font-style: normal; }
+
+    /* ========================================================
+       SECCIÓN PASE (pricing)
+    ======================================================== */
+    .pase-card {
+      max-width: 560px;
+      margin: 32px auto 0;
+      background: linear-gradient(180deg, #FFD86B 0%, #EDBC3B 100%);
+      border-radius: 24px;
+      padding: 40px 36px;
+      text-align: center;
+      color: #1a1a2e;
+      box-shadow: 0 22px 50px rgba(237, 188, 59, 0.25);
+    }
+    .pase-card .badge {
+      display: inline-block;
+      background: #1a1a2e;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+    }
+    .pase-card h3 { font-size: 24px; margin-bottom: 8px; }
+    .price-box { background: rgba(255,255,255,0.55); border-radius: 16px; padding: 20px; margin: 18px 0; }
+    .price-tag { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; color: #c9447a; }
+    .price { font-size: 38px; font-weight: 800; margin: 4px 0; }
+    .price-sub { font-size: 13px; color: #5a5a72; margin: 0 auto; }
+    .check-list { text-align: left; margin: 18px 0; }
+    .check-list li {
+      position: relative;
+      padding: 6px 0 6px 28px;
+      font-size: 14px;
+    }
+    .check-list li::before {
+      content: '✓';
+      position: absolute; left: 8px;
+      color: #E8578A;
+      font-weight: 800;
+    }
+
+    /* ========================================================
+       PERSONAJE FLOTANTE
+    ======================================================== */
+    .floating-character {
+      position: fixed;
+      right: 30px;                       /* anchor fijo a 30px del borde derecho */
+      top: 50%;
+      transform: translate3d(0, -50%, 0);
+      z-index: 9999;
+      width: 320px;
+      aspect-ratio: 1024 / 1536;
+      max-width: 30vw;
+      max-height: 70vh;
+      pointer-events: none;
+      user-select: none;
+      will-change: transform;
+      filter: drop-shadow(0 14px 28px rgba(0,0,0,0.22));
+    }
+    .floating-character__bob {
+      width: 100%;
+      height: 100%;
+      will-change: transform;
+      transform: translateZ(0);
+    }
+    .floating-character__img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      pointer-events: auto;
+      -webkit-user-drag: none;
+      cursor: grab;
+      touch-action: none;
+      opacity: 1;
+      transition: opacity 0.1s linear;
+    }
+    .floating-character__img--ghost { opacity: 0; pointer-events: none; }
+    .floating-character.is-dragging .floating-character__img { cursor: grabbing; }
+
+    /* ========================================================
+       FOOTER
+    ======================================================== */
+    .site-footer {
+      background: #0f1024;
+      color: #b8bcd0;
+      padding: 60px 0 30px;
+    }
+    .footer-inner {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 40px;
+      align-items: center;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+    .footer-logo { font-weight: 800; font-size: 24px; color: #fff; }
+    .footer-nav { display: flex; flex-wrap: wrap; gap: 22px; }
+    .footer-nav a { font-size: 13px; transition: color 0.2s; }
+    .footer-nav a:hover { color: #E8578A; }
+    .footer-copy { text-align: center; font-size: 12px; color: #6a6a82; margin-top: 32px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.06); }
+
+    /* ========================================================
+       RESPONSIVE
+    ======================================================== */
+    @media (max-width: 960px) {
+      .nav-desktop { display: none; }
+      .section { padding: 70px 0; }
+      .section-grid, .section-grid.reverse {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        min-height: 0;
+      }
+      .section-grid .char-zone { min-height: 240px; order: 0; }
+      .section-grid .text-block { order: 1; align-items: center !important; text-align: center; }
+      .text-block .divider { margin-inline: auto; }
+      .text-block p { margin-inline: auto; }
+      .btn-group { justify-content: center; }
+      .cards-grid, .cards-grid--4 { grid-template-columns: repeat(2, 1fr); }
+      .floating-character {
+        width: 140px;
+        max-width: 32vw;
+        max-height: 28vh;
+        top: 78px;                       /* debajo del header sticky */
+        right: 10px;
+        transform: none;                 /* el JS no lo toca en mobile */
+        filter: drop-shadow(0 8px 18px rgba(0,0,0,0.18));
+      }
+      .footer-inner { grid-template-columns: 1fr; text-align: center; }
+      .footer-nav { justify-content: center; }
+    }
+    @media (max-width: 560px) {
+      .cards-grid, .cards-grid--4, .cards-grid--2 { grid-template-columns: 1fr; }
+      h1 { font-size: 32px; }
+      h2 { font-size: 26px; }
+    }
+
+    /* ========================================================
+       STORYTELLING — SECCIONES DORMIDAS QUE SE ACTIVAN AL SCROLLEAR
+       ========================================================
+       Cada sección arranca con grayscale + blur + opacity baja.
+       Al scrollear, GSAP scrub anima hacia el estado activo.
+       Bidireccional: al volver para arriba, la sección "se duerme".
+       (En mobile el sistema entero se omite — sección siempre activa.) */
+    .section {
+      position: relative;
+      will-change: filter, opacity;
+      /* La variable --glow se anima vía GSAP para el resplandor mágico */
+      --glow: 0;
+    }
+    /* Glow mágico de fondo (radial) que aparece al activarse */
+    .section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        ellipse 60% 60% at 50% 45%,
+        rgba(232, 87, 138, 0.12) 0%,
+        rgba(237, 188, 59, 0.06) 30%,
+        transparent 70%
+      );
+      opacity: var(--glow);
+      pointer-events: none;
+      z-index: 0;
+      transition: none;
+    }
+    .section--navy::before {
+      background: radial-gradient(
+        ellipse 60% 60% at 50% 45%,
+        rgba(232, 87, 138, 0.18) 0%,
+        rgba(127, 201, 216, 0.08) 35%,
+        transparent 70%
+      );
+    }
+    .section--final::before {
+      background: radial-gradient(
+        ellipse 60% 60% at 50% 45%,
+        rgba(255, 255, 255, 0.18) 0%,
+        transparent 65%
+      );
+    }
+    /* Contenido por encima del glow */
+    .section > * { position: relative; z-index: 1; }
+    /* Helper: la clase .reveal queda neutralizada — el sistema nuevo maneja todo */
+    .reveal { /* las animaciones las hace storytelling, no esta clase */ }
+
+    /* ========================================================
+       STORY STACK — primeras 3 secciones en un solo viewport pineado
+       Mientras el usuario hace scroll, los 3 paneles de texto caen
+       secuencialmente en sus posiciones (top-left, center, bottom-left).
+       Al terminar, el pin se libera y el scroll continúa normal.
+    ======================================================== */
+    .story-stack {
+      position: relative;
+      height: 130vh;                    /* pin breve — los textos aparecen solos al cargar */
+      background: #fff;
+    }
+    .story-stack__sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      width: 100%;
+      overflow: hidden;
+    }
+    .story-stack__bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .story-stack__sticky > .story-panel { z-index: 2; }
+    /* Velo dinámico — empieza invisible, sube tras 2s para aclarar el fondo */
+    .story-stack__sticky::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0.6) 100%);
+      opacity: var(--veil-opacity, 0);
+      transition: opacity 1.2s ease;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .story-stack__sticky.is-lit { --veil-opacity: 1; }
+
+    /* Personaje flotante — oculto hasta que la intro de 2s termina */
+    .floating-character { opacity: 0; transition: opacity 0.8s ease; }
+    .floating-character.is-ready { opacity: 1; }
+    .story-panel {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 0;
+    }
+    /* Panel TOP-LEFT — chico, parte superior izquierda */
+    .story-panel[data-pos="top-left"] {
+      top: 12%;
+      left: calc(7% + 30px);
+      width: 38%;
+      max-width: 460px;
+    }
+    /* Panel CENTER — Hero, ahora reposicionado al cuadrante superior derecho
+       (junto al personaje, según el área marcada en el screenshot) */
+    .story-panel[data-pos="center"] {
+      top: 18%;
+      left: 47%;
+      width: 32%;
+      max-width: 460px;
+      text-align: left;
+    }
+    /* En el panel center, los headings y párrafos respetan el ancho de la caja */
+    .story-panel[data-pos="center"] h1 {
+      font-size: clamp(24px, 2.6vw, 36px);
+      line-height: 1.15;
+    }
+    .story-panel[data-pos="center"] p {
+      font-size: 14px;
+      max-width: 100%;
+    }
+    /* Panel BOTTOM-LEFT — chico, parte inferior izquierda */
+    .story-panel[data-pos="bottom-left"] {
+      bottom: calc(8% + 50px);
+      left: calc(7% + 30px);
+      width: 38%;
+      max-width: 460px;
+    }
+    /* Tipografías más chicas para los paneles laterales */
+    .story-panel[data-pos="top-left"] h2,
+    .story-panel[data-pos="bottom-left"] h2 {
+      font-size: clamp(22px, 2.4vw, 30px);
+    }
+    .story-panel[data-pos="top-left"] p,
+    .story-panel[data-pos="bottom-left"] p {
+      font-size: 14px;
+      max-width: 100%;
+    }
+    .story-panel .btn { font-size: 13px; padding: 11px 22px; }
+
+    /* Texto de los paneles intro en negrita para mejor legibilidad sobre el video */
+    .story-panel h1,
+    .story-panel h2 { font-weight: 900; }
+    .story-panel p {
+      font-weight: 700;
+      color: #1a1a2e;
+      text-shadow: 0 1px 2px rgba(255,255,255,0.55);
+    }
+    .story-panel .eyebrow { font-weight: 800; }
+
+    /* En mobile/tablet — colapsa a un layout simple stacked, sin pin */
+    @media (max-width: 960px) {
+      .story-stack { height: auto; background: transparent; }
+      .story-stack__sticky {
+        position: relative;
+        height: auto;
+        padding: 60px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 60px;
+      }
+      .story-panel {
+        position: relative;
+        top: auto; bottom: auto; left: auto;
+        width: 100%;
+        max-width: 100%;
+        text-align: center;
+        align-items: center;
+      }
+      .story-panel .btn-group { justify-content: center; }
+    }
+  </style>
+
+  <!-- GSAP + ScrollTrigger + Lenis -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+</head>
+<body>
+
+  <!-- ====================== HEADER ====================== -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#" class="logo">Alimeythor</a>
+      <nav class="nav-desktop">
+        <a href="#" class="active">Home</a>
+        <a href="#alicia">Soy Alicia</a>
+        <a href="#">Masterclass</a>
+        <a href="#">Recursos</a>
+        <a href="#mundo">Mundo Alimeythor</a>
+      </nav>
+      <a href="#" class="header-cta">Contactame</a>
+    </div>
+  </header>
+
+  <!-- ====================== STORY STACK (hero + quien + alicia pineadas) ====================== -->
+  <section class="story-stack">
+    <div class="story-stack__sticky">
+
+      <!-- Video de fondo -->
+      <video
+        class="story-stack__bg"
+        autoplay muted loop playsinline preload="auto"
+        disablepictureinpicture disableremoteplayback
+        aria-hidden="true"
+      >
+        <source src="assets/fondo.mp4" type="video/mp4" />
+      </video>
+
+      <!-- Panel 1 — TOP-LEFT: ¿Quién es Alimeythor? -->
+      <article class="story-panel" data-pos="top-left" id="quien">
+        <span class="eyebrow">El Personaje</span>
+        <h2>🫧 ¿Quién es Alimeythor?</h2>
+        <div class="divider"></div>
+        <p>
+          Un personaje nacido de una historia familiar real, creado para acompañar
+          desafíos cotidianos con ternura, humor y magia.
+        </p>
+        <div class="btn-group">
+          <a href="#" class="btn btn--outline">Conocer más sobre su historia</a>
+        </div>
+      </article>
+
+      <!-- Panel 2 — CENTER: Hero (texto principal) -->
+      <article class="story-panel" data-pos="center">
+        <span class="eyebrow">El Mundo Mágico</span>
+        <h1>¿Sentís que las pantallas reemplazan las <span class="pink">emociones reales</span>?</h1>
+        <p class="lead">
+          Descubrí Alimeythor: un malvavisco mágico que acompaña a los niños
+          a explorar sus emociones a través de historias, aventuras y magia.
+        </p>
+        <div class="btn-group">
+          <a href="#quien" class="btn btn--primary">Descubrí quién es Alimeythor</a>
+          <a href="#pase" class="btn btn--outline">Ver el Pase Mágico</a>
+        </div>
+      </article>
+
+      <!-- Panel 3 — BOTTOM-LEFT: Soy Alicia -->
+      <article class="story-panel" data-pos="bottom-left" id="alicia">
+        <span class="eyebrow">La Creadora</span>
+        <h2>Soy Alicia</h2>
+        <div class="divider"></div>
+        <div class="tag-list">
+          <span class="tag">▲ Lic. en Enfermería</span>
+          <span class="tag">★ Madre de 4</span>
+          <span class="tag">🇦🇷 Argentina</span>
+        </div>
+        <p>
+          Madre de cuatro hijos, abuela y Lic. en Enfermería. Más de 30 años acompañando
+          familias en situaciones difíciles. Hoy nació Mundo Alimeythor.
+        </p>
+        <div class="btn-group">
+          <a href="#" class="btn btn--outline">Conocé mi historia completa →</a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ====================== QUÉ VAS A ENCONTRAR ====================== -->
+  <section class="section section--white section--centered" data-char-side="left" data-char-gap="5" data-char-against="edge">
+    <div class="container">
+      <div class="text-block reveal">
+        <span class="eyebrow">El Mundo</span>
+        <h2>Qué vas a encontrar en este mundo</h2>
+        <div class="divider"></div>
+      </div>
+      <div class="cards-grid reveal">
+        <article class="card">
+          <div class="card-icon">📖</div>
+          <h4>El e-book "Misión de Vida"</h4>
+          <p>Una guía práctica para acompañar a tus hijos en el camino de descubrir quiénes son y qué los mueve.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">✨</div>
+          <h4>Mini cuentos exclusivos</h4>
+          <p>Historias breves y mágicas diseñadas para leer juntos en familia, en cualquier momento del día.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">🎨</div>
+          <h4>Talleres para disfrutar en familia</h4>
+          <p>Actividades interactivas que convierten el tiempo en casa en momentos de conexión y aprendizaje.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== MUNDO ALIMEYTHOR ====================== -->
+  <section id="mundo" class="section section--navy section--centered" data-char-side="right" data-char-gap="5" data-char-against="edge" data-char-costume="verano">
+    <div class="container">
+      <div class="text-block reveal">
+        <span class="eyebrow">La Plataforma</span>
+        <h2>💫 ¿Qué es Mundo Alimeythor?</h2>
+        <div class="divider"></div>
+        <p class="lead">
+          Mundo Alimeythor no es solo una plataforma. Es un plan de entrenamiento para el corazón
+          y la mente de los niños. Un espacio donde la magia y las emociones van de la mano,
+          pero no solos, sino juntos en familia.
+        </p>
+        <h3 style="margin-top:32px;">✨ Los 4 Destellos — Temporada 1</h3>
+        <p style="font-style:italic;">Cada destello trabaja una emoción clave con historias, juegos y experiencias.</p>
+      </div>
+
+      <div class="cards-grid cards-grid--4 reveal">
+        <article class="card">
+          <div class="card-icon">🌙</div>
+          <h4>Calma</h4>
+          <p>Herramientas para encontrar la paz interior en medio del caos cotidiano.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">🔍</div>
+          <h4>Curiosidad</h4>
+          <p>Despertar el asombro y las ganas de explorar el mundo con ojos nuevos.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">💗</div>
+          <h4>Empatía</h4>
+          <p>Aprender a ponerse en el lugar del otro y construir vínculos genuinos.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">🦁</div>
+          <h4>Valentía</h4>
+          <p>Enfrentar miedos con confianza y atreverse a ser quien uno es.</p>
+        </article>
+      </div>
+
+      <div class="cards-grid reveal" style="margin-top:32px;">
+        <article class="card">
+          <div class="card-icon">🧘</div>
+          <h4>Zona de Relajación</h4>
+          <p>Mandalas, libros para colorear, historias guiadas y materiales descargables.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">📓</div>
+          <h4>Blog</h4>
+          <p>Un espacio para que vos también crezcas, reflexiones y compartas el camino.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">🎂</div>
+          <h4>Saludo de cumpleaños</h4>
+          <p>Porque cada niño merece sentirse visto y celebrado en su día especial.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== POR QUÉ UNIRSE ====================== -->
+  <section class="section section--cream section--centered" data-char-side="left" data-char-gap="5" data-char-against="edge" data-char-costume="verano">
+    <div class="container">
+      <div class="text-block reveal">
+        <span class="eyebrow">Los Beneficios</span>
+        <h2>Por qué unirse</h2>
+        <div class="divider"></div>
+      </div>
+      <div class="cards-grid cards-grid--2 reveal">
+        <article class="card">
+          <div class="card-icon">📚</div>
+          <h4>Historias exclusivas</h4>
+          <p>Contenido no disponible fuera de la membresía, pensado para cada etapa.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">💗</div>
+          <h4>Acompañamiento emocional simple</h4>
+          <p>Sin tecnicismos — solo herramientas que funcionan en la vida real.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">👨‍👩‍👧</div>
+          <h4>Lecturas probadas en familia</h4>
+          <p>Contenido que ya pasó por hogares reales y generó conexión genuina.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">🌱</div>
+          <h4>Un proyecto vivo que crece cada mes</h4>
+          <p>Nuevo contenido mensual para que la magia nunca se detenga.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== TESTIMONIOS ====================== -->
+  <section class="section section--white section--centered" data-char-side="right" data-char-gap="5" data-char-against="edge" data-char-costume="pileta">
+    <div class="container">
+      <div class="text-block reveal">
+        <span class="eyebrow">Familias Reales</span>
+        <h2>Lo que dicen las familias</h2>
+        <div class="divider"></div>
+      </div>
+      <div class="cards-grid reveal">
+        <div class="testimonial">
+          <span class="star">★</span>
+          <p class="testimonial-quote">"Reemplazar con testimonio real de una familia."</p>
+          <cite>— Nombre, mamá</cite>
+        </div>
+        <div class="testimonial">
+          <span class="star">★</span>
+          <p class="testimonial-quote">"Reemplazar con testimonio real de una familia."</p>
+          <cite>— Nombre, mamá</cite>
+        </div>
+        <div class="testimonial">
+          <span class="star">★</span>
+          <p class="testimonial-quote">"Reemplazar con testimonio real de una familia."</p>
+          <cite>— Nombre, mamá</cite>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== PASE MÁGICO ====================== -->
+  <section id="pase" class="section section--cream section--centered" data-char-side="left" data-char-gap="5" data-char-against="edge" data-char-costume="pileta">
+    <div class="container">
+      <div class="text-block reveal">
+        <span class="eyebrow">El Pase</span>
+        <h2>🔒 Pase Mágico — Temporada 1</h2>
+        <div class="divider"></div>
+        <p>Acceso completo a todo el contenido. Pago único.</p>
+      </div>
+      <div class="pase-card reveal">
+        <span class="badge">Acceso Completo</span>
+        <h3>Pase Mágico Temporada 1</h3>
+        <div class="price-box">
+          <span class="price-tag">Precio de Fundadores</span>
+          <div class="price">$60.000</div>
+          <p class="price-sub">pago único · acceso total por 6 meses</p>
+        </div>
+        <ul class="check-list">
+          <li>Pago único</li>
+          <li>6 meses de acceso total</li>
+          <li>Beneficios exclusivos para fundadores</li>
+          <li>Contenido que no vuelve a este valor</li>
+        </ul>
+        <div class="btn-group" style="justify-content:center;">
+          <a href="#" class="btn btn--primary">🎁 Obtener el Pase Mágico</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== FINAL CTA ====================== -->
+  <section class="section section--final" data-char-side="right" data-char-gap="5" data-char-against="edge" data-char-costume="pileta">
+    <div class="container">
+      <div class="text-block reveal" style="margin: 0 auto; align-items: center;">
+        <h2 style="color:#fff;">La aventura comienza<br/>con una decisión</h2>
+        <p style="color:rgba(255,255,255,0.92); max-width: 540px; margin: 0 auto;">
+          Dale a tu hijo/a una experiencia que lo acompañe a descubrir sus emociones,
+          tomar decisiones y conectar con su mundo interior.
+        </p>
+        <div class="btn-group" style="justify-content:center; margin-top: 18px;">
+          <a href="#" class="btn btn--white">🎁 Obtener el Pase Mágico</a>
+          <a href="#" class="btn btn--outline-w">Probar gratis →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== FOOTER ====================== -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span class="footer-logo">Alimeythor</span>
+      <nav class="footer-nav">
+        <a href="#quien">¿Quién es?</a>
+        <a href="#alicia">Soy Alicia</a>
+        <a href="#mundo">Mundo Alimeythor</a>
+        <a href="#pase">Pase Mágico</a>
+        <a href="#">Contacto</a>
+      </nav>
+    </div>
+    <p class="footer-copy">© 2025 Alimeythor — Alimenta Tu Alma. Todos los derechos reservados.</p>
+  </footer>
+
+  <!-- ====================== PERSONAJE FLOTANTE ======================
+       Estructura por capas (cada una dueña de sus propios transforms):
+       · .floating-character    → scroll position (x/y entre secciones)
+       · .floating-character__bob → idle floating constante (yPercent yoyo)
+       · .floating-character__img → mouse follow + drag (rotación, micro x/y)
+  -->
+  <div class="floating-character" data-floating-character aria-hidden="true">
+    <div class="floating-character__bob" style="position: relative;">
+      <img
+        class="floating-character__img"
+        data-layer="a"
+        src="assets/personajeflotante.png"
+        alt=""
+        loading="eager"
+        decoding="async"
+        draggable="false"
+      />
+      <img
+        class="floating-character__img floating-character__img--ghost"
+        data-layer="b"
+        src="assets/personajeflotante.png"
+        alt=""
+        loading="eager"
+        decoding="async"
+        draggable="false"
+      />
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCRIPTS
+  ============================================================ -->
+  <script>
+    /* ============================================================
+       INTRO — sincronizada y reseteable
+       Cada recarga: scroll al top, video de fondo desde 0,
+       personaje aparece 1s después de que el video arranca.
+       ============================================================ */
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    window.scrollTo(0, 0);
+
+    window.addEventListener('load', () => {
+      window.scrollTo(0, 0);
+
+      const sticky    = document.querySelector('.story-stack__sticky');
+      const character = document.querySelector('[data-floating-character]');
+      const bgVideo   = document.querySelector('.story-stack__bg');
+
+      // Reset visual al estado inicial
+      if (sticky)    sticky.classList.remove('is-lit');
+      if (character) character.classList.remove('is-ready');
+
+      function startTimer() {
+        setTimeout(() => {
+          if (sticky)    sticky.classList.add('is-lit');
+          if (character) character.classList.add('is-ready');
+        }, 1000);
+      }
+
+      if (bgVideo) {
+        try { bgVideo.currentTime = 0; } catch (e) {}
+        const begin = () => startTimer();
+        // Esperar a que el video efectivamente arranque para sincronizar el 1s
+        if (!bgVideo.paused && bgVideo.currentTime > 0) begin();
+        else bgVideo.addEventListener('playing', begin, { once: true });
+        const p = bgVideo.play();
+        if (p && typeof p.catch === 'function') p.catch(() => startTimer());
+        // Failsafe: si el video no arranca en 1.5s, igual mostrar el personaje
+        setTimeout(() => { if (bgVideo.paused) startTimer(); }, 1500);
+      } else {
+        startTimer();
+      }
+    });
+
+    /* ============================================================
+       HEADER AUTO-HIDE — se oculta al scrollear hacia abajo,
+       reaparece al scrollear hacia arriba o al acercar el mouse al tope.
+       ============================================================ */
+    (function () {
+      const header = document.querySelector('.site-header');
+      if (!header) return;
+
+      let lastY = window.scrollY;
+      const DELTA = 6;     // umbral mínimo de scroll para reaccionar
+      const TOP_ZONE = 80; // px desde el tope donde el mouse muestra el header
+
+      function update() {
+        const y = window.scrollY;
+        const diff = y - lastY;
+        if (Math.abs(diff) < DELTA) return;
+        if (y < 60) {
+          header.classList.remove('is-hidden');
+        } else if (diff > 0) {
+          header.classList.add('is-hidden');     // scroll down
+        } else {
+          header.classList.remove('is-hidden');  // scroll up
+        }
+        lastY = y;
+      }
+
+      let scheduled = false;
+      window.addEventListener('scroll', () => {
+        if (scheduled) return;
+        scheduled = true;
+        requestAnimationFrame(() => { scheduled = false; update(); });
+      }, { passive: true });
+
+      // Mouse cerca del tope → revelar
+      window.addEventListener('mousemove', (e) => {
+        if (e.clientY <= TOP_ZONE) header.classList.remove('is-hidden');
+      }, { passive: true });
+    })();
+
+    /* ============================================================
+       HEADER ADAPTATIVO — copia el color de la sección bajo el header
+       ============================================================ */
+    (function () {
+      const header = document.querySelector('.site-header');
+      if (!header) return;
+      const headerH = header.offsetHeight || 70;
+
+      function themeFor(section) {
+        if (!section) return 'white';
+        if (section.classList.contains('story-stack')) return 'video';
+        if (section.classList.contains('section--cream')) return 'cream';
+        if (section.classList.contains('section--navy'))  return 'navy';
+        if (section.classList.contains('section--final')) return 'pink';
+        return 'white';
+      }
+
+      const sections = Array.from(document.querySelectorAll('.story-stack, .section'));
+      let current = null;
+
+      function update() {
+        const probeY = headerH + 4; // un poco bajo el borde del header
+        let hit = null;
+        for (const s of sections) {
+          const r = s.getBoundingClientRect();
+          if (r.top <= probeY && r.bottom > probeY) { hit = s; break; }
+        }
+        const theme = themeFor(hit);
+        if (theme !== current) {
+          current = theme;
+          header.setAttribute('data-theme', theme);
+        }
+      }
+
+      let scheduled = false;
+      function onScroll() {
+        if (scheduled) return;
+        scheduled = true;
+        requestAnimationFrame(() => { scheduled = false; update(); });
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll);
+      update();
+    })();
+
+    /* ===== Lenis smooth scroll integrado con ScrollTrigger ===== */
+    let lenis = null;
+    try {
+      gsap.registerPlugin(ScrollTrigger);
+      if (typeof Lenis !== 'undefined') {
+        lenis = new Lenis({
+          duration: 1.2,
+          easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          smoothWheel: true,
+          smoothTouch: false
+        });
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add(t => lenis.raf(t * 1000));
+        gsap.ticker.lagSmoothing(0);
+        // Forzar arranque en 0 sin la animación inicial de Lenis
+        lenis.scrollTo(0, { immediate: true, force: true });
+      }
+    } catch (e) { console.warn('Lenis fail:', e); }
+
+    /* ============================================================
+       STORY STACK — paneles que caen secuencialmente durante el pin
+       ============================================================
+       El .story-stack mide 300vh. Su contenido (.story-stack__sticky)
+       queda pineado al top mientras se hace scroll por sus 300vh.
+       Cada panel cae desde arriba en su tercio correspondiente del scroll.
+    */
+    (function () {
+      if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+      const isMobile = window.matchMedia('(max-width: 960px)').matches;
+      if (isMobile) return; // mobile: layout simple en flujo normal, sin pin
+
+      const stack  = document.querySelector('.story-stack');
+      const panels = stack && stack.querySelectorAll('.story-panel');
+      if (!stack || !panels || panels.length !== 3) return;
+
+      // Estado inicial: paneles invisibles y desplazados HACIA ARRIBA + escala chica
+      gsap.set(panels, { opacity: 0, y: -120, scale: 0.92 });
+
+      // Flujo:
+      //  1) Carga la web → video de fondo + personaje a 1s (intro)
+      //  2) Cada scroll del usuario revela UN panel (1° CENTER, 2° TOP-LEFT, 3° BOTTOM-LEFT)
+      //  3) Cuando los 3 están visibles, el scroll vuelve a ser normal
+      // Mientras tanto, el scroll real está bloqueado para que la web no avance.
+      const order = [panels[1], panels[0], panels[2]];
+      let shown = 0;
+      let lastTrigger = 0;
+      const COOLDOWN = 550; // ms — evita que un solo wheel cuente como varios
+
+      function revealNext() {
+        const now = performance.now();
+        if (now - lastTrigger < COOLDOWN) return false;
+        if (shown >= order.length) return false;
+        lastTrigger = now;
+        gsap.to(order[shown], {
+          opacity: 1, y: 0, scale: 1,
+          duration: 0.7, ease: 'power3.out'
+        });
+        shown++;
+        if (shown >= order.length) unlock();
+        return true;
+      }
+
+      // Bloqueo del scroll mientras quedan paneles por revelar
+      function lockKeys(e) {
+        if (shown >= order.length) return;
+        const keys = [' ', 'PageDown', 'PageUp', 'ArrowDown', 'ArrowUp', 'Home', 'End'];
+        if (keys.includes(e.key)) { e.preventDefault(); revealNext(); }
+      }
+      function lockWheel(e) {
+        if (shown >= order.length) return;
+        e.preventDefault();
+        revealNext();
+      }
+      let touchStartY = 0;
+      function onTouchStart(e) { touchStartY = e.touches[0].clientY; }
+      function lockTouch(e) {
+        if (shown >= order.length) return;
+        e.preventDefault();
+        const dy = touchStartY - e.touches[0].clientY;
+        if (Math.abs(dy) > 8) revealNext();
+      }
+
+      window.addEventListener('wheel',      lockWheel, { passive: false });
+      window.addEventListener('touchstart', onTouchStart, { passive: true });
+      window.addEventListener('touchmove',  lockTouch, { passive: false });
+      window.addEventListener('keydown',    lockKeys);
+
+      // Lenis: pausar mientras el lock está activo, reanudar al terminar
+      if (window.lenis && typeof window.lenis.stop === 'function') window.lenis.stop();
+      else if (typeof lenis !== 'undefined' && lenis && lenis.stop) lenis.stop();
+
+      function unlock() {
+        window.removeEventListener('wheel',      lockWheel);
+        window.removeEventListener('touchmove',  lockTouch);
+        window.removeEventListener('keydown',    lockKeys);
+        try { (window.lenis || lenis).start(); } catch (e) {}
+      }
+
+      ScrollTrigger.refresh();
+    })();
+
+    /* ============================================================
+       STORYTELLING — Sistema "secciones dormidas" bidireccional
+       ============================================================
+       Cada sección arranca dormida (grayscale + blur + opacity baja).
+       Al entrar al viewport (top 80%) → la sección se "enciende"
+       progresivamente con scrub: textos aparecen escalonados, el glow
+       de fondo se intensifica, los colores se saturan.
+       Al scrollear hacia arriba → la sección se "duerme" de vuelta
+       (el mismo proceso pero en reversa).
+       En mobile (≤960px) → todo el sistema se omite, sección siempre activa.
+    */
+    (function () {
+      if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+      const isMobile = window.matchMedia('(max-width: 960px)').matches;
+      if (isMobile) return; // mobile: todo activo siempre, sin filtros
+
+      const sections = Array.from(document.querySelectorAll('.section'));
+      if (!sections.length) return;
+
+      sections.forEach((section) => {
+        // Detectar elementos clave dentro de la sección para el reveal escalonado.
+        const heading     = section.querySelector('h1, h2');
+        const eyebrow     = section.querySelector('.eyebrow');
+        const divider     = section.querySelector('.divider');
+        const paragraphs  = section.querySelectorAll('.text-block p');
+        const tags        = section.querySelector('.tag-list');
+        const buttons     = section.querySelectorAll('.btn-group, .pase-card .btn');
+        const cards       = section.querySelectorAll('.card, .testimonial, .pase-card');
+
+        // Timeline scrubbeada bidireccional. Trigger RETRASADO: la sección
+        // empieza a revelarse cuando su top llega al 55% del viewport
+        // (suficientemente arriba para que el personaje ya esté en su
+        // anchor lateral). Termina al 5% (sección casi al tope).
+        const tl = gsap.timeline({
+          defaults: { ease: 'power3.out', duration: 1 },
+          scrollTrigger: {
+            trigger: section,
+            start:   'top 55%',
+            end:     'top 5%',
+            scrub:   1.2,
+            invalidateOnRefresh: true
+          }
+        });
+
+        // === FASE 1 (timeline 0.0 – 1.0): el personaje llega ===
+        // Solo se despierta el fondo: grayscale → color, glow se enciende.
+        // El CONTENIDO sigue invisible. Esto le da tiempo al personaje
+        // a posicionarse en su anchor antes de que aparezca cualquier texto.
+        tl.fromTo(section,
+          { filter: 'grayscale(1) blur(4px)', opacity: 0.4, '--glow': 0 },
+          { filter: 'grayscale(0) blur(0px)', opacity: 1,   '--glow': 1, duration: 1.0 },
+          0
+        );
+
+        // === FASE 2 (timeline 1.0 +): rompecabezas, piezas snap into place ===
+        // Cada elemento entra desde una dirección distinta con back.out,
+        // dando sensación de piezas que encajan en su lugar.
+
+        // Eyebrow → entra desde la IZQUIERDA, rotando
+        if (eyebrow) {
+          tl.fromTo(eyebrow,
+            { opacity: 0, x: -50, rotation: -8 },
+            { opacity: 1, x: 0, rotation: 0, duration: 0.6, ease: 'back.out(1.7)' },
+            1.0
+          );
+        }
+
+        // Título → escala desde 0.6 con leve rotación (efecto "aparece de la nada")
+        if (heading) {
+          tl.fromTo(heading,
+            { opacity: 0, scale: 0.6, rotation: -3, transformOrigin: '50% 100%' },
+            { opacity: 1, scale: 1, rotation: 0, duration: 0.9, ease: 'back.out(1.6)' },
+            1.15
+          );
+        }
+
+        // Divider → escala horizontal desde el centro
+        if (divider) {
+          tl.fromTo(divider,
+            { scaleX: 0, transformOrigin: '50% 50%', opacity: 0 },
+            { scaleX: 1, opacity: 1, duration: 0.5, ease: 'power2.out' },
+            1.35
+          );
+        }
+
+        // Tags → cada una desde un ángulo distinto, con rebote
+        if (tags) {
+          tl.fromTo(tags.children,
+            { opacity: 0, scale: 0, rotation: -25, transformOrigin: '50% 100%' },
+            { opacity: 1, scale: 1, rotation: 0, duration: 0.55, stagger: 0.1, ease: 'back.out(2)' },
+            1.45
+          );
+        }
+
+        // Párrafos → entran desde abajo, escalonados
+        if (paragraphs.length) {
+          tl.fromTo(paragraphs,
+            { opacity: 0, y: 35, scale: 0.95 },
+            { opacity: 1, y: 0, scale: 1, duration: 0.7, stagger: 0.12, ease: 'power3.out' },
+            1.55
+          );
+        }
+
+        // Botones → pop con rebote pronunciado
+        if (buttons.length) {
+          tl.fromTo(buttons,
+            { opacity: 0, scale: 0, rotation: 15 },
+            { opacity: 1, scale: 1, rotation: 0, duration: 0.7, stagger: 0.1, ease: 'back.out(2.2)' },
+            1.75
+          );
+        }
+
+        // Cards → ALTERNAN dirección (zig-zag puzzle): par desde izq, impar desde der.
+        if (cards.length) {
+          cards.forEach((card, i) => {
+            const fromX = i % 2 === 0 ? -60 : 60;
+            tl.fromTo(card,
+              { opacity: 0, x: fromX, y: 30, rotation: i % 2 === 0 ? -4 : 4, scale: 0.9 },
+              { opacity: 1, x: 0, y: 0, rotation: 0, scale: 1, duration: 0.8, ease: 'back.out(1.5)' },
+              1.6 + i * 0.12
+            );
+          });
+        }
+      });
+
+      ScrollTrigger.refresh();
+    })();
+
+    /* ============================================================
+       SISTEMA DE PERSONAJE FLOTANTE — config-driven por atributos
+       ============================================================
+       Cada <section> declara su propio anchor:
+         data-char-side    = "left" | "right"
+         data-char-gap     = px (separación al texto o al borde)
+         data-char-against = "text" | "edge"
+
+       Layout de capas:
+         .floating-character    → SCROLL position (x, y entre secciones)
+         .floating-character__bob → IDLE floating (yPercent yoyo)
+         .floating-character__img → MOUSE follow + DRAG (rotación, micro x/y)
+
+       No hay conflictos de transforms porque cada propiedad vive en
+       un elemento distinto.
+    ============================================================ */
+    (function () {
+      const el  = document.querySelector('[data-floating-character]');
+      const bob = el && el.querySelector('.floating-character__bob');
+      if (!el || !bob) return;
+
+      const RIGHT_ANCHOR = 30; // CSS: .floating-character { right: 30px }
+
+      // Mide los bordes REALES del texto rendereado dentro del .text-block,
+      // usando Range API (que da el ancho del texto visible, no del contenedor).
+      // Esto hace que la posición del personaje sea consistente en cualquier
+      // tamaño de pantalla — siempre relativa al texto, nunca al viewport.
+      const TEXT_NODES_SELECTOR = 'h1, h2, h3, h4, p, .eyebrow, .btn, .tag';
+      function getTextEdges(textBlock) {
+        if (!textBlock) return null;
+        let minLeft = Infinity, maxRight = -Infinity;
+        textBlock.querySelectorAll(TEXT_NODES_SELECTOR).forEach((node) => {
+          if (!node.textContent.trim()) return;
+          try {
+            const range = document.createRange();
+            range.selectNodeContents(node);
+            const r = range.getBoundingClientRect();
+            if (!r.width) return;
+            if (r.left  < minLeft)  minLeft  = r.left;
+            if (r.right > maxRight) maxRight = r.right;
+          } catch (e) {}
+        });
+        if (minLeft === Infinity) {
+          const r = textBlock.getBoundingClientRect();
+          return { left: r.left, right: r.right };
+        }
+        return { left: minLeft, right: maxRight };
+      }
+
+      // Calcula el xPercent target: personaje a `gap` px del borde del TEXTO,
+      // del lado declarado por data-char-side. Sin dependencia del viewport.
+      function anchorXPercent(section) {
+        const side = section.dataset.charSide   || 'right';
+        const gap  = parseInt(section.dataset.charGap || '5', 10);
+
+        const vw  = window.innerWidth;
+        const elW = el.offsetWidth || 320;
+        const currentLeft = vw - RIGHT_ANCHOR - elW;
+
+        const textBlock = section.querySelector('.text-block');
+        const edges     = getTextEdges(textBlock);
+
+        let targetLeft;
+        if (edges) {
+          targetLeft = side === 'left'
+            ? edges.left  - gap - elW
+            : edges.right + gap;
+        } else {
+          // Fallback: borde del viewport
+          targetLeft = side === 'left' ? gap : vw - gap - elW;
+        }
+
+        const xp = ((targetLeft - currentLeft) / elW) * 100;
+        console.log(`📍 ${section.id || section.className.split(' ')[1]} | side=${side} gap=${gap} | textEdges=[${edges ? Math.round(edges.left)+','+Math.round(edges.right) : '—'}] → targetLeft=${Math.round(targetLeft)}px xPercent=${xp.toFixed(1)}%`);
+        return xp;
+      }
+
+      // Alineación vertical: centro del personaje = centro del bloque de texto.
+      function anchorYOffset(section) {
+        const textBlock = section.querySelector('.text-block');
+        if (!textBlock) return 0;
+        const secRect = section.getBoundingClientRect();
+        const txtRect = textBlock.getBoundingClientRect();
+        const txtCenterFromSecTop = (txtRect.top - secRect.top) + txtRect.height / 2;
+        return txtCenterFromSecTop - secRect.height / 2;
+      }
+
+      function start() {
+        if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+        const isMobile = window.matchMedia('(max-width: 960px)').matches;
+
+        const sections = Array.from(document.querySelectorAll('.section[data-char-side]'));
+        if (!sections.length) return;
+
+        // Baseline del transform (matches CSS top:50%)
+        gsap.set(el, { xPercent: 0, yPercent: -50, force3D: true });
+
+        // ===== Idle floating constante sobre .bob =====
+        // Bobbing sutil que NO compite con scroll (que vive en el wrapper)
+        // ni con mouse follow (que vive en el img).
+        gsap.to(bob, {
+          y: '+=12',
+          duration: 2.8,
+          ease: 'sine.inOut',
+          repeat: -1,
+          yoyo: true
+        });
+
+        // Personaje ANCLADO al lateral derecho (CSS: right: 30px; top: 50%).
+        // Ya no se mueve automáticamente con el scroll — solo el usuario
+        // puede moverlo arrastrándolo (sistema de drag & throw más abajo).
+        // Mantenemos activos: idle floating, mouse follow (cabeza/ojos),
+        // y drag & throw. Cuando soltás después de arrastrar, vuelve a su
+        // posición fija al hacer scroll.
+
+        ScrollTrigger.refresh();
+      }
+
+      if (document.readyState === 'complete') start();
+      else window.addEventListener('load', start, { once: true });
+    })();
+
+    /* ===== Mouse follow sobre AMBAS capas de img (a y b) =====
+       Tiene que aplicar a las dos porque el costume swap intercambia
+       cuál capa está visible. Si solo animáramos una, después del
+       primer swap el sprite visible quedaría sin movimiento de cabeza.
+    */
+    (function () {
+      const wrap = document.querySelector('[data-floating-character]');
+      const imgs = wrap && wrap.querySelectorAll('.floating-character__img');
+      if (!wrap || !imgs || !imgs.length) return;
+
+      const MAX = { rotation: 6, x: 10, y: 8 };
+      gsap.set(imgs, { transformOrigin: '50% 30%', force3D: true });
+      const setRot = gsap.quickTo(imgs, 'rotation', { duration: 0.6, ease: 'power3.out' });
+      const setX   = gsap.quickTo(imgs, 'x',        { duration: 0.5, ease: 'power3.out' });
+      const setY   = gsap.quickTo(imgs, 'y',        { duration: 0.5, ease: 'power3.out' });
+
+      let nx = 0, ny = 0, rafId = 0;
+      window.addEventListener('mousemove', (e) => {
+        nx = Math.max(-1, Math.min(1, (e.clientX - innerWidth/2) / (innerWidth/2)));
+        ny = Math.max(-1, Math.min(1, (e.clientY - innerHeight/2) / (innerHeight/2)));
+        if (!rafId) rafId = requestAnimationFrame(() => {
+          rafId = 0;
+          const easeFn = v => Math.sign(v) * Math.pow(Math.abs(v), 0.8);
+          setRot(easeFn(nx) * MAX.rotation);
+          setX(easeFn(nx) * MAX.x);
+          setY(easeFn(ny) * MAX.y);
+        });
+      }, { passive: true });
+
+      document.addEventListener('mouseleave', () => { setRot(0); setX(0); setY(0); });
+    })();
+
+    /* ============================================================
+       COSTUME SWAP — el personaje cambia de disfraz al entrar a
+       secciones marcadas con data-char-costume="verano|pileta".
+       Si la sección no declara disfraz, vuelve al sprite default.
+       ============================================================ */
+    (function () {
+      const wrap = document.querySelector('[data-floating-character]');
+      const imgs = wrap && wrap.querySelectorAll('.floating-character__img');
+      if (!wrap || !imgs || imgs.length < 2) return;
+
+      const V = 'v2';
+      const COSTUMES = {
+        default: 'assets/personajeflotante.png',
+        verano:  'assets/disfrazverano.png?' + V,
+        pileta:  'assets/disfrazpileta.png?' + V
+      };
+
+      // Preload para que el swap sea instantáneo
+      Object.values(COSTUMES).forEach((src) => { const i = new Image(); i.src = src; });
+
+      // Dos capas: active = visible, ghost = oculta. Se intercambian en cada swap.
+      let active = imgs[0];   // .floating-character__img
+      let ghost  = imgs[1];   // .floating-character__img--ghost
+      let currentCostume = 'default';
+
+      function swapTo(costume) {
+        if (costume === currentCostume) return;
+        const src = COSTUMES[costume] || COSTUMES.default;
+        currentCostume = costume;
+
+        // Cargar el nuevo sprite en la capa ghost ANTES de revelarla
+        const onReady = () => {
+          // Crossfade instantáneo (no hay gap blanco)
+          ghost.classList.remove('floating-character__img--ghost');
+          active.classList.add('floating-character__img--ghost');
+          const tmp = active; active = ghost; ghost = tmp;
+        };
+
+        if (ghost.src.endsWith(src) && ghost.complete) {
+          onReady();
+        } else {
+          ghost.onload = onReady;
+          ghost.src = src;
+          // Failsafe: si ya está cacheada y onload no dispara
+          if (ghost.complete) requestAnimationFrame(onReady);
+        }
+      }
+
+      // ============================================================
+      // Detección PRECISA: qué sección contiene el centro del personaje.
+      // Trigger exacto cuando el borde de la sección cruza el centro
+      // del sprite — no por threshold de IntersectionObserver.
+      // ============================================================
+      const sections = Array.from(document.querySelectorAll('.section[data-char-costume], .section, .story-stack'));
+      if (!sections.length) return;
+
+      let scheduled = false;
+      function check() {
+        scheduled = false;
+        const wrapRect = wrap.getBoundingClientRect();
+        const charCenterY = wrapRect.top + wrapRect.height / 2;
+        let containing = null;
+        for (const s of sections) {
+          const r = s.getBoundingClientRect();
+          if (r.top <= charCenterY && r.bottom > charCenterY) {
+            containing = s;
+            break;
+          }
+        }
+        if (!containing) return;
+        const costume = containing.dataset.charCostume || 'default';
+        swapTo(costume);
+      }
+      function onScroll() {
+        if (scheduled) return;
+        scheduled = true;
+        requestAnimationFrame(check);
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll);
+      check();
+    })();
+
+    /* ===== Drag & throw =====
+       Listener de pointerdown enganchado a AMBAS capas — el costume
+       swap intercambia cuál es la activa, así que si solo escuchamos
+       en la original, después del primer swap no se puede agarrar.
+    */
+    (function () {
+      const wrap = document.querySelector('[data-floating-character]');
+      const imgs = wrap && wrap.querySelectorAll('.floating-character__img');
+      if (!wrap || !imgs || !imgs.length) return;
+      const img = imgs[0]; // referencia "principal" para src swap direccional
+
+      // Constantes geométricas: margen al borde y assets direccionales
+      const EDGE = 30;
+      const SRC = {
+        derecha:   'assets/derecha.png',
+        izquierda: 'assets/izquierda.png',
+        arriba:    'assets/arriba.png',
+        abajo:     'assets/abajo.png',
+        default:   'assets/personajeflotante.png'
+      };
+
+      // Preloading de las 4 imágenes direccionales para evitar flash al cambiar src
+      Object.values(SRC).forEach((src) => { const i = new Image(); i.src = src; });
+
+      const setX   = gsap.quickSetter(wrap, 'x', 'px');
+      const setY   = gsap.quickSetter(wrap, 'y', 'px');
+      const setRot = gsap.quickSetter(wrap, 'rotation', 'deg');
+
+      let dragging = false, startMX=0, startMY=0, baseX=0, baseY=0;
+      let curX=0, curY=0, lastX=0, lastY=0, velX=0, velY=0;
+
+      const onPointerDown = (e) => {
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        dragging = true;
+        wrap.classList.add('is-dragging');
+        const target = e.currentTarget;
+        target.setPointerCapture && target.setPointerCapture(e.pointerId);
+        activePointerTarget = target;
+        baseX = gsap.getProperty(wrap, 'x');
+        baseY = gsap.getProperty(wrap, 'y');
+        curX = lastX = baseX; curY = lastY = baseY; velX = velY = 0;
+        startMX = e.clientX; startMY = e.clientY;
+        gsap.killTweensOf(wrap, 'x,y,rotation');
+        e.preventDefault();
+      };
+      let activePointerTarget = null;
+      imgs.forEach((i) => i.addEventListener('pointerdown', onPointerDown));
+
+      window.addEventListener('pointermove', (e) => {
+        if (!dragging) return;
+        const dx = e.clientX - startMX, dy = e.clientY - startMY;
+        lastX = curX; lastY = curY;
+        curX = baseX + dx; curY = baseY + dy;
+        velX = curX - lastX; velY = curY - lastY;
+        setX(curX); setY(curY);
+        setRot(Math.max(-22, Math.min(22, velX * 0.55)));
+      });
+
+      // Determina el cuadrante donde quedó y devuelve el target + imagen.
+      // Eje dominante (cuál distancia desde el centro es mayor) define la dirección.
+      function resolveSnap() {
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const elW = wrap.offsetWidth  || 320;
+        const elH = wrap.offsetHeight || 480;
+
+        // Baseline = posición top-left cuando x=0, y=0 (CSS: right:30, top:50% + translateY(-50%))
+        const baselineLeft = vw - EDGE - elW;
+        const baselineTop  = vh / 2 - elH / 2;
+
+        // Centro actual del personaje (después del drag)
+        const cx = baselineLeft + curX + elW / 2;
+        const cy = baselineTop  + curY + elH / 2;
+
+        const isLeft = cx < vw / 2;
+        const isTop  = cy < vh / 2;
+        const dx = cx - vw / 2;
+        const dy = cy - vh / 2;
+        const horizontalDominant = Math.abs(dx) > Math.abs(dy);
+
+        // Imagen apuntando al CENTRO
+        let src;
+        if (horizontalDominant) {
+          src = isLeft ? SRC.derecha : SRC.izquierda;
+        } else {
+          src = isTop  ? SRC.abajo   : SRC.arriba;
+        }
+
+        // Esquina target (top-left coords)
+        const targetLeft = isLeft ? EDGE : (vw - EDGE - elW);
+        const targetTop  = isTop  ? EDGE : (vh - EDGE - elH);
+
+        return {
+          src,
+          targetX: targetLeft - baselineLeft,
+          targetY: targetTop  - baselineTop
+        };
+      }
+
+      function release(e) {
+        if (!dragging) return;
+        dragging = false;
+        wrap.classList.remove('is-dragging');
+        const t = activePointerTarget || img;
+        try { t.releasePointerCapture && t.releasePointerCapture(e.pointerId); } catch (err) {}
+        activePointerTarget = null;
+
+        const snap = resolveSnap();
+        // Swap direccional aplicado a AMBAS capas para que la visible
+        // siempre tenga la dirección correcta tras el throw.
+        imgs.forEach((i) => { i.src = snap.src; });
+
+        // Animación de imantación a la esquina del cuadrante
+        gsap.to(wrap, {
+          x: snap.targetX,
+          y: snap.targetY,
+          rotation: 0,
+          duration: 0.7,
+          ease: 'power3.out'
+        });
+      }
+      window.addEventListener('pointerup',     release);
+      window.addEventListener('pointercancel', release);
+    })();
+  </script>
+
+</body>
+</html>
