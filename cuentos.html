@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cuentos — Alimeythor</title>
+  <link rel="icon" href="./favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: #1a1a2e;
+      background: linear-gradient(180deg, #fff5f5 0%, #ffe5e5 100%);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    .back-bar {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      z-index: 10;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      background: #E63946;
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      border-radius: 999px;
+      box-shadow: 0 8px 20px rgba(230,57,70,0.35);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .back-btn--ghost {
+      background: #fff;
+      color: #E63946;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.10);
+    }
+    .back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(230,57,70,0.45);
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 100px 32px 80px;
+      text-align: center;
+    }
+    .eyebrow {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #E63946;
+      background: rgba(230,57,70,0.10);
+      padding: 6px 16px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    h1 {
+      font-size: clamp(32px, 4.4vw, 54px);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.6px;
+      margin-bottom: 14px;
+    }
+    h1 .accent { color: #E63946; }
+    .sub {
+      font-size: clamp(15px, 1vw, 18px);
+      color: #6a6a82;
+      max-width: 620px;
+      margin: 0 auto 60px;
+      line-height: 1.65;
+    }
+
+    .stories {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .story {
+      background: #fff;
+      border-radius: 24px;
+      padding: 36px 24px;
+      box-shadow: 0 18px 36px rgba(0,0,0,0.08), 0 4px 0 rgba(230,57,70,0.06);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      text-align: center;
+    }
+    .story:hover {
+      transform: translateY(-6px) scale(1.03);
+      box-shadow: 0 28px 50px rgba(230,57,70,0.18), 0 8px 0 rgba(230,57,70,0.10);
+    }
+    .story-emoji {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: rgba(230,57,70,0.10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+    .story:hover .story-emoji {
+      background: rgba(230,57,70,0.20);
+      transform: scale(1.08);
+    }
+    .story-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #1a1a2e;
+      line-height: 1.25;
+    }
+    .story-cta {
+      margin-top: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #E63946;
+      letter-spacing: 0.3px;
+    }
+
+    @media (max-width: 900px) {
+      .stories { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .stories { grid-template-columns: 1fr; }
+      .wrap { padding: 100px 20px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="back-bar">
+    <a href="./biblioteca.html" class="back-btn">← Volver a Biblioteca</a>
+    <a href="./index.html" class="back-btn back-btn--ghost" onclick="try{sessionStorage.setItem('alm_return','que-es');}catch(e){}">Ir a Alimeythor</a>
+  </div>
+
+  <div class="wrap">
+    <span class="eyebrow">Cuentos</span>
+    <h1>Historias para <span class="accent">leer en familia</span></h1>
+    <p class="sub">Seis cuentos pensados para acompañar emociones, hábitos y vínculos. Clickeá uno para empezar.</p>
+
+    <div class="stories">
+      <a href="./cuento-bano-magico.html" class="story">
+        <div class="story-emoji">🛁</div>
+        <div class="story-title">El Baño Mágico</div>
+        <span class="story-cta">Leer cuento →</span>
+      </a>
+      <a href="./cuento-sonrisa-magica.html" class="story">
+        <div class="story-emoji">😊</div>
+        <div class="story-title">La Sonrisa Mágica</div>
+        <span class="story-cta">Leer cuento →</span>
+      </a>
+      <a href="./cuento-respeto-y-amor.html" class="story">
+        <div class="story-emoji">💗</div>
+        <div class="story-title">Respeto y Amor</div>
+        <span class="story-cta">Leer cuento →</span>
+      </a>
+      <a href="./cuento-oveja-negra.html" class="story">
+        <div class="story-emoji">🐑</div>
+        <div class="story-title">La Oveja Negra</div>
+        <span class="story-cta">Leer cuento →</span>
+      </a>
+      <a href="./cuento-frasco-brillante.html" class="story">
+        <div class="story-emoji">✨</div>
+        <div class="story-title">El Frasco Brillante</div>
+        <span class="story-cta">Leer cuento →</span>
+      </a>
+      <a href="./cuento-gran-misterio-bano.html" class="story">
+        <div class="story-emoji">🔍</div>
+        <div class="story-title">El Gran Misterio del Baño</div>
+        <span class="story-cta">Leer cuento →</span>
+      </a>
+    </div>
+  </div>
+
+</body>
+</html>
