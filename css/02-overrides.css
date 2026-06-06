@@ -236,12 +236,14 @@
        ======================================================== */
     h1, h2, h3, h4,
     .story-panel h1, .story-panel h2,
+    .hero-burbuja,
     .com-modal h2,
     .footer-logo, .logo,
     .btn {
       font-family: 'Chewy', 'Poppins', sans-serif;
       letter-spacing: 0.5px;
     }
+    .hero-burbuja { font-weight: 400 !important; }
     /* Compensar el peso natural de Chewy (no necesita 900) */
     h1, h2, h3, h4 { font-weight: 400 !important; }
     .story-panel h1, .story-panel h2 { font-weight: 400 !important; }
