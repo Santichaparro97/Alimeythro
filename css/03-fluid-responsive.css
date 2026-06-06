@@ -1,0 +1,317 @@
+    /* ========================================================
+       PRIORIDAD 3 — Cards más generosas + ícono enmarcado
+       ======================================================== */
+    .card {
+      padding: 38px 28px;
+      border-radius: 22px;
+      transition: transform 0.3s ease,
+                  box-shadow 0.3s ease,
+                  border-color 0.3s ease;
+    }
+    .card-icon {
+      width: 68px;
+      height: 68px;
+      border-radius: 20px;
+      background: rgba(248, 35, 28,0.10);
+      font-size: 34px;
+      margin: 0 auto 20px;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+    .card:hover {
+      border-color: rgba(248, 35, 28,0.30) !important;
+    }
+    .card:hover .card-icon {
+      background: rgba(248, 35, 28,0.20);
+      transform: scale(1.06);
+    }
+    /* En secciones que antes eran cremas, el ícono se ve mejor con un crema suave */
+    .section--cream .card-icon {
+      background: rgba(247,237,224,0.85);
+    }
+    .section--cream .card:hover .card-icon {
+      background: rgba(248, 35, 28,0.15);
+    }
+
+    /* ========================================================
+       FLUID DESKTOP — escala suave entre 1024px y 1920px.
+       En 1920px todos los clamp() resuelven al máximo (= look actual).
+       Por debajo de 1024px, las media queries de responsive
+       más abajo pisan estos valores. No se toca la lógica JS.
+       ======================================================== */
+
+    /* Container con padding lateral fluido */
+    .container { padding: 0 clamp(20px, 1.7vw, 32px); }
+
+    /* Section: padding vertical fluido (1920 → 110px) */
+    .section { padding: clamp(60px, 5.73vw, 110px) 0; }
+    .story-stack + .section { padding-top: clamp(60px, 5.73vw, 110px); }
+
+    /* Header */
+    .header-inner {
+      padding: clamp(12px, 1.05vw, 18px) clamp(18px, 1.7vw, 28px);
+      gap: clamp(16px, 1.4vw, 24px);
+    }
+    .logo { font-size: clamp(18px, 1.15vw, 22px); }
+    .nav-desktop { gap: clamp(12px, 1.05vw, 18px); }
+    .nav-desktop a { font-size: clamp(12px, 0.68vw, 13px); }
+    .header-cta {
+      font-size: clamp(12px, 0.68vw, 13px);
+      padding: clamp(7px, 0.5vw, 9px) clamp(14px, 1vw, 18px);
+    }
+
+    /* Eyebrow */
+    .eyebrow {
+      font-size: clamp(11px, 0.65vw, 12px);
+      padding: clamp(5px, 0.35vw, 6px) clamp(12px, 0.85vw, 16px);
+    }
+
+    /* Tipografía base */
+    h3 { font-size: clamp(16px, 1vw, 19px); }
+    h4 { font-size: clamp(14px, 0.84vw, 16px); }
+    p  { font-size: clamp(14px, 0.84vw, 16px); }
+
+    /* Botones */
+    .btn {
+      font-size: clamp(12px, 0.73vw, 14px);
+      padding: clamp(11px, 0.73vw, 14px) clamp(20px, 1.46vw, 28px);
+    }
+    .btn-group { gap: clamp(10px, 0.73vw, 14px); }
+
+    /* Cards */
+    .card {
+      padding: clamp(22px, 1.67vw, 32px) clamp(16px, 1.25vw, 24px);
+    }
+    .card-icon {
+      width: clamp(44px, 2.71vw, 52px);
+      height: clamp(44px, 2.71vw, 52px);
+      font-size: clamp(22px, 1.46vw, 28px);
+      margin: 0 auto clamp(12px, 0.84vw, 16px);
+    }
+    .card p {
+      font-size: clamp(13px, 0.73vw, 14px);
+      max-width: clamp(180px, 11.5vw, 220px);
+    }
+    .cards-grid { gap: clamp(16px, 1.25vw, 24px); margin-top: clamp(28px, 2.5vw, 48px); }
+
+    /* Divider y eyebrow micro */
+    .divider { width: clamp(48px, 3.34vw, 64px); }
+
+    /* === HERO — width fluido del panel + personaje + burbujas === */
+    .story-stack .story-panel[data-pos="center"] {
+      width: clamp(440px, 38vw, 720px) !important;
+      max-width: 720px !important;
+    }
+    .story-stack .story-panel[data-pos="center"] h1 {
+      font-size: clamp(28px, 3.44vw, 66px) !important;
+    }
+    .story-stack .story-panel[data-pos="center"] > p[style*="font-size:18px"] {
+      font-size: clamp(14px, 0.94vw, 18px) !important;
+    }
+    /* Microcopy pastilla */
+    .story-stack .story-panel[data-pos="center"] > p[style*="font-size:15px"] {
+      font-size: clamp(13px, 0.78vw, 15px) !important;
+      padding: clamp(8px, 0.52vw, 10px) clamp(14px, 0.94vw, 18px) !important;
+    }
+
+    /* Personaje flotante: ancho fluido (1920 → 320px) */
+    .floating-character {
+      width: clamp(220px, 16.67vw, 320px) !important;
+    }
+
+    /* Burbujas del hero: recalculan offsets con el ancho fluido */
+    #hero-burbujas {
+      left: calc(6% + clamp(440px, 38vw, 720px) + 24px) !important;
+      right: calc(30px + clamp(220px, 16.67vw, 320px) + 24px) !important;
+      gap: clamp(14px, 1.05vw, 20px) !important;
+    }
+    #hero-burbujas .hero-burbuja {
+      font-size: clamp(15px, 1vw, 19px) !important;
+      padding: clamp(16px, 1.15vw, 22px) clamp(16px, 1.25vw, 24px) !important;
+      max-width: clamp(280px, 21.9vw, 420px) !important;
+    }
+
+    /* Presentación: imagen + texto col widths + gap */
+    .presentacion-grid {
+      grid-template-columns: clamp(260px, 21.9vw, 420px) 1fr !important;
+      gap: clamp(32px, 2.92vw, 56px) !important;
+    }
+
+    /* Hero burbuja en otros sitios (FAQ, comunidad…) — no afecta */
+
+    /* Footer fluido */
+    .site-footer { padding: clamp(40px, 3.13vw, 60px) 0 clamp(20px, 1.56vw, 30px); }
+    .footer-logo { font-size: clamp(20px, 1.25vw, 24px); }
+    .footer-nav a { font-size: clamp(12px, 0.68vw, 13px); }
+    .footer-nav { gap: clamp(14px, 1.15vw, 22px); }
+    .footer-inner { padding: 0 clamp(20px, 1.7vw, 32px); gap: clamp(24px, 2.08vw, 40px); }
+
+    /* Sin scroll horizontal por las dudas */
+    html, body { overflow-x: hidden; }
+    img, video { max-width: 100%; }
+
+    /* ========================================================
+       RESPONSIVE — Tablets, celulares y mini
+       Solo actúa de 1024px para abajo. Escritorio queda intacto.
+       Todas las reglas usan !important para ganarle a los inline
+       styles del hero (que tienen specificity 1000).
+       ======================================================== */
+
+    /* === TABLETS (hasta 1024px) === */
+    @media (max-width: 1024px) {
+      /* Anti scroll horizontal */
+      html, body { overflow-x: hidden; max-width: 100vw; }
+      img, video { max-width: 100%; height: auto; }
+
+      /* Hero: desactivar el pin/abs y dejar todo en flujo vertical */
+      .story-stack { height: auto !important; }
+      .story-stack__sticky {
+        position: relative !important;
+        height: auto !important;
+        padding: 90px 24px 40px !important;
+        overflow: visible !important;
+      }
+      .story-stack .story-panel[data-pos="center"] {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        transform: none !important;
+        width: 100% !important;
+        max-width: 720px !important;
+        margin: 0 auto !important;
+        text-align: center !important;
+        align-items: center !important;
+      }
+      .story-stack .story-panel[data-pos="center"] h1 {
+        font-size: clamp(28px, 4.4vw, 44px) !important;
+        text-align: center !important;
+      }
+      .story-stack .story-panel[data-pos="center"] p {
+        text-align: center !important;
+        max-width: 100% !important;
+      }
+      .story-stack .story-panel[data-pos="center"] .btn-group {
+        justify-content: center !important;
+      }
+
+      /* Burbujas: salen del absoluto y se acomodan en fila con wrap */
+      #hero-burbujas {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        transform: none !important;
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        width: 100% !important;
+        max-width: 760px !important;
+        margin: 32px auto 0 !important;
+        gap: 14px !important;
+        justify-content: center !important;
+      }
+      #hero-burbujas .hero-burbuja {
+        flex: 1 1 220px;
+        max-width: 280px !important;
+        font-size: 15px !important;
+        padding: 18px 18px !important;
+      }
+
+      /* Grids 3/4 columnas → 2 */
+      .cards-grid,
+      .cards-grid--4 { grid-template-columns: repeat(2, 1fr) !important; }
+
+      /* Header: ocultar nav extenso */
+      .nav-desktop { display: none !important; }
+
+      /* Presentación: imagen arriba, texto abajo */
+      .presentacion-grid {
+        grid-template-columns: 1fr !important;
+        gap: 32px !important;
+      }
+    }
+
+    /* === CELULARES (hasta 768px) === */
+    @media (max-width: 768px) {
+      .story-stack__sticky { padding: 80px 20px 30px !important; }
+
+      .story-stack .story-panel[data-pos="center"] h1 {
+        font-size: clamp(24px, 6vw, 32px) !important;
+      }
+      .story-stack .story-panel[data-pos="center"] p {
+        font-size: 15px !important;
+        line-height: 1.55 !important;
+      }
+      .story-stack .story-panel[data-pos="center"] .btn-group {
+        flex-direction: column !important;
+        gap: 12px !important;
+        width: 100% !important;
+      }
+      .story-stack .story-panel[data-pos="center"] .btn-group .btn {
+        width: 100% !important;
+        text-align: center;
+      }
+
+      /* Burbujas en columna ancho completo */
+      #hero-burbujas {
+        flex-direction: column !important;
+        align-items: center !important;
+        max-width: 100% !important;
+      }
+      #hero-burbujas .hero-burbuja {
+        width: 100% !important;
+        max-width: 360px !important;
+        flex: none !important;
+      }
+
+      /* Personaje achicado a esquina superior derecha */
+      .floating-character {
+        width: 90px !important;
+        max-width: 26vw !important;
+        max-height: 22vh !important;
+        top: 70px !important;
+        right: 8px !important;
+        transform: none !important;
+      }
+
+      /* Grids → 1 columna */
+      .cards-grid,
+      .cards-grid--4,
+      .cards-grid--2 { grid-template-columns: 1fr !important; }
+
+      /* Paddings verticales más chicos */
+      .section { padding: 50px 0 !important; }
+      .story-stack + .section { padding-top: 30px !important; }
+
+      /* Header padding interno */
+      .header-inner { padding: 12px 16px !important; gap: 12px !important; }
+
+      /* FAQ más compacto */
+      .faq-question { padding: 16px 18px !important; font-size: 15px !important; }
+      .faq-answer { padding: 0 18px; }
+      .faq-item.is-open .faq-answer { padding-bottom: 18px !important; }
+    }
+
+    /* === CELULARES CHICOS (hasta 480px) === */
+    @media (max-width: 480px) {
+      .container { padding: 0 18px !important; }
+
+      .story-stack__sticky { padding: 70px 16px 24px !important; }
+      .story-stack .story-panel[data-pos="center"] h1 { font-size: 24px !important; }
+      .story-stack .story-panel[data-pos="center"] p { font-size: 14px !important; }
+
+      #hero-burbujas .hero-burbuja {
+        font-size: 14px !important;
+        padding: 14px 14px !important;
+      }
+
+      .floating-character {
+        width: 72px !important;
+        top: 64px !important;
+      }
+
+      h1 { font-size: 26px !important; }
+      h2 { font-size: 22px !important; }
+
+      .section { padding: 40px 0 !important; }
+    }

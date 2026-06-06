@@ -1,0 +1,319 @@
+    /* ========================================================
+       OVERRIDES v3 — FONDO GLOBAL ESTÁTICO + SECCIONES SIN COLOR
+       ======================================================== */
+    html, body { background: transparent !important; }
+
+    /* El video del bosque ahora vive en el body, fijo al viewport */
+    .global-bg {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      object-position: center center;
+      z-index: -2;
+      pointer-events: none;
+    }
+    /* Velo global encima del fondo (tonalidad 4) */
+    .global-veil {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.70) 0%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0.72) 100%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* Velo viejo del story-stack desactivado (ahora es global) */
+    .story-stack__sticky::after { display: none !important; }
+
+    /* Todas las secciones: sin color de fondo, sin gradientes de transición */
+    .story-stack,
+    .story-stack__sticky,
+    .section,
+    .section--white,
+    .section--cream,
+    .section--navy,
+    .section--final,
+    .section--white + .section--navy,
+    .section--navy + .section--cream,
+    .section--cream + .section--white,
+    .section--white + .section--cream,
+    .section--cream + .section--final,
+    .section--final,
+    .story-stack + .section--white {
+      background: transparent !important;
+    }
+
+    /* Footer también transparente sobre el fondo */
+    .site-footer { background: rgba(15,16,36,0.85) !important; }
+
+    /* Textos: normalizar las secciones que antes eran oscuras o rosas */
+    .section--navy, .section--navy h2, .section--navy h3, .section--navy h4 { color: #1a1a2e !important; }
+    .section--navy p { color: #6a6a82 !important; }
+    .section--navy .eyebrow { background: rgba(248, 35, 28, 0.10) !important; color: #f8231c !important; }
+
+    /* Cards en navy → fondo blanco (legibilidad sobre el bosque) */
+    .section--navy .card { background: #fff !important; border-color: rgba(0,0,0,0.06) !important; color: #1a1a2e !important; }
+    .section--navy .card p { color: #6a6a82 !important; }
+    .section--navy .card h4 { color: #1a1a2e !important; }
+
+    /* Sección final (antes rosa) — texto oscuro */
+    .section--final, .section--final h2, .section--final p { color: #1a1a2e !important; }
+    .section--final h2[style] { color: #1a1a2e !important; }
+    .section--final p[style]  { color: #6a6a82 !important; }
+    .section--final .btn--white { background: #f8231c !important; color: #fff !important; }
+    .section--final .btn--outline-w { border-color: #f8231c !important; color: #f8231c !important; }
+    .section--final .btn--outline-w:hover { background: #f8231c !important; color: #fff !important; }
+
+    /* Header: siempre con el MISMO look, independiente de la sección debajo */
+    .site-header,
+    .site-header[data-theme="white"],
+    .site-header[data-theme="cream"],
+    .site-header[data-theme="navy"],
+    .site-header[data-theme="pink"],
+    .site-header[data-theme="video"] {
+      background: transparent !important;
+      border-bottom-color: transparent !important;
+      backdrop-filter: blur(6px);
+      --header-bg: transparent !important;
+      --header-border: transparent !important;
+      --header-fg: #1a1a2e !important;
+      --header-fg-soft: #1a1a2e !important;
+      --header-cta-bg: #f8231c !important;
+      --header-cta-fg: #ffffff !important;
+    }
+    .site-header.is-hidden { transform: none !important; }
+
+    /* Misma distancia que entre secciones consecutivas (padding default 110px) */
+    .story-stack + .section { padding-top: 110px; }
+
+    /* ========================================================
+       FAQ — Acordeón
+       ======================================================== */
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-width: 800px;
+      margin: 40px auto 0;
+      text-align: left;
+    }
+    .faq-item {
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .faq-item.is-open {
+      border-color: #f8231c;
+      box-shadow: 0 14px 32px rgba(248, 35, 28,0.14);
+    }
+    .faq-question {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 20px 24px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      color: #1a1a2e;
+      background: transparent;
+      border: none;
+      text-align: left;
+      user-select: none;
+    }
+    .faq-arrow {
+      color: #f8231c;
+      font-size: 22px;
+      line-height: 1;
+      transition: transform 0.35s ease;
+      flex-shrink: 0;
+      font-weight: 800;
+    }
+    .faq-item.is-open .faq-arrow { transform: rotate(180deg); }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.45s ease, padding 0.3s ease;
+      padding: 0 24px;
+    }
+    .faq-item.is-open .faq-answer {
+      max-height: 600px;
+      padding-bottom: 22px;
+    }
+    .faq-answer p {
+      margin: 0;
+      color: #6a6a82;
+      line-height: 1.7;
+      font-size: 15px;
+      max-width: none;
+    }
+
+    /* Presentación: en mobile colapsa a una columna (imagen arriba, texto abajo) */
+    @media (max-width: 960px) {
+      .presentacion-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+      .presentacion-grid img { max-width: 320px; margin: 0 auto; }
+      .presentacion-grid .text-block { text-align: center !important; align-items: center !important; }
+    }
+
+    /* ========================================================
+       FLOTADO CONSTANTE de las .card — usa la propiedad CSS
+       "translate" (independiente del transform que maneja GSAP)
+       para no chocar con las animaciones de storytelling.
+       ======================================================== */
+    @keyframes cardFloat {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-7px); }
+    }
+    .card {
+      animation: cardFloat 4s ease-in-out infinite;
+    }
+    .card:hover {
+      animation-play-state: paused;
+      transform: translateY(-6px) scale(1.06) !important;
+      box-shadow: 0 22px 44px rgba(0,0,0,0.12);
+      z-index: 2;
+    }
+    /* Desfasaje para que no floten todas a la vez */
+    .card:nth-child(2n) { animation-delay: 0.8s; }
+    .card:nth-child(3n) { animation-delay: 1.6s; }
+
+    /* ========================================================
+       PRIORIDAD 1 — Highlight de palabra clave en títulos
+       Resaltado tipo "marcador" en tono rojo suave de marca.
+       box-decoration-break:clone para que sobreviva los saltos de línea.
+       ======================================================== */
+    .hl {
+      background: linear-gradient(180deg, transparent 0%, transparent 35%, rgba(248, 35, 28,0.22) 35%, rgba(248, 35, 28,0.22) 92%, transparent 92%);
+      padding: 0 6px;
+      border-radius: 4px;
+      color: inherit;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+      white-space: nowrap;
+    }
+    /* Que la palabra resaltada no parta entre dos renglones de forma fea:
+       white-space:nowrap garantiza que la palabra resaltada no se corte.
+       Si fuese una frase larga, quitar nowrap caso a caso. */
+
+    /* h2: un poco más de presencia visual sin romper la tipografía base */
+    h2 {
+      font-size: clamp(30px, 3.6vw, 46px);
+      line-height: 1.18;
+    }
+
+    /* ========================================================
+       PRIORIDAD 2 — Botones con más vida
+       ======================================================== */
+    .btn {
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      padding: 15px 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      transition: transform 0.28s cubic-bezier(.2,.8,.2,1),
+                  box-shadow 0.3s ease,
+                  background 0.3s ease,
+                  color 0.3s ease,
+                  border-color 0.3s ease;
+    }
+    .btn:hover {
+      transform: translateY(-3px) scale(1.04);
+      box-shadow: 0 18px 36px rgba(248, 35, 28,0.28);
+    }
+    .btn--primary:hover { background: #C81818; }
+    .btn--outline:hover { background: #f8231c; color: #fff; border-color: #f8231c; }
+    .btn--white:hover  { background: #fff8f8; }
+    .btn--outline-w:hover { box-shadow: 0 18px 36px rgba(255,255,255,0.18); }
+
+
+    /* ========================================================
+       TIPOGRAFÍA — Chewy en títulos y botones (inspirada en Sweet Dream)
+       Cuerpo: Poppins (sin cambios)
+       ======================================================== */
+    h1, h2, h3, h4,
+    .story-panel h1, .story-panel h2,
+    .com-modal h2,
+    .footer-logo, .logo,
+    .btn {
+      font-family: 'Chewy', 'Poppins', sans-serif;
+      letter-spacing: 0.5px;
+    }
+    /* Compensar el peso natural de Chewy (no necesita 900) */
+    h1, h2, h3, h4 { font-weight: 400 !important; }
+    .story-panel h1, .story-panel h2 { font-weight: 400 !important; }
+    .com-modal h2 { font-weight: 400 !important; }
+    .btn { font-weight: 400 !important; }
+    /* Eyebrow y micro-elementos se mantienen en Poppins para legibilidad */
+    .eyebrow, .footer-nav a, .nav-desktop a, .header-cta,
+    .faq-question, .com-field label, .com-submit, .com-item-name,
+    .com-item-meta, .com-item-text, .com-list-title,
+    .price-tag, .check-list li, .pase-card .badge {
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* ========================================================
+       FIX clicks Comunidad — z-index sobre el personaje flotante
+       El personaje fixed está a z-index:9999 con su <img> en
+       pointer-events:auto (para drag). Si el personaje se ubica
+       cerca de los botones de redes, los clicks no llegan.
+       Levantamos las cards de Comunidad por encima del personaje.
+       ======================================================== */
+    #comunidad .card { position: relative; z-index: 10000; }
+    #comunidad .card .btn-group,
+    #comunidad .card .btn { position: relative; z-index: 10001; }
+
+    /* ========================================================
+       PALETA POR SECCIÓN — cada sección tiene su color de marca
+       Variables: --acc (color principal), --acc-bg (bg tenue),
+                  --acc-bg-strong (bg semi-transparente)
+       ======================================================== */
+    /* PADRES — verde */
+    #padres { --acc: #3fb411; --acc-bg: rgba(63,180,17,0.12); --acc-bg-strong: rgba(63,180,17,0.22); }
+    #padres .eyebrow { color: #2a7d0c !important; background: var(--acc-bg) !important; }
+    #padres .divider { background: var(--acc) !important; }
+    #padres .hl { background: linear-gradient(180deg, transparent 0%, transparent 30%, var(--acc-bg-strong) 30%, var(--acc-bg-strong) 92%, transparent 92%) !important; }
+    #padres .pink { color: var(--acc) !important; }
+    #padres .card:hover { box-shadow: 0 28px 56px rgba(63,180,17,0.20), 0 8px 0 rgba(63,180,17,0.10) !important; }
+
+    /* QUÉ ES ALIMEYTHOR — celeste */
+    #que-es { --acc: #33afed; --acc-bg: rgba(51,175,237,0.12); --acc-bg-strong: rgba(51,175,237,0.22); }
+    #que-es .eyebrow { color: #1572a8 !important; background: var(--acc-bg) !important; }
+    #que-es .divider { background: var(--acc) !important; }
+    #que-es .hl { background: linear-gradient(180deg, transparent 0%, transparent 30%, var(--acc-bg-strong) 30%, var(--acc-bg-strong) 92%, transparent 92%) !important; }
+    #que-es .pink { color: var(--acc) !important; }
+    #que-es .card:hover { box-shadow: 0 28px 56px rgba(51,175,237,0.22), 0 8px 0 rgba(51,175,237,0.10) !important; }
+
+    /* EMOCIONES VS PANTALLAS — violeta */
+    #emociones { --acc: #ed1cb9; --acc-bg: rgba(237,28,185,0.12); --acc-bg-strong: rgba(237,28,185,0.22); }
+    #emociones .eyebrow { color: #a01380 !important; background: var(--acc-bg) !important; }
+    #emociones .divider { background: var(--acc) !important; }
+    #emociones .hl { background: linear-gradient(180deg, transparent 0%, transparent 30%, var(--acc-bg-strong) 30%, var(--acc-bg-strong) 92%, transparent 92%) !important; }
+    #emociones .pink { color: var(--acc) !important; }
+    #emociones .card:hover { box-shadow: 0 28px 56px rgba(237,28,185,0.22), 0 8px 0 rgba(237,28,185,0.10) !important; }
+
+    /* PRESENTACIÓN — naranja */
+    #presentacion { --acc: #f8a00a; --acc-bg: rgba(248,160,10,0.12); --acc-bg-strong: rgba(248,160,10,0.22); }
+    #presentacion .eyebrow { color: #b56e00 !important; background: var(--acc-bg) !important; }
+    #presentacion .divider { background: var(--acc) !important; }
+    #presentacion .hl { background: linear-gradient(180deg, transparent 0%, transparent 30%, var(--acc-bg-strong) 30%, var(--acc-bg-strong) 92%, transparent 92%) !important; }
+    #presentacion .pink { color: var(--acc) !important; }
+    #presentacion h3 { color: #b56e00 !important; }
+
+    /* FAQ — amarillo */
+    #faq { --acc: #e8ed0b; --acc-bg: rgba(232,237,11,0.18); --acc-bg-strong: rgba(232,237,11,0.40); }
+    #faq .eyebrow { color: #8a6d00 !important; background: var(--acc-bg) !important; }
+    #faq .divider { background: var(--acc) !important; }
+    #faq .hl { background: linear-gradient(180deg, transparent 0%, transparent 30%, var(--acc-bg-strong) 30%, var(--acc-bg-strong) 92%, transparent 92%) !important; }
+    #faq .faq-item.is-open { border-color: var(--acc) !important; box-shadow: 0 14px 32px rgba(232,237,11,0.30) !important; }
+    #faq .faq-arrow { color: #8a6d00 !important; }
+
+    /* COMUNIDAD — mantiene rojo (acción / CTA) pero acentos con verde claro */
+    #comunidad .card:hover { border-color: rgba(74,239,16,0.30) !important; }
+
+    /* VERDE CLARO #4aef10 — usado como acento de "Disponible ahora" en subpáginas y como hover-glow en Comunidad */
+    .option-badge:not(.soon) { background: rgba(74,239,16,0.18) !important; color: #2a8a0a !important; }
+    .story-cta { color: #2a8a0a !important; }

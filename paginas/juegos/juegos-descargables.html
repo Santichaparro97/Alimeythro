@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Juegos y descargables — Alimeythor</title>
+  <link rel="icon" href="../../favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: #1a1a2e;
+      background: linear-gradient(180deg, #fff5f5 0%, #ffe5e5 100%);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    .back-bar {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      z-index: 10;
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      background: #f8231c;
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      border-radius: 999px;
+      box-shadow: 0 8px 20px rgba(248, 35, 28,0.35);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(248, 35, 28,0.45);
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 100px 32px 80px;
+      text-align: center;
+    }
+    .eyebrow {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #f8231c;
+      background: rgba(248, 35, 28,0.10);
+      padding: 6px 16px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    h1 {
+      font-size: clamp(32px, 4.4vw, 54px);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.6px;
+      margin-bottom: 14px;
+    }
+    h1 .accent { color: #f8231c; }
+    .sub {
+      font-size: clamp(15px, 1vw, 18px);
+      color: #6a6a82;
+      max-width: 620px;
+      margin: 0 auto 60px;
+      line-height: 1.65;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px;
+      max-width: 880px;
+      margin: 0 auto;
+    }
+    .option-card {
+      background: #fff;
+      border-radius: 28px;
+      padding: 56px 36px;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.10), 0 6px 0 rgba(248, 35, 28,0.06);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      display: block;
+    }
+    .option-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 32px 60px rgba(248, 35, 28,0.20), 0 10px 0 rgba(248, 35, 28,0.10);
+    }
+    .option-icon {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: rgba(248, 35, 28,0.10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      margin: 0 auto 24px;
+      transition: background 0.3s ease;
+    }
+    .option-card:hover .option-icon { background: rgba(248, 35, 28,0.20); }
+    .option-card h2 {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .option-card p {
+      font-size: 15px;
+      color: #6a6a82;
+      line-height: 1.6;
+    }
+    .option-badge {
+      display: inline-block;
+      margin-top: 18px;
+      padding: 6px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border-radius: 999px;
+      background: rgba(248, 35, 28,0.10);
+      color: #f8231c;
+    }
+    .option-badge.soon {
+      background: rgba(106,106,130,0.15);
+      color: #6a6a82;
+    }
+
+    @media (max-width: 720px) {
+      .options { grid-template-columns: 1fr; gap: 22px; }
+      .option-card { padding: 40px 28px; }
+      .option-icon { width: 80px; height: 80px; font-size: 38px; }
+      .wrap { padding: 90px 20px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="back-bar">
+    <a href="../../index.html" class="back-btn" onclick="try{sessionStorage.setItem('alm_return','que-es');}catch(e){}">← Volver a Alimeythor</a>
+  </div>
+
+  <div class="wrap">
+    <span class="eyebrow">Juegos y descargables</span>
+    <h1>Elegí tu <span class="accent">experiencia</span></h1>
+    <p class="sub">Sumate a un juego interactivo o llevate material descargable para usar en familia.</p>
+
+    <div class="options">
+      <a href="./juego.html" class="option-card">
+        <div class="option-icon">🎮</div>
+        <h2>Juegos</h2>
+        <p>Experiencias interactivas para jugar y aprender en familia.</p>
+        <span class="option-badge">Disponible ahora</span>
+      </a>
+
+      <a href="#" class="option-card" onclick="event.preventDefault(); return false;" style="cursor:not-allowed; opacity:0.85;">
+        <div class="option-icon">📥</div>
+        <h2>Descargables</h2>
+        <p>Materiales imprimibles, actividades y recursos para llevar a casa.</p>
+        <span class="option-badge soon">Próximamente</span>
+      </a>
+    </div>
+  </div>
+
+</body>
+</html>

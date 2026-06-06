@@ -1,0 +1,140 @@
+<!--
+  ============================================================
+  PERSONAJE FLOTANTE GLOBAL — Alimeythor
+  ------------------------------------------------------------
+  Archivo independiente. NO modifica index.html.
+  Para activarlo en la web:
+    1) Guardá la imagen del personaje en:
+         assets/personaje-flotante.png
+    2) Copiá el bloque <style id="fc-styles">…</style>
+       dentro del <head> de index.html (o pegalo en css/styles.css
+       quitando las etiquetas <style>).
+    3) Copiá el bloque <div id="floating-character">…</div>
+       justo antes de </body> en index.html.
+    4) (Opcional, para animaciones futuras) Copiá el <script>
+       del final justo antes de </body>, después de cargar GSAP
+       y ScrollTrigger.
+
+  Estado actual: SIN animaciones. Solo position fixed, responsive,
+  optimizado y preparado para GSAP ScrollTrigger.
+  ============================================================
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Floating Character — Preview</title>
+
+  <!-- ============ STYLES ============ -->
+  <style id="fc-styles">
+    /* ===== PERSONAJE FLOTANTE GLOBAL =====
+       - position: fixed, siempre visible
+       - lateral derecho, parte inferior media
+       - z-index alto para estar arriba de toda la web
+       - sin animaciones (preparado para GSAP ScrollTrigger)
+       - GPU-friendly: will-change + translate3d
+       - respeta prefers-reduced-motion (sin esconder, solo sin transforms)
+    */
+    .floating-character {
+      position: fixed;
+      right: clamp(12px, 2vw, 32px);
+      bottom: 50%;
+      transform: translate3d(0, 50%, 0); /* centra verticalmente respecto a "bottom: 50%" */
+      z-index: 9999;
+      width: clamp(90px, 12vw, 170px);
+      aspect-ratio: 1024 / 1536; /* ratio del PNG enviado (vertical) */
+      pointer-events: none; /* no bloquea clicks de la UI por defecto */
+      user-select: none;
+      -webkit-user-drag: none;
+      will-change: transform;
+      contain: layout paint;
+      filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.25));
+    }
+
+    .floating-character__img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      pointer-events: auto; /* el PNG sí puede recibir hover/click si se quiere */
+      -webkit-user-drag: none;
+    }
+
+    /* Tablet */
+    @media (max-width: 1023px) {
+      .floating-character {
+        width: clamp(80px, 14vw, 130px);
+        right: clamp(8px, 2vw, 20px);
+      }
+    }
+
+    /* Mobile */
+    @media (max-width: 640px) {
+      .floating-character {
+        width: clamp(64px, 22vw, 100px);
+        right: 10px;
+        bottom: 45%;
+      }
+    }
+
+    /* Accesibilidad: reduce motion-friendly (no rompe layout) */
+    @media (prefers-reduced-motion: reduce) {
+      .floating-character { transition: none !important; animation: none !important; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ============ MARKUP ============ -->
+  <!--
+    Estructura preparada para GSAP ScrollTrigger:
+    - .floating-character        → contenedor fixed (target principal de animaciones globales)
+    - .floating-character__inner → wrapper extra para animar transform sin pelearse con el centrado
+    - .floating-character__img   → la imagen propiamente dicha
+    data-* atributos listos para hookear desde JS.
+  -->
+  <div
+    id="floating-character"
+    class="floating-character"
+    data-floating-character
+    aria-hidden="true"
+  >
+    <img
+      class="floating-character__img"
+      src="assets/personaje-flotante.png"
+      alt=""
+      width="1024"
+      height="1536"
+      loading="eager"
+      decoding="async"
+      fetchpriority="high"
+      draggable="false"
+    />
+  </div>
+
+  <!-- ============ SCRIPT SCAFFOLD (sin animaciones aún) ============ -->
+  <!--
+    Dejamos el hook listo para conectar GSAP + ScrollTrigger
+    cuando quieras animar. NO ejecuta ninguna animación todavía.
+  -->
+  <script>
+    (function () {
+      const el = document.querySelector('[data-floating-character]');
+      if (!el) return;
+
+      // Punto de extensión para futuras animaciones:
+      // window.FloatingCharacter.init({ gsap, ScrollTrigger })
+      window.FloatingCharacter = {
+        el,
+        init(/* { gsap, ScrollTrigger } */) {
+          // TODO: animaciones GSAP ScrollTrigger
+          // Ejemplo de futuro uso:
+          // gsap.to(el, { x: -40, scrollTrigger: { trigger: '#mundo', scrub: true } });
+        }
+      };
+    })();
+  </script>
+</body>
+</html>
