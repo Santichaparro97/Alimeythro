@@ -358,3 +358,26 @@
       box-decoration-break: clone;
       -webkit-box-decoration-break: clone;
     }
+
+    /* ========================================================
+       AUMENTO de tipografías (3/10 → 4/10) — solicitado
+       Aplica a: burbujas del hero + h4/descripción/botones
+       dentro de las cards de Padres, Qué es y Comunidad.
+       Otros botones (hero, modal, etc.) NO cambian.
+       ======================================================== */
+    .hero-burbuja {
+      font-size: clamp(17px, 1.3vw, 25px) !important;
+      line-height: 1.28 !important;
+    }
+    .card h4 {
+      font-size: clamp(17px, 1.1vw, 21px) !important;
+    }
+    .card p {
+      font-size: clamp(15px, 0.94vw, 18px) !important;
+      max-width: clamp(220px, 14vw, 270px) !important;
+      line-height: 1.55 !important;
+    }
+    .card .btn {
+      font-size: clamp(14px, 0.94vw, 18px) !important;
+      padding: clamp(12px, 0.94vw, 15px) clamp(22px, 1.7vw, 30px) !important;
+    }
