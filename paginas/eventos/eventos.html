@@ -111,25 +111,42 @@
     }
     .tab-btn {
       background: #fff;
-      border: 2px solid rgba(0,0,0,0.06);
+      border: 2px solid rgba(248,35,28,0.10);
       color: #1a1a2e;
-      padding: 12px 22px;
+      padding: 14px 28px;
       border-radius: 999px;
       cursor: pointer;
-      font-size: 15px;
+      font-size: 19px;
       font-weight: 400;
-      transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+      transition: transform 0.25s ease, background 0.2s ease, color 0.2s ease, box-shadow 0.25s ease;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      box-shadow: 0 4px 0 rgba(0,0,0,0.06);
+      gap: 10px;
+      box-shadow: 0 6px 0 rgba(248,35,28,0.18), 0 12px 22px rgba(248,35,28,0.08);
+      animation: tabFloat 3.6s ease-in-out infinite;
     }
-    .tab-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(0,0,0,0.08); }
+    /* Desfasaje en ola para que no floten todos a la vez */
+    .tab-btn:nth-child(1) { animation-delay: 0s; }
+    .tab-btn:nth-child(2) { animation-delay: 0.35s; }
+    .tab-btn:nth-child(3) { animation-delay: 0.70s; }
+    .tab-btn:nth-child(4) { animation-delay: 1.05s; }
+    .tab-btn:nth-child(5) { animation-delay: 1.40s; }
+    .tab-btn:hover {
+      animation-play-state: paused;
+      transform: translateY(-5px) !important;
+      box-shadow: 0 9px 0 rgba(248,35,28,0.26), 0 16px 28px rgba(248,35,28,0.16);
+    }
     .tab-btn.is-active {
       background: linear-gradient(135deg, #f8a00a, #f8231c);
       color: #fff;
       border-color: transparent;
       box-shadow: 0 6px 0 #C42836, 0 12px 22px rgba(248,160,10,0.30);
+    }
+    .tab-btn.is-active:hover { box-shadow: 0 9px 0 #C42836, 0 16px 28px rgba(248,160,10,0.40); }
+
+    @keyframes tabFloat {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-6px); }
     }
     .tab-btn .tab-count {
       background: rgba(0,0,0,0.08);
