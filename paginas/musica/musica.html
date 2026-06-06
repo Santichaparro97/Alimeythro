@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Música — Alimeythor</title>
+  <link rel="icon" href="../../favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: #1a1a2e;
+      background: linear-gradient(180deg, #e6f4ff 0%, #fff5f5 100%);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* Decoración: notas y estrellas flotando suaves */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        radial-gradient(circle at 8% 18%, rgba(51,175,237,0.18) 0 6px, transparent 8px),
+        radial-gradient(circle at 92% 30%, rgba(237,28,185,0.14) 0 5px, transparent 7px),
+        radial-gradient(circle at 12% 78%, rgba(248,160,10,0.16) 0 5px, transparent 7px),
+        radial-gradient(circle at 88% 82%, rgba(63,180,17,0.14) 0 5px, transparent 7px),
+        radial-gradient(circle at 50% 5%, rgba(232,237,11,0.18) 0 4px, transparent 6px);
+    }
+
+    h1, h2, h3, h4, .btn, .player-title, .pl-title { font-family: 'Chewy', 'Poppins', sans-serif; letter-spacing: 0.5px; }
+
+    /* ============= BACK BAR ============= */
+    .back-bar {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      z-index: 50;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      background: #f8231c;
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      border-radius: 999px;
+      box-shadow: 0 8px 20px rgba(248,35,28,0.35);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      font-family: 'Poppins', sans-serif;
+    }
+    .back-btn--ghost {
+      background: #fff;
+      color: #f8231c;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.10);
+    }
+    .back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(248,35,28,0.45);
+    }
+
+    /* ============= WRAP ============= */
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 100px 28px 80px;
+      text-align: center;
+    }
+    .eyebrow {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #1572a8;
+      background: rgba(51,175,237,0.12);
+      padding: 6px 16px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      font-family: 'Poppins', sans-serif;
+    }
+    h1 {
+      font-size: clamp(34px, 4.4vw, 56px);
+      font-weight: 400;
+      line-height: 1.1;
+      margin-bottom: 14px;
+    }
+    h1 .accent { color: #33afed; }
+    .sub {
+      font-size: clamp(15px, 1vw, 18px);
+      color: #6a6a82;
+      max-width: 620px;
+      margin: 0 auto 46px;
+      line-height: 1.65;
+    }
+
+    /* ============= LAYOUT REPRODUCTOR + PLAYLIST ============= */
+    .music-grid {
+      display: grid;
+      grid-template-columns: minmax(280px, 380px) 1fr;
+      gap: 32px;
+      align-items: start;
+      text-align: left;
+    }
+    @media (max-width: 880px) {
+      .music-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ============= NOW PLAYING CARD ============= */
+    .player {
+      background: #fff;
+      border-radius: 28px;
+      padding: 32px 28px;
+      box-shadow: 0 24px 48px rgba(51,175,237,0.18), 0 6px 0 rgba(51,175,237,0.10);
+      text-align: center;
+      position: sticky;
+      top: 110px;
+    }
+    .player-cover {
+      width: 200px;
+      height: 200px;
+      margin: 0 auto 20px;
+      border-radius: 32px;
+      background: linear-gradient(135deg, #33afed 0%, #ed1cb9 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 96px;
+      box-shadow: 0 14px 32px rgba(51,175,237,0.35), 0 6px 0 rgba(0,0,0,0.08);
+      transition: transform 0.4s cubic-bezier(.2,.8,.2,1);
+    }
+    .player.is-playing .player-cover {
+      animation: coverFloat 4s ease-in-out infinite;
+    }
+    @keyframes coverFloat {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50%      { transform: translateY(-8px) rotate(2deg); }
+    }
+    .player-title {
+      font-size: 22px;
+      font-weight: 400;
+      color: #1a1a2e;
+      margin-bottom: 6px;
+      min-height: 30px;
+    }
+    .player-subtitle {
+      font-size: 13px;
+      color: #6a6a82;
+      margin-bottom: 22px;
+    }
+
+    /* Barra de progreso */
+    .player-progress {
+      width: 100%;
+      height: 6px;
+      background: rgba(0,0,0,0.08);
+      border-radius: 999px;
+      position: relative;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+    .player-progress-fill {
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      background: linear-gradient(90deg, #33afed, #ed1cb9);
+      border-radius: 999px;
+      width: 0%;
+      transition: width 0.15s linear;
+    }
+    .player-progress-knob {
+      position: absolute;
+      top: 50%;
+      width: 14px; height: 14px;
+      background: #fff;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      pointer-events: none;
+    }
+    .player-times {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #6a6a82;
+      font-variant-numeric: tabular-nums;
+      margin-bottom: 22px;
+    }
+
+    /* Controles */
+    .player-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .ctrl {
+      background: #fff;
+      border: 2px solid rgba(0,0,0,0.06);
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      color: #1a1a2e;
+      font-size: 18px;
+    }
+    .ctrl:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.10); }
+    .ctrl--play {
+      width: 64px; height: 64px;
+      background: linear-gradient(135deg, #f8231c, #ed1cb9);
+      color: #fff;
+      border: none;
+      font-size: 26px;
+      box-shadow: 0 8px 0 #8C1010, 0 14px 24px rgba(248,35,28,0.30);
+    }
+    .ctrl--play:hover { transform: translateY(-3px); box-shadow: 0 11px 0 #8C1010, 0 18px 28px rgba(248,35,28,0.40); }
+
+    /* Volumen */
+    .player-volume {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      max-width: 200px;
+      margin: 0 auto;
+    }
+    .player-volume input[type="range"] {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      background: rgba(0,0,0,0.08);
+      border-radius: 999px;
+      outline: none;
+    }
+    .player-volume input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px; height: 14px;
+      background: #33afed;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .player-volume input[type="range"]::-moz-range-thumb {
+      width: 14px; height: 14px;
+      background: #33afed;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+    }
+    .player-volume span { font-size: 16px; color: #6a6a82; }
+
+    /* ============= PLAYLIST ============= */
+    .playlist {
+      background: #fff;
+      border-radius: 28px;
+      padding: 24px;
+      box-shadow: 0 18px 36px rgba(0,0,0,0.08), 0 4px 0 rgba(237,28,185,0.10);
+    }
+    .pl-title {
+      font-size: 22px;
+      font-weight: 400;
+      margin-bottom: 4px;
+      color: #1a1a2e;
+    }
+    .pl-meta {
+      font-size: 12px;
+      color: #6a6a82;
+      margin-bottom: 18px;
+      font-weight: 600;
+    }
+    .pl-item {
+      display: grid;
+      grid-template-columns: 44px 1fr auto auto;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      transition: background 0.2s ease, transform 0.2s ease;
+      cursor: pointer;
+      border: 1.5px solid transparent;
+    }
+    .pl-item:hover {
+      background: rgba(51,175,237,0.08);
+      border-color: rgba(51,175,237,0.20);
+    }
+    .pl-item.is-active {
+      background: rgba(51,175,237,0.14);
+      border-color: rgba(51,175,237,0.40);
+    }
+    .pl-item.is-active .pl-num {
+      background: linear-gradient(135deg, #33afed, #ed1cb9);
+      color: #fff;
+    }
+    .pl-num {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a1a2e;
+      transition: background 0.2s ease;
+      flex-shrink: 0;
+    }
+    .pl-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .pl-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1a1a2e;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .pl-emoji { font-size: 22px; flex-shrink: 0; }
+    .pl-dur {
+      font-size: 12px;
+      color: #6a6a82;
+      font-variant-numeric: tabular-nums;
+      padding: 0 8px;
+    }
+    .pl-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .pl-btn {
+      width: 32px; height: 32px;
+      border: none;
+      background: transparent;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease, transform 0.15s ease;
+      color: #6a6a82;
+    }
+    .pl-btn:hover { background: rgba(0,0,0,0.06); transform: scale(1.1); }
+    .pl-btn.is-fav { color: #f8231c; }
+    .pl-btn.is-watched { color: #3fb411; }
+
+    .empty-note {
+      text-align: center;
+      color: #6a6a82;
+      padding: 24px;
+      font-style: italic;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="back-bar">
+    <a href="../cuentos/biblioteca.html" class="back-btn">← Volver a Biblioteca</a>
+    <a href="../../index.html" class="back-btn back-btn--ghost" onclick="try{sessionStorage.setItem('alm_return','que-es');}catch(e){}">Ir a Alimeythor</a>
+  </div>
+
+  <div class="wrap">
+    <span class="eyebrow">Música</span>
+    <h1>Banda sonora de <span class="accent">Alimeythor</span></h1>
+    <p class="sub">Una playlist pensada para acompañar cada momento del día en familia. Calma, energía y aprendizaje en cada canción.</p>
+
+    <div class="music-grid">
+
+      <!-- ============= NOW PLAYING ============= -->
+      <div class="player" id="player">
+        <div class="player-cover" id="player-cover">🎵</div>
+        <div class="player-title" id="player-title">Elegí una canción</div>
+        <div class="player-subtitle" id="player-subtitle">Mundo Alimeythor</div>
+
+        <div class="player-progress" id="player-progress">
+          <div class="player-progress-fill" id="player-fill"></div>
+          <div class="player-progress-knob" id="player-knob" style="left:0%"></div>
+        </div>
+        <div class="player-times">
+          <span id="player-current">0:00</span>
+          <span id="player-total">0:00</span>
+        </div>
+
+        <div class="player-controls">
+          <button class="ctrl" id="ctrl-prev" aria-label="Anterior">⏮</button>
+          <button class="ctrl ctrl--play" id="ctrl-play" aria-label="Reproducir">▶</button>
+          <button class="ctrl" id="ctrl-next" aria-label="Siguiente">⏭</button>
+        </div>
+
+        <div class="player-volume">
+          <span>🔈</span>
+          <input type="range" id="ctrl-volume" min="0" max="100" value="80" aria-label="Volumen">
+          <span>🔊</span>
+        </div>
+
+        <audio id="audio" preload="metadata"></audio>
+      </div>
+
+      <!-- ============= PLAYLIST ============= -->
+      <div class="playlist">
+        <div class="pl-title">Playlist</div>
+        <div class="pl-meta" id="pl-meta">8 canciones</div>
+        <div id="pl-list">
+          <!-- Las canciones se renderean por JS -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ============================================================
+    // LISTA DE CANCIONES — agregar/modificar acá cuando tengas los links
+    // Estructura: { id, emoji, title, src, duration }
+    //   - src: URL del MP3/WAV directo. Si vas a usar YouTube,
+    //          avisame y migramos a embeds.
+    //   - duration: string "M:SS" (opcional; si tiene src real, se lee del audio)
+    // ============================================================
+    const SONGS = [
+      { id: 1, emoji: '🎶', title: 'Canción 1 — Pendiente de cargar', src: '', duration: '0:00' },
+      { id: 2, emoji: '🌟', title: 'Canción 2 — Pendiente de cargar', src: '', duration: '0:00' },
+      { id: 3, emoji: '🌙', title: 'Canción 3 — Pendiente de cargar', src: '', duration: '0:00' },
+      { id: 4, emoji: '☀️', title: 'Canción 4 — Pendiente de cargar', src: '', duration: '0:00' },
+      { id: 5, emoji: '🎈', title: 'Canción 5 — Pendiente de cargar', src: '', duration: '0:00' },
+      { id: 6, emoji: '🐻', title: 'Canción 6 — Pendiente de cargar', src: '', duration: '0:00' },
+      { id: 7, emoji: '🌈', title: 'Canción 7 — Pendiente de cargar', src: '', duration: '0:00' },
+      { id: 8, emoji: '✨', title: 'Canción 8 — Pendiente de cargar', src: '', duration: '0:00' }
+    ];
+
+    // ============================================================
+    // STATE + STORAGE
+    // ============================================================
+    const STORAGE = { fav: 'alm_music_fav', watched: 'alm_music_watched' };
+    const getSet = (key) => {
+      try { return new Set(JSON.parse(localStorage.getItem(key) || '[]')); } catch (e) { return new Set(); }
+    };
+    const saveSet = (key, set) => {
+      try { localStorage.setItem(key, JSON.stringify([...set])); } catch (e) {}
+    };
+    const favs    = getSet(STORAGE.fav);
+    const watched = getSet(STORAGE.watched);
+
+    let currentIndex = -1;
+
+    // ============================================================
+    // DOM
+    // ============================================================
+    const audio       = document.getElementById('audio');
+    const playerEl    = document.getElementById('player');
+    const coverEl     = document.getElementById('player-cover');
+    const titleEl     = document.getElementById('player-title');
+    const subtitleEl  = document.getElementById('player-subtitle');
+    const fillEl      = document.getElementById('player-fill');
+    const knobEl      = document.getElementById('player-knob');
+    const curTimeEl   = document.getElementById('player-current');
+    const totTimeEl   = document.getElementById('player-total');
+    const progressEl  = document.getElementById('player-progress');
+    const btnPlay     = document.getElementById('ctrl-play');
+    const btnPrev     = document.getElementById('ctrl-prev');
+    const btnNext     = document.getElementById('ctrl-next');
+    const volumeEl    = document.getElementById('ctrl-volume');
+    const listEl      = document.getElementById('pl-list');
+    const metaEl      = document.getElementById('pl-meta');
+
+    // ============================================================
+    // RENDER PLAYLIST
+    // ============================================================
+    function renderList() {
+      listEl.innerHTML = SONGS.map((s, i) => {
+        const isActive  = i === currentIndex;
+        const isFav     = favs.has(s.id);
+        const isWatched = watched.has(s.id);
+        return `
+          <div class="pl-item ${isActive ? 'is-active' : ''}" data-idx="${i}">
+            <div class="pl-num">${i+1}</div>
+            <div class="pl-info">
+              <div class="pl-name"><span class="pl-emoji">${s.emoji}</span>${s.title}</div>
+            </div>
+            <div class="pl-dur">${s.duration || '–:–'}</div>
+            <div class="pl-actions">
+              <button class="pl-btn ${isFav ? 'is-fav' : ''}" data-act="fav" data-idx="${i}" title="Favorita">${isFav ? '❤️' : '🤍'}</button>
+              <button class="pl-btn ${isWatched ? 'is-watched' : ''}" data-act="watched" data-idx="${i}" title="Escuchada">${isWatched ? '✅' : '⬜'}</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+      metaEl.textContent = `${SONGS.length} canciones · ${favs.size} favoritas · ${watched.size} escuchadas`;
+    }
+
+    // ============================================================
+    // PLAYER
+    // ============================================================
+    function loadSong(i) {
+      currentIndex = i;
+      const s = SONGS[i];
+      titleEl.textContent = s.title;
+      coverEl.textContent = s.emoji;
+      subtitleEl.textContent = 'Mundo Alimeythor';
+      if (s.src) {
+        audio.src = s.src;
+        audio.load();
+      } else {
+        audio.removeAttribute('src');
+        totTimeEl.textContent = s.duration || '0:00';
+        curTimeEl.textContent = '0:00';
+        fillEl.style.width = '0%';
+        knobEl.style.left = '0%';
+      }
+      renderList();
+    }
+
+    function play() {
+      if (!audio.src) {
+        // Si no hay src real, simulamos un placeholder visual
+        playerEl.classList.add('is-playing');
+        btnPlay.textContent = '⏸';
+        return;
+      }
+      audio.play().then(() => {
+        playerEl.classList.add('is-playing');
+        btnPlay.textContent = '⏸';
+      }).catch(() => {});
+    }
+    function pause() {
+      audio.pause();
+      playerEl.classList.remove('is-playing');
+      btnPlay.textContent = '▶';
+    }
+    function togglePlay() {
+      if (currentIndex < 0) loadSong(0);
+      if (audio.paused) play();
+      else pause();
+    }
+    function prev() {
+      if (currentIndex <= 0) loadSong(SONGS.length - 1);
+      else loadSong(currentIndex - 1);
+      play();
+    }
+    function next() {
+      if (currentIndex >= SONGS.length - 1) loadSong(0);
+      else loadSong(currentIndex + 1);
+      play();
+    }
+
+    btnPlay.addEventListener('click', togglePlay);
+    btnPrev.addEventListener('click', prev);
+    btnNext.addEventListener('click', next);
+
+    volumeEl.addEventListener('input', () => {
+      audio.volume = volumeEl.value / 100;
+    });
+    audio.volume = 0.8;
+
+    // Progreso
+    audio.addEventListener('loadedmetadata', () => {
+      totTimeEl.textContent = fmt(audio.duration);
+      // Refrescar duración en la lista
+      if (currentIndex >= 0) {
+        SONGS[currentIndex].duration = fmt(audio.duration);
+        renderList();
+      }
+    });
+    audio.addEventListener('timeupdate', () => {
+      if (!isFinite(audio.duration)) return;
+      const pct = (audio.currentTime / audio.duration) * 100;
+      fillEl.style.width = pct + '%';
+      knobEl.style.left = pct + '%';
+      curTimeEl.textContent = fmt(audio.currentTime);
+    });
+    audio.addEventListener('ended', () => {
+      // Marcar como escuchada automáticamente
+      watched.add(SONGS[currentIndex].id);
+      saveSet(STORAGE.watched, watched);
+      // Pasar a la siguiente
+      next();
+    });
+
+    progressEl.addEventListener('click', (e) => {
+      if (!isFinite(audio.duration)) return;
+      const rect = progressEl.getBoundingClientRect();
+      const pct = (e.clientX - rect.left) / rect.width;
+      audio.currentTime = pct * audio.duration;
+    });
+
+    // Click en items + acciones
+    listEl.addEventListener('click', (e) => {
+      const btn = e.target.closest('.pl-btn');
+      if (btn) {
+        e.stopPropagation();
+        const idx = +btn.dataset.idx;
+        const act = btn.dataset.act;
+        const id  = SONGS[idx].id;
+        if (act === 'fav') {
+          favs.has(id) ? favs.delete(id) : favs.add(id);
+          saveSet(STORAGE.fav, favs);
+        } else if (act === 'watched') {
+          watched.has(id) ? watched.delete(id) : watched.add(id);
+          saveSet(STORAGE.watched, watched);
+        }
+        renderList();
+        return;
+      }
+      const item = e.target.closest('.pl-item');
+      if (item) {
+        const idx = +item.dataset.idx;
+        loadSong(idx);
+        play();
+      }
+    });
+
+    function fmt(seconds) {
+      if (!isFinite(seconds)) return '0:00';
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      return m + ':' + (s < 10 ? '0' + s : s);
+    }
+
+    // Init
+    renderList();
+  </script>
+</body>
+</html>
