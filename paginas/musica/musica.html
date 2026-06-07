@@ -466,14 +466,15 @@
     //   - duration: string "M:SS" (opcional; si tiene src real, se lee del audio)
     // ============================================================
     const SONGS = [
-      { id: 1, emoji: '🎶', title: 'Canción 1 — Pendiente de cargar', src: '', duration: '0:00' },
-      { id: 2, emoji: '🌟', title: 'Canción 2 — Pendiente de cargar', src: '', duration: '0:00' },
-      { id: 3, emoji: '🌙', title: 'Canción 3 — Pendiente de cargar', src: '', duration: '0:00' },
-      { id: 4, emoji: '☀️', title: 'Canción 4 — Pendiente de cargar', src: '', duration: '0:00' },
-      { id: 5, emoji: '🎈', title: 'Canción 5 — Pendiente de cargar', src: '', duration: '0:00' },
-      { id: 6, emoji: '🐻', title: 'Canción 6 — Pendiente de cargar', src: '', duration: '0:00' },
-      { id: 7, emoji: '🌈', title: 'Canción 7 — Pendiente de cargar', src: '', duration: '0:00' },
-      { id: 8, emoji: '✨', title: 'Canción 8 — Pendiente de cargar', src: '', duration: '0:00' }
+      { id: 1, emoji: '✨', title: 'Secreto Estelar',             src: 'https://drive.google.com/uc?id=1ykIe7EjI972hMJ5D36JNgvKD4mcvH4xK&export=download', duration: '0:00' },
+      { id: 2, emoji: '🪄', title: 'Dónde está la magia',         src: 'https://drive.google.com/uc?id=1kUjvwFyPx1wuSgbt9c3woZuCzNKogrXr&export=download', duration: '0:00' },
+      { id: 3, emoji: '🤗', title: 'Siempre me vas a tener',      src: 'https://drive.google.com/uc?id=1C9Q1xHcWE00Hp96Et--PxU3eAQQgaOR7&export=download', duration: '0:00' },
+      { id: 4, emoji: '🛡️', title: 'Parte del escuadrón',         src: 'https://drive.google.com/uc?id=1L97RakNh6_YrZIdNjIJjLh9b8wmsHsul&export=download', duration: '0:00' },
+      { id: 5, emoji: '🤐', title: 'Guardo mis palabras',         src: 'https://drive.google.com/uc?id=15VzGgf3BENPcYSc5x5yfznO3AdZ8yOpK&export=download', duration: '0:00' },
+      { id: 6, emoji: '👂', title: 'Escuchamos juntos',           src: 'https://drive.google.com/uc?id=1zTwCVYMiPNiNsmjjZRSNT6mQWsPEQ4Gi&export=download', duration: '0:00' },
+      { id: 7, emoji: '🎧', title: 'Enseñame a escuchar',         src: 'https://drive.google.com/uc?id=13-8lLbL0rD72Bg6kFoY_HLyQkeNfb2VB&export=download', duration: '0:00' },
+      { id: 8, emoji: '🫧', title: 'Malvavisco mágico, eres así', src: 'https://drive.google.com/uc?id=1M2TPJdBegN12hozIRZ6639b2e7fuu_g0&export=download', duration: '0:00' },
+      { id: 9, emoji: '🌅', title: 'Despertar al mundo',          src: 'https://drive.google.com/uc?id=1vIJKUgOSW8e9xjIZJK3ogtU77aNobaPV&export=download', duration: '0:00' }
     ];
 
     // ============================================================
@@ -622,6 +623,17 @@
       saveSet(STORAGE.watched, watched);
       // Pasar a la siguiente
       next();
+    });
+    audio.addEventListener('error', () => {
+      subtitleEl.textContent = 'No se pudo cargar el audio · revisá el enlace';
+      playerEl.classList.remove('is-playing');
+      btnPlay.textContent = '▶';
+    });
+    audio.addEventListener('waiting', () => {
+      subtitleEl.textContent = 'Cargando…';
+    });
+    audio.addEventListener('playing', () => {
+      subtitleEl.textContent = 'Mundo Alimeythor';
     });
 
     progressEl.addEventListener('click', (e) => {
