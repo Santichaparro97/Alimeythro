@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Descargables — Alimeythor</title>
+  <link rel="icon" href="../../favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: #1a1a2e;
+      background: linear-gradient(180deg, #fff5f5 0%, #ffeae0 50%, #fff5dc 100%);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    h1, h2, .back-btn, .download-btn { font-family: 'Chewy', 'Poppins', sans-serif; letter-spacing: 0.5px; }
+
+    /* Decoración suave */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        radial-gradient(circle at 8% 18%, rgba(248,160,10,0.16) 0 5px, transparent 7px),
+        radial-gradient(circle at 92% 30%, rgba(248,35,28,0.14) 0 5px, transparent 7px),
+        radial-gradient(circle at 12% 78%, rgba(63,180,17,0.14) 0 5px, transparent 7px),
+        radial-gradient(circle at 88% 82%, rgba(232,237,11,0.18) 0 5px, transparent 7px);
+    }
+
+    /* ============= BACK BAR ============= */
+    .back-bar {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      z-index: 50;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      background: #f8231c;
+      color: #fff;
+      font-weight: 400;
+      font-size: 14px;
+      border-radius: 999px;
+      box-shadow: 0 8px 20px rgba(248,35,28,0.35);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .back-btn--ghost {
+      background: #fff;
+      color: #f8231c;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.10);
+    }
+    .back-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(248,35,28,0.45); }
+
+    /* ============= WRAP ============= */
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 100px 28px 80px;
+      text-align: center;
+    }
+    .eyebrow {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #b56e00;
+      background: rgba(248,160,10,0.14);
+      padding: 6px 16px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      font-family: 'Poppins', sans-serif;
+    }
+    h1 {
+      font-size: clamp(32px, 4.4vw, 54px);
+      font-weight: 400;
+      line-height: 1.1;
+      margin-bottom: 14px;
+    }
+    h1 .accent { color: #f8a00a; }
+    .sub {
+      font-size: clamp(15px, 1vw, 18px);
+      color: #6a6a82;
+      max-width: 640px;
+      margin: 0 auto 40px;
+      line-height: 1.6;
+    }
+
+    /* ============= LAYOUT HERO + THUMBS ============= */
+    .stk-grid {
+      display: grid;
+      grid-template-columns: minmax(160px, 200px) 1fr;
+      gap: 28px;
+      align-items: start;
+      text-align: left;
+    }
+    @media (max-width: 760px) {
+      .stk-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ============= THUMBNAILS ============= */
+    .stk-thumbs {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    @media (max-width: 760px) {
+      .stk-thumbs { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+    }
+    .stk-thumb {
+      background: #fff;
+      border: 2px solid rgba(248,35,28,0.10);
+      border-radius: 16px;
+      padding: 6px;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      box-shadow: 0 6px 0 rgba(248,35,28,0.14), 0 10px 22px rgba(248,35,28,0.08);
+      overflow: hidden;
+    }
+    @media (max-width: 760px) {
+      .stk-thumb { width: 110px; }
+    }
+    .stk-thumb img {
+      width: 100%;
+      aspect-ratio: 1 / 1.4;
+      object-fit: cover;
+      border-radius: 10px;
+      transition: transform 0.3s ease;
+    }
+    .stk-thumb:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 9px 0 rgba(248,35,28,0.22), 0 14px 28px rgba(248,35,28,0.14);
+      border-color: rgba(248,35,28,0.30);
+    }
+    .stk-thumb:hover img { transform: scale(1.05); }
+    .stk-thumb.is-active {
+      border-color: #f8231c;
+      box-shadow: 0 9px 0 #C81818, 0 14px 28px rgba(248,35,28,0.22);
+    }
+    .stk-thumb-label {
+      display: block;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin-top: 6px;
+      padding-bottom: 4px;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* ============= HERO PREVIEW ============= */
+    .stk-hero {
+      background: #fff;
+      border: 2px solid rgba(248,35,28,0.14);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 10px 0 rgba(248,35,28,0.20), 0 22px 40px rgba(248,35,28,0.14), 0 4px 12px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+    .stk-hero-img-wrap {
+      width: 100%;
+      max-width: 560px;
+      aspect-ratio: 1 / 1.41;
+      background: linear-gradient(135deg, rgba(248,160,10,0.06), rgba(248,35,28,0.06));
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: zoom-in;
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+    .stk-hero-img-wrap:hover { transform: scale(1.01); }
+    .stk-hero-img-wrap::after {
+      content: '🔍 Ampliar';
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: rgba(255,255,255,0.92);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #1a1a2e;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+    }
+    .stk-hero-img-wrap:hover::after { opacity: 1; }
+    .stk-hero-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transition: opacity 0.2s ease;
+    }
+    .stk-hero-title {
+      font-family: 'Chewy', 'Poppins', sans-serif;
+      font-size: clamp(20px, 2vw, 26px);
+      font-weight: 400;
+      text-align: center;
+    }
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 28px;
+      background: #f8231c;
+      color: #fff;
+      font-size: 17px;
+      font-weight: 400;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 8px 0 #8C1010, 0 14px 24px rgba(248,35,28,0.35);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 11px 0 #8C1010, 0 18px 28px rgba(248,35,28,0.45);
+    }
+
+    /* ============= LIGHTBOX ============= */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.88);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 50px 80px 100px;
+      flex-direction: column;
+    }
+    .lightbox.is-open { display: flex; }
+    .lightbox-img {
+      max-width: 100%;
+      max-height: calc(100vh - 200px);
+      border-radius: 12px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+      animation: lbIn 0.3s ease-out;
+    }
+    @keyframes lbIn { from { transform: scale(0.94); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .lb-btn {
+      position: absolute;
+      width: 56px; height: 56px;
+      background: rgba(255,255,255,0.15);
+      border: none;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .lb-btn:hover { background: rgba(255,255,255,0.30); transform: scale(1.1); }
+    .lb-close { top: 24px; right: 24px; }
+    .lb-prev { left: 24px; top: 50%; transform: translateY(-50%); }
+    .lb-next { right: 24px; top: 50%; transform: translateY(-50%); }
+    .lb-prev:hover, .lb-next:hover { transform: translateY(-50%) scale(1.1); }
+    .lb-actions {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .lb-counter {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      background: rgba(255,255,255,0.15);
+      padding: 10px 18px;
+      border-radius: 999px;
+    }
+
+    @media (max-width: 600px) {
+      .lightbox { padding: 50px 16px 100px; }
+      .lb-close { top: 12px; right: 12px; }
+      .lb-prev { left: 8px; }
+      .lb-next { right: 8px; }
+      .lb-btn { width: 44px; height: 44px; font-size: 20px; }
+      .download-btn { font-size: 15px; padding: 12px 22px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="back-bar">
+    <a href="./juegos-descargables.html" class="back-btn">← Volver</a>
+    <a href="../../index.html" class="back-btn back-btn--ghost" onclick="try{sessionStorage.setItem('alm_return','que-es');}catch(e){}">Ir a Alimeythor</a>
+  </div>
+
+  <div class="wrap">
+    <span class="eyebrow">Descargables</span>
+    <h1>Planchas de <span class="accent">stickers</span> para imprimir</h1>
+    <p class="sub">Descargá las planchas, imprimilas y recortá las pegatinas para usar en familia. ¡Una actividad creativa para compartir con los chicos!</p>
+
+    <div class="stk-grid">
+
+      <!-- ============= THUMBNAILS ============= -->
+      <div class="stk-thumbs" id="stk-thumbs">
+        <!-- Generadas por JS -->
+      </div>
+
+      <!-- ============= HERO PREVIEW ============= -->
+      <div class="stk-hero">
+        <div class="stk-hero-img-wrap" id="stk-preview">
+          <img class="stk-hero-img" id="stk-hero-img" src="" alt="">
+        </div>
+        <div class="stk-hero-title" id="stk-hero-title">Plancha</div>
+        <a id="stk-download" href="" download="" class="download-btn">
+          <span>📥</span> <span>Descargar plancha</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Visor de plancha">
+    <button class="lb-btn lb-close" id="lb-close" aria-label="Cerrar">✕</button>
+    <button class="lb-btn lb-prev" id="lb-prev" aria-label="Anterior">‹</button>
+    <button class="lb-btn lb-next" id="lb-next" aria-label="Siguiente">›</button>
+    <img class="lightbox-img" id="lb-img" src="" alt="">
+    <div class="lb-actions">
+      <span class="lb-counter" id="lb-counter">1 / 4</span>
+      <a id="lb-download" href="" download="" class="download-btn">
+        <span>📥</span> <span>Descargar</span>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // ============================================================
+    // PLANCHAS DE STICKERS
+    // ============================================================
+    const STICKERS = [
+      { id: 1, file: 'sticker-01.png', title: 'Plancha de Primavera #1' },
+      { id: 2, file: 'sticker-02.png', title: 'Plancha de Primavera #2' },
+      { id: 3, file: 'sticker-03.png', title: 'Plancha de Primavera #3' },
+      { id: 4, file: 'sticker-04.png', title: 'Pegatinas con mascota Alimeythor' }
+    ];
+    const BASE_PATH = '../../sticker/';
+    const DOWNLOAD_PREFIX = 'alimeythor-';
+
+    let activeIdx = 0;
+
+    // ============================================================
+    // DOM
+    // ============================================================
+    const thumbsEl    = document.getElementById('stk-thumbs');
+    const heroImg     = document.getElementById('stk-hero-img');
+    const heroTitle   = document.getElementById('stk-hero-title');
+    const heroPreview = document.getElementById('stk-preview');
+    const heroDownload= document.getElementById('stk-download');
+    const lightbox    = document.getElementById('lightbox');
+    const lbImg       = document.getElementById('lb-img');
+    const lbCounter   = document.getElementById('lb-counter');
+    const lbDownload  = document.getElementById('lb-download');
+
+    // ============================================================
+    // RENDER THUMBS
+    // ============================================================
+    function renderThumbs() {
+      thumbsEl.innerHTML = STICKERS.map((s, i) => `
+        <div class="stk-thumb ${i === activeIdx ? 'is-active' : ''}" data-idx="${i}">
+          <img src="${BASE_PATH}${s.file}" alt="${s.title}" loading="lazy">
+          <span class="stk-thumb-label">Plancha ${i+1}</span>
+        </div>
+      `).join('');
+    }
+
+    // ============================================================
+    // SET HERO (preview grande)
+    // ============================================================
+    function setHero(idx) {
+      activeIdx = idx;
+      const s = STICKERS[idx];
+      heroImg.src = BASE_PATH + s.file;
+      heroImg.alt = s.title;
+      heroTitle.textContent = s.title;
+      heroDownload.href = BASE_PATH + s.file;
+      heroDownload.download = DOWNLOAD_PREFIX + s.file;
+      renderThumbs();
+    }
+
+    // ============================================================
+    // LIGHTBOX
+    // ============================================================
+    function openLightbox(idx) {
+      activeIdx = idx;
+      const s = STICKERS[idx];
+      lbImg.src = BASE_PATH + s.file;
+      lbImg.alt = s.title;
+      lbCounter.textContent = `${idx + 1} / ${STICKERS.length}`;
+      lbDownload.href = BASE_PATH + s.file;
+      lbDownload.download = DOWNLOAD_PREFIX + s.file;
+      lightbox.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+      lightbox.classList.remove('is-open');
+      document.body.style.overflow = '';
+    }
+    function lbPrev() { openLightbox((activeIdx - 1 + STICKERS.length) % STICKERS.length); }
+    function lbNext() { openLightbox((activeIdx + 1) % STICKERS.length); }
+
+    // ============================================================
+    // EVENTS
+    // ============================================================
+    thumbsEl.addEventListener('click', (e) => {
+      const thumb = e.target.closest('.stk-thumb');
+      if (!thumb) return;
+      setHero(+thumb.dataset.idx);
+    });
+
+    heroPreview.addEventListener('click', () => openLightbox(activeIdx));
+
+    document.getElementById('lb-close').addEventListener('click', closeLightbox);
+    document.getElementById('lb-prev').addEventListener('click', (e) => { e.stopPropagation(); lbPrev(); });
+    document.getElementById('lb-next').addEventListener('click', (e) => { e.stopPropagation(); lbNext(); });
+    lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+
+    document.addEventListener('keydown', (e) => {
+      if (!lightbox.classList.contains('is-open')) return;
+      if (e.key === 'Escape')          closeLightbox();
+      else if (e.key === 'ArrowLeft')  lbPrev();
+      else if (e.key === 'ArrowRight') lbNext();
+    });
+
+    // Init
+    setHero(0);
+  </script>
+</body>
+</html>
