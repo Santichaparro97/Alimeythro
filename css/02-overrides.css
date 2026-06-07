@@ -392,7 +392,11 @@
       display: grid !important;
       grid-template-columns: 1fr auto 1fr;
       align-items: center;
-      padding: clamp(12px, 1.05vw, 18px) clamp(14px, 1.2vw, 22px) !important;
+      max-width: none !important;
+      /* Padding lateral simétrico al 6% del viewport (mismo offset que el hero left:6%)
+         → logo alineado verticalmente con el título principal "Cuentos, juegos y videos…"
+         max() asegura un mínimo de 20px en pantallas muy chicas */
+      padding: clamp(12px, 1.05vw, 18px) max(20px, 6%) !important;
     }
     .site-header .logo {
       justify-self: start;
