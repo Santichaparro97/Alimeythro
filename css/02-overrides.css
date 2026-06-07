@@ -381,3 +381,24 @@
       font-size: clamp(14px, 0.94vw, 18px) !important;
       padding: clamp(12px, 0.94vw, 15px) clamp(22px, 1.7vw, 30px) !important;
     }
+
+    /* ========================================================
+       HEADER LAYOUT — logo flush a la izquierda + nav centrado
+       Usa grid de 3 cols: 1fr (logo) | auto (nav) | 1fr (espejo)
+       La columna 3 vacía balancea el espacio para que el nav
+       quede perfectamente en el centro del viewport.
+       ======================================================== */
+    .site-header .header-inner {
+      display: grid !important;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: clamp(12px, 1.05vw, 18px) clamp(14px, 1.2vw, 22px) !important;
+    }
+    .site-header .logo {
+      justify-self: start;
+      grid-column: 1;
+    }
+    .site-header .nav-desktop {
+      justify-self: center;
+      grid-column: 2;
+    }
