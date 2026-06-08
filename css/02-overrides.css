@@ -406,3 +406,57 @@
       justify-self: center;
       grid-column: 2;
     }
+
+    /* ========================================================
+       EMOCIONES VS PANTALLAS — cards con forma de NUBE (SVG)
+       Mantiene el cardFloat existente (transform no choca con mask).
+       Sombra de profundidad implementada vía filter:drop-shadow
+       para que respete la silueta de nube (no la del rectángulo).
+       ======================================================== */
+    #emociones .card {
+      background: var(--cloud-bg, #c8e9fa) !important;
+      border: none !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      padding: clamp(36px, 4vw, 56px) clamp(28px, 3vw, 44px) clamp(36px, 4vw, 56px) !important;
+      filter:
+        drop-shadow(0 10px 0 var(--cloud-deep, rgba(51,175,237,0.45)))
+        drop-shadow(0 18px 26px rgba(0,0,0,0.08));
+      -webkit-mask-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 100' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'><path d='M30,78 Q5,78 5,60 Q5,42 25,44 Q30,22 52,28 Q58,8 82,14 Q102,4 118,18 Q142,12 148,32 Q170,32 168,55 Q182,62 172,78 Q166,92 142,86 Q116,96 90,86 Q66,96 46,86 Q32,92 30,78 Z' fill='black'/></svg>");
+              mask-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 100' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'><path d='M30,78 Q5,78 5,60 Q5,42 25,44 Q30,22 52,28 Q58,8 82,14 Q102,4 118,18 Q142,12 148,32 Q170,32 168,55 Q182,62 172,78 Q166,92 142,86 Q116,96 90,86 Q66,96 46,86 Q32,92 30,78 Z' fill='black'/></svg>");
+      -webkit-mask-size: 100% 100%;
+              mask-size: 100% 100%;
+      -webkit-mask-repeat: no-repeat;
+              mask-repeat: no-repeat;
+    }
+    /* Hover: no usar box-shadow (estaría clipeado), solo intensificar drop-shadow */
+    #emociones .card:hover {
+      box-shadow: none !important;
+      filter:
+        drop-shadow(0 14px 0 var(--cloud-deep, rgba(51,175,237,0.55)))
+        drop-shadow(0 24px 32px rgba(0,0,0,0.12)) !important;
+    }
+
+    /* 4 colores de la paleta, uno por nube */
+    #emociones .card:nth-child(1) {
+      --cloud-bg: #c8e9fa;
+      --cloud-deep: rgba(51,175,237,0.55);
+    }
+    #emociones .card:nth-child(2) {
+      --cloud-bg: #cdedba;
+      --cloud-deep: rgba(63,180,17,0.50);
+    }
+    #emociones .card:nth-child(3) {
+      --cloud-bg: #f6f4a8;
+      --cloud-deep: rgba(232,237,11,0.65);
+    }
+    #emociones .card:nth-child(4) {
+      --cloud-bg: #ffdda5;
+      --cloud-deep: rgba(248,160,10,0.55);
+    }
+
+    /* El texto adentro mantiene color navy y se ve cómodo sobre los pasteles */
+    #emociones .card p {
+      color: #1a1a2e !important;
+      font-weight: 600 !important;
+    }
