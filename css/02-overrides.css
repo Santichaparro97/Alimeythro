@@ -440,20 +440,20 @@
        + stroke sólido (contorno 3D del color de la paleta).
        Path: nube ancha que cubre ~92% del rectángulo. */
     #emociones .card:nth-child(1) {
-      --cloud-svg: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 100' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30,88 Q5,88 5,68 Q-2,42 18,36 Q20,12 45,18 Q55,2 80,8 Q100,-3 120,8 Q145,3 152,22 Q180,18 188,40 Q200,50 188,68 Q195,86 170,90 Q160,98 138,92 Q115,100 92,92 Q70,100 48,92 Q30,98 30,88 Z' fill='rgba(51,175,237,0.22)' stroke='%2333afed' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E");
-      --cloud-deep: rgba(51,175,237,0.40);
+      --cloud-svg: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 100' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30,88 Q5,88 5,68 Q-2,42 18,36 Q20,12 45,18 Q55,2 80,8 Q100,-3 120,8 Q145,3 152,22 Q180,18 188,40 Q200,50 188,68 Q195,86 170,90 Q160,98 138,92 Q115,100 92,92 Q70,100 48,92 Q30,98 30,88 Z' fill='rgba(51,175,237,0.13)' stroke='%2333afed' stroke-opacity='0.65' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E");
+      --cloud-deep: rgba(51,175,237,0.26);
     }
     #emociones .card:nth-child(2) {
-      --cloud-svg: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 100' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30,88 Q5,88 5,68 Q-2,42 18,36 Q20,12 45,18 Q55,2 80,8 Q100,-3 120,8 Q145,3 152,22 Q180,18 188,40 Q200,50 188,68 Q195,86 170,90 Q160,98 138,92 Q115,100 92,92 Q70,100 48,92 Q30,98 30,88 Z' fill='rgba(63,180,17,0.22)' stroke='%233fb411' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E");
-      --cloud-deep: rgba(63,180,17,0.40);
+      --cloud-svg: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 100' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30,88 Q5,88 5,68 Q-2,42 18,36 Q20,12 45,18 Q55,2 80,8 Q100,-3 120,8 Q145,3 152,22 Q180,18 188,40 Q200,50 188,68 Q195,86 170,90 Q160,98 138,92 Q115,100 92,92 Q70,100 48,92 Q30,98 30,88 Z' fill='rgba(63,180,17,0.13)' stroke='%233fb411' stroke-opacity='0.65' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E");
+      --cloud-deep: rgba(63,180,17,0.26);
     }
     #emociones .card:nth-child(3) {
-      --cloud-svg: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 100' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30,88 Q5,88 5,68 Q-2,42 18,36 Q20,12 45,18 Q55,2 80,8 Q100,-3 120,8 Q145,3 152,22 Q180,18 188,40 Q200,50 188,68 Q195,86 170,90 Q160,98 138,92 Q115,100 92,92 Q70,100 48,92 Q30,98 30,88 Z' fill='rgba(232,237,11,0.32)' stroke='%23c4c800' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E");
-      --cloud-deep: rgba(232,237,11,0.55);
+      --cloud-svg: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 100' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30,88 Q5,88 5,68 Q-2,42 18,36 Q20,12 45,18 Q55,2 80,8 Q100,-3 120,8 Q145,3 152,22 Q180,18 188,40 Q200,50 188,68 Q195,86 170,90 Q160,98 138,92 Q115,100 92,92 Q70,100 48,92 Q30,98 30,88 Z' fill='rgba(232,237,11,0.20)' stroke='%23c4c800' stroke-opacity='0.55' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E");
+      --cloud-deep: rgba(232,237,11,0.38);
     }
     #emociones .card:nth-child(4) {
-      --cloud-svg: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 100' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30,88 Q5,88 5,68 Q-2,42 18,36 Q20,12 45,18 Q55,2 80,8 Q100,-3 120,8 Q145,3 152,22 Q180,18 188,40 Q200,50 188,68 Q195,86 170,90 Q160,98 138,92 Q115,100 92,92 Q70,100 48,92 Q30,98 30,88 Z' fill='rgba(248,160,10,0.22)' stroke='%23f8a00a' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E");
-      --cloud-deep: rgba(248,160,10,0.45);
+      --cloud-svg: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 100' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30,88 Q5,88 5,68 Q-2,42 18,36 Q20,12 45,18 Q55,2 80,8 Q100,-3 120,8 Q145,3 152,22 Q180,18 188,40 Q200,50 188,68 Q195,86 170,90 Q160,98 138,92 Q115,100 92,92 Q70,100 48,92 Q30,98 30,88 Z' fill='rgba(248,160,10,0.13)' stroke='%23f8a00a' stroke-opacity='0.65' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E");
+      --cloud-deep: rgba(248,160,10,0.30);
     }
 
     /* Texto navy bold para máxima legibilidad sobre las nubes traslúcidas */
