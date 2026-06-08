@@ -408,55 +408,58 @@
     }
 
     /* ========================================================
-       EMOCIONES VS PANTALLAS — cards con forma de NUBE (SVG)
-       Mantiene el cardFloat existente (transform no choca con mask).
-       Sombra de profundidad implementada vía filter:drop-shadow
-       para que respete la silueta de nube (no la del rectángulo).
+       EMOCIONES VS PANTALLAS — NUBES SVG transparentes
+       Enfoque: SVG como BACKGROUND (no mask), con fill rgba
+       traslúcido + stroke sólido para el contorno 3D.
+       El texto va por encima sin recortarse.
        ======================================================== */
     #emociones .card {
-      background: var(--cloud-bg, #c8e9fa) !important;
+      background-color: transparent !important;
       border: none !important;
       border-radius: 0 !important;
       box-shadow: none !important;
-      padding: clamp(36px, 4vw, 56px) clamp(28px, 3vw, 44px) clamp(36px, 4vw, 56px) !important;
+      padding: clamp(48px, 5.5vw, 72px) clamp(40px, 4.5vw, 62px) !important;
+      -webkit-mask-image: none !important;
+              mask-image: none !important;
+      background-image: var(--cloud-svg) !important;
+      background-size: 100% 100% !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
       filter:
-        drop-shadow(0 10px 0 var(--cloud-deep, rgba(51,175,237,0.45)))
-        drop-shadow(0 18px 26px rgba(0,0,0,0.08));
-      -webkit-mask-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 100' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'><path d='M30,78 Q5,78 5,60 Q5,42 25,44 Q30,22 52,28 Q58,8 82,14 Q102,4 118,18 Q142,12 148,32 Q170,32 168,55 Q182,62 172,78 Q166,92 142,86 Q116,96 90,86 Q66,96 46,86 Q32,92 30,78 Z' fill='black'/></svg>");
-              mask-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 100' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'><path d='M30,78 Q5,78 5,60 Q5,42 25,44 Q30,22 52,28 Q58,8 82,14 Q102,4 118,18 Q142,12 148,32 Q170,32 168,55 Q182,62 172,78 Q166,92 142,86 Q116,96 90,86 Q66,96 46,86 Q32,92 30,78 Z' fill='black'/></svg>");
-      -webkit-mask-size: 100% 100%;
-              mask-size: 100% 100%;
-      -webkit-mask-repeat: no-repeat;
-              mask-repeat: no-repeat;
+        drop-shadow(0 8px 0 var(--cloud-deep, rgba(51,175,237,0.40)))
+        drop-shadow(0 18px 28px rgba(0,0,0,0.08));
     }
-    /* Hover: no usar box-shadow (estaría clipeado), solo intensificar drop-shadow */
     #emociones .card:hover {
       box-shadow: none !important;
       filter:
-        drop-shadow(0 14px 0 var(--cloud-deep, rgba(51,175,237,0.55)))
-        drop-shadow(0 24px 32px rgba(0,0,0,0.12)) !important;
+        drop-shadow(0 12px 0 var(--cloud-deep, rgba(51,175,237,0.55)))
+        drop-shadow(0 24px 34px rgba(0,0,0,0.12)) !important;
     }
 
-    /* 4 colores de la paleta, uno por nube */
+    /* Cada nube usa su propio SVG con fill rgba (trasparencia)
+       + stroke sólido (contorno 3D del color de la paleta).
+       Path: nube ancha que cubre ~92% del rectángulo. */
     #emociones .card:nth-child(1) {
-      --cloud-bg: #c8e9fa;
-      --cloud-deep: rgba(51,175,237,0.55);
+      --cloud-svg: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 100' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30,88 Q5,88 5,68 Q-2,42 18,36 Q20,12 45,18 Q55,2 80,8 Q100,-3 120,8 Q145,3 152,22 Q180,18 188,40 Q200,50 188,68 Q195,86 170,90 Q160,98 138,92 Q115,100 92,92 Q70,100 48,92 Q30,98 30,88 Z' fill='rgba(51,175,237,0.22)' stroke='%2333afed' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E");
+      --cloud-deep: rgba(51,175,237,0.40);
     }
     #emociones .card:nth-child(2) {
-      --cloud-bg: #cdedba;
-      --cloud-deep: rgba(63,180,17,0.50);
+      --cloud-svg: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 100' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30,88 Q5,88 5,68 Q-2,42 18,36 Q20,12 45,18 Q55,2 80,8 Q100,-3 120,8 Q145,3 152,22 Q180,18 188,40 Q200,50 188,68 Q195,86 170,90 Q160,98 138,92 Q115,100 92,92 Q70,100 48,92 Q30,98 30,88 Z' fill='rgba(63,180,17,0.22)' stroke='%233fb411' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E");
+      --cloud-deep: rgba(63,180,17,0.40);
     }
     #emociones .card:nth-child(3) {
-      --cloud-bg: #f6f4a8;
-      --cloud-deep: rgba(232,237,11,0.65);
+      --cloud-svg: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 100' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30,88 Q5,88 5,68 Q-2,42 18,36 Q20,12 45,18 Q55,2 80,8 Q100,-3 120,8 Q145,3 152,22 Q180,18 188,40 Q200,50 188,68 Q195,86 170,90 Q160,98 138,92 Q115,100 92,92 Q70,100 48,92 Q30,98 30,88 Z' fill='rgba(232,237,11,0.32)' stroke='%23c4c800' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E");
+      --cloud-deep: rgba(232,237,11,0.55);
     }
     #emociones .card:nth-child(4) {
-      --cloud-bg: #ffdda5;
-      --cloud-deep: rgba(248,160,10,0.55);
+      --cloud-svg: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 100' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30,88 Q5,88 5,68 Q-2,42 18,36 Q20,12 45,18 Q55,2 80,8 Q100,-3 120,8 Q145,3 152,22 Q180,18 188,40 Q200,50 188,68 Q195,86 170,90 Q160,98 138,92 Q115,100 92,92 Q70,100 48,92 Q30,98 30,88 Z' fill='rgba(248,160,10,0.22)' stroke='%23f8a00a' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E");
+      --cloud-deep: rgba(248,160,10,0.45);
     }
 
-    /* El texto adentro mantiene color navy y se ve cómodo sobre los pasteles */
+    /* Texto navy bold para máxima legibilidad sobre las nubes traslúcidas */
     #emociones .card p {
       color: #1a1a2e !important;
-      font-weight: 600 !important;
+      font-weight: 700 !important;
+      position: relative;
+      z-index: 2;
     }
