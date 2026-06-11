@@ -718,3 +718,26 @@
         justify-content: center !important;
       }
     }
+
+    /* ========================================================
+       MOBILE — Botones de Redes (Instagram, TikTok, YouTube)
+       en layout 2+1 centrado, igual que las 3-cards
+       Solo aplica en la 1° card de Comunidad (Redes) ≤768px
+       ======================================================== */
+    @media (max-width: 768px) {
+      #comunidad .card:first-child .btn-group {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 6px !important;
+        width: 100%;
+      }
+      #comunidad .card:first-child .btn-group .btn {
+        grid-column: span 2;
+        text-align: center;
+        width: auto !important;
+        padding: 8px 6px !important;
+      }
+      #comunidad .card:first-child .btn-group .btn:nth-child(3) {
+        grid-column: 2 / span 2;
+      }
+    }
