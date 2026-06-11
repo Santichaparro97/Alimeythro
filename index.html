@@ -50,8 +50,24 @@
         <a href="#faq">FAQ</a>
         <a href="#comunidad">Comunidad</a>
       </nav>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-mobile" type="button">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </header>
+
+  <!-- Overlay del menú mobile -->
+  <div class="nav-mobile" id="nav-mobile" aria-hidden="true">
+    <nav class="nav-mobile-inner">
+      <a href="#" class="active">Inicio</a>
+      <a href="#padres">Padres</a>
+      <a href="#que-es">Qué es Alimeythor</a>
+      <a href="#emociones">Emociones vs Pantallas</a>
+      <a href="#presentacion">Presentación</a>
+      <a href="#faq">FAQ</a>
+      <a href="#comunidad">Comunidad</a>
+    </nav>
+  </div>
 
   <!-- ====================== STORY STACK (hero + quien + alicia pineadas) ====================== -->
   <section class="story-stack">
@@ -432,6 +448,46 @@
 
   <!-- ====== Fast return: posicionar instantáneo y mostrar body ====== -->
   <script src="./js/07-fast-return-late.js"></script>
+
+  <!-- Menú hamburguesa mobile -->
+  <script>
+    (function () {
+      const btn = document.getElementById('nav-toggle');
+      const menu = document.getElementById('nav-mobile');
+      if (!btn || !menu) return;
+
+      function open() {
+        btn.classList.add('is-open');
+        menu.classList.add('is-open');
+        btn.setAttribute('aria-expanded', 'true');
+        menu.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('nav-open');
+      }
+      function close() {
+        btn.classList.remove('is-open');
+        menu.classList.remove('is-open');
+        btn.setAttribute('aria-expanded', 'false');
+        menu.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('nav-open');
+      }
+      function toggle() {
+        if (menu.classList.contains('is-open')) close();
+        else open();
+      }
+
+      btn.addEventListener('click', toggle);
+      // Click en cualquier link del menú → cerrar
+      menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', close));
+      // Escape → cerrar
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && menu.classList.contains('is-open')) close();
+      });
+      // Click fuera de los links (sobre el overlay) → cerrar
+      menu.addEventListener('click', (e) => {
+        if (e.target === menu) close();
+      });
+    })();
+  </script>
 
 </body>
 </html>
