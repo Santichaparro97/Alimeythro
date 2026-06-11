@@ -641,3 +641,80 @@
       }
       .site-header .logo-img { height: 46px !important; }
     }
+
+    /* ========================================================
+       MOBILE — Layouts 2x2 / 2+1 en las 4 secciones de cards
+       Solo aplica ≤768px. La 3° card en sections con 3 cards
+       se centra abajo con mismo ancho que las de arriba.
+       ======================================================== */
+    @media (max-width: 768px) {
+      /* PADRES (4 cards) — 2x2 */
+      #padres .cards-grid,
+      #padres .cards-grid--4 {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+      }
+
+      /* QUÉ ES ALIMEYTHOR (3 cards) — 2 arriba + 1 centrada abajo */
+      #que-es .cards-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 12px !important;
+      }
+      #que-es .cards-grid > .card { grid-column: span 2; }
+      #que-es .cards-grid > .card:nth-child(3) { grid-column: 2 / span 2; }
+
+      /* EMOCIONES VS PANTALLAS (4 nubes) — 2x2 */
+      #emociones .cards-grid,
+      #emociones .cards-grid--2 {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 14px !important;
+      }
+
+      /* COMUNIDAD (3 cards) — 2 arriba + 1 centrada abajo */
+      #comunidad .cards-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 12px !important;
+      }
+      #comunidad .cards-grid > .card { grid-column: span 2; }
+      #comunidad .cards-grid > .card:nth-child(3) { grid-column: 2 / span 2; }
+
+      /* Padding/tipografía interna ajustada para columnas más angostas */
+      #padres .card,
+      #que-es .card,
+      #comunidad .card {
+        padding: 20px 14px !important;
+      }
+      #emociones .card {
+        padding: 28px 16px !important;
+      }
+      #padres .card h4,
+      #que-es .card h4,
+      #comunidad .card h4 { font-size: 15px !important; }
+      #padres .card p,
+      #que-es .card p,
+      #comunidad .card p,
+      #emociones .card p {
+        font-size: 13px !important;
+        max-width: 100% !important;
+        line-height: 1.45 !important;
+      }
+      #padres .card-icon,
+      #que-es .card-icon,
+      #comunidad .card-icon {
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 22px !important;
+        margin: 0 auto 10px !important;
+      }
+      /* Botones dentro de cards en mobile 2-col: más chicos */
+      #que-es .card .btn,
+      #comunidad .card .btn {
+        font-size: 11px !important;
+        padding: 8px 14px !important;
+      }
+      /* Botones de Redes (Instagram/TikTok/YouTube): wrap y centro */
+      #comunidad .card .btn-group {
+        gap: 6px !important;
+        justify-content: center !important;
+      }
+    }
