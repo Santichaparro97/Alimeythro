@@ -189,11 +189,15 @@
     }
     .hero h1 .hl-red { color: #f8231c; }
     /* Efecto lupa: cada letra se agranda al acercarse el cursor */
+    .hero h1 { cursor: default; }
     .hero h1 .mag-ch {
       display: inline-block;
       transform-origin: 50% 75%;
       transition: transform 0.13s ease-out;
       will-change: transform;
+      cursor: default;
+      -webkit-user-select: none;
+      user-select: none;
     }
     .hero-sub {
       font-size: clamp(16px, 1.2vw, 19px);
@@ -1842,8 +1846,8 @@
       splitNode(h1);
 
       const chars = Array.from(h1.querySelectorAll('.mag-ch'));
-      const R = 70;        // radio de influencia de la "lupa" (px)
-      const BOOST = 0.50;  // crecimiento máximo (~50%)
+      const R = 80;        // radio de influencia de la "lupa" (px)
+      const BOOST = 0.75;  // crecimiento máximo (~75%)
       let raf = null, mx = 0, my = 0;
 
       function update() {
