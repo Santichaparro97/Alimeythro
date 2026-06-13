@@ -519,41 +519,25 @@
     .area-card {
       --acc: #33afed;
       --acc-soft: rgba(51,175,237,0.14);
-      --mx: 50%; --my: 50%;                       /* posición del cursor dentro de la carta */
       position: relative;
-      overflow: hidden;
       background: rgba(255,255,255,0.94);
       border-radius: 24px;
       border-left: 6px solid var(--acc);
       padding: clamp(22px, 2.6vw, 32px) clamp(20px, 2.4vw, 30px);
       box-shadow: 0 8px 0 var(--acc-soft), 0 18px 34px rgba(26,26,46,0.08);
-      transition: box-shadow 0.35s ease, border-color 0.35s ease;
+      transition: transform 0.12s ease-out, box-shadow 0.35s ease, border-color 0.35s ease;
     }
-    /* Al pasar el mouse: glow de color (el hundimiento es localizado, lo da ::after) */
+    /* Al pasar el mouse: glow de color; el hundimiento 3D lo da el JS
+       inclinando la carta hacia el cursor (esa zona se va hacia adentro) */
     .area-card:hover {
+      z-index: 3;
       border-color: var(--acc);
       box-shadow:
         0 6px 0 var(--acc-soft),
-        0 14px 30px rgba(26,26,46,0.10),
+        0 16px 32px rgba(26,26,46,0.12),
         0 0 38px var(--acc-glow),
         inset 0 0 22px var(--acc-glow);
     }
-    /* Hoyuelo de profundidad que sigue al cursor: solo se hunde esa parte */
-    .area-card::after {
-      content: '';
-      position: absolute; inset: 0;
-      border-radius: inherit;
-      pointer-events: none;
-      z-index: 2;
-      opacity: 0;
-      transition: opacity 0.18s ease;
-      mix-blend-mode: multiply;
-      background: radial-gradient(150px circle at var(--mx) var(--my),
-        rgba(150,150,172,1) 0%,
-        rgba(196,196,212,1) 36%,
-        rgba(255,255,255,1) 62%);
-    }
-    .area-card:hover::after { opacity: 1; }
     .area-card--blue   { --acc: #33afed; --acc-soft: rgba(51,175,237,0.16); --acc-glow: rgba(51,175,237,0.42); }
     .area-card--orange { --acc: #f8a00a; --acc-soft: rgba(248,160,10,0.18); --acc-glow: rgba(248,160,10,0.44); }
     .area-card--violet { --acc: #ed1cb9; --acc-soft: rgba(237,28,185,0.13); --acc-glow: rgba(237,28,185,0.40); }
@@ -1803,21 +1787,29 @@
       setTimeout(() => { if (flip) flip.classList.remove('is-on', 'is-back'); }, 1500);
     })();
 
-    /* ===== Profundidad localizada en las cartas de "emociones": se hunde donde está el mouse ===== */
+    /* ===== Cartas de "emociones": se hunde la parte donde pasa el mouse (inclinación 3D) ===== */
     (function () {
       if (!window.matchMedia || !window.matchMedia('(hover: hover)').matches) return;
+      const TILT = 9;   // grados de inclinación (cuánto se hunde la zona del cursor)
       document.querySelectorAll('.area-card').forEach((card) => {
-        let raf = null, px = 50, py = 50;
+        let raf = null, oxf = 0.5, oyf = 0.5;
         function apply() {
           raf = null;
-          card.style.setProperty('--mx', px.toFixed(1) + '%');
-          card.style.setProperty('--my', py.toFixed(1) + '%');
+          // la zona bajo el cursor se va hacia adentro (recede): se hunde ahí
+          const rx = (0.5 - oyf) * TILT;   // cursor arriba → se hunde arriba
+          const ry = (oxf - 0.5) * TILT;   // cursor a la derecha → se hunde a la derecha
+          card.style.transform =
+            'perspective(680px) rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg) scale(0.99)';
         }
         card.addEventListener('mousemove', (e) => {
           const r = card.getBoundingClientRect();
-          px = ((e.clientX - r.left) / r.width) * 100;
-          py = ((e.clientY - r.top) / r.height) * 100;
+          oxf = (e.clientX - r.left) / r.width;
+          oyf = (e.clientY - r.top) / r.height;
           if (!raf) raf = requestAnimationFrame(apply);
+        });
+        card.addEventListener('mouseleave', () => {
+          if (raf) { cancelAnimationFrame(raf); raf = null; }
+          card.style.transform = '';
         });
       });
     })();
