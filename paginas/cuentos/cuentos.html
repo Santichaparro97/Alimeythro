@@ -10,203 +10,270 @@
   <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
     body {
       font-family: 'Poppins', sans-serif;
       color: #1a1a2e;
-      background: linear-gradient(180deg, #fff5f5 0%, #ffe5e5 100%);
-      min-height: 100vh;
+      background: #fff8f5;
       -webkit-font-smoothing: antialiased;
     }
     a { color: inherit; text-decoration: none; }
-    h1, h2, .back-btn, .story-title { font-family: 'Chewy', 'Poppins', sans-serif; letter-spacing: 0.5px; font-weight: 400 !important; }
+    h1, h2, .back-btn, .ck-title { font-family: 'Chewy', 'Poppins', sans-serif; letter-spacing: 0.5px; font-weight: 400; }
 
-    .back-bar {
-      position: fixed;
-      top: 18px;
-      left: 18px;
-      z-index: 10;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .back-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 18px;
-      background: #f8231c;
-      color: #fff;
-      font-weight: 700;
-      font-size: 14px;
-      border-radius: 999px;
-      box-shadow: 0 8px 20px rgba(248, 35, 28,0.35);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .back-btn--ghost {
-      background: #fff;
-      color: #f8231c;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.10);
-    }
-    .back-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 24px rgba(248, 35, 28,0.45);
-    }
+    /* ===== Fondo suave Alimeythor (bosque + velo claro) ===== */
+    .bg-video { position: fixed; inset: 0; width: 100vw; height: 100vh; object-fit: cover; z-index: -2; pointer-events: none; }
+    .bg-veil  { position: fixed; inset: 0; z-index: -1; pointer-events: none;
+      background: linear-gradient(180deg, rgba(255,250,247,0.84) 0%, rgba(255,248,245,0.74) 50%, rgba(255,250,247,0.87) 100%); }
+    .twinkle { position: fixed; width: 5px; height: 5px; z-index: 0; pointer-events: none; border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,250,210,0.9) 0%, rgba(248,160,10,0.35) 60%, transparent 75%);
+      animation: twinkleV5 3.2s ease-in-out infinite; }
+    @keyframes twinkleV5 { 0%,100% { opacity: 0.12; transform: scale(0.7); } 50% { opacity: 0.5; transform: scale(1.15); } }
 
-    .wrap {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 100px 32px 80px;
-      text-align: center;
-    }
-    .eyebrow {
-      display: inline-block;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      color: #f8231c;
-      background: rgba(248, 35, 28,0.10);
-      padding: 6px 16px;
-      border-radius: 999px;
-      text-transform: uppercase;
-      margin-bottom: 18px;
-    }
-    h1 {
-      font-size: clamp(32px, 4.4vw, 54px);
-      font-weight: 900;
-      line-height: 1.1;
-      letter-spacing: -0.6px;
-      margin-bottom: 14px;
-    }
-    h1 .accent { color: #f8231c; }
-    .sub {
-      font-size: clamp(15px, 1vw, 18px);
-      color: #6a6a82;
-      max-width: 620px;
-      margin: 0 auto 60px;
-      line-height: 1.65;
-    }
+    /* ===== Layout principal 20 / 80 ===== */
+    .app { display: flex; height: 100vh; position: relative; z-index: 1; }
 
-    .stories {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-    }
-    .story {
-      background: #fff;
-      border-radius: 24px;
-      padding: 36px 24px;
-      box-shadow: 0 18px 36px rgba(0,0,0,0.08), 0 4px 0 rgba(248, 35, 28,0.06);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* ----- Checklist (20%) ----- */
+    .sidebar {
+      width: 20%;
+      min-width: 248px;
+      max-width: 340px;
+      height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      padding: 18px 16px;
       gap: 14px;
-      text-align: center;
+      background: rgba(255,255,255,0.66);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-right: 1.5px solid rgba(248,35,28,0.12);
+      box-shadow: 6px 0 28px rgba(120,80,20,0.08);
+      overflow-y: auto;
     }
-    .story:hover {
-      transform: translateY(-6px) scale(1.03);
-      box-shadow: 0 28px 50px rgba(248, 35, 28,0.18), 0 8px 0 rgba(248, 35, 28,0.10);
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 16px;
+      background: #f8231c; color: #fff;
+      font-size: 14px; font-weight: 700;
+      border-radius: 999px;
+      box-shadow: 0 8px 20px rgba(248,35,28,0.32);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      align-self: flex-start;
+      font-family: 'Poppins', sans-serif;
     }
-    .story-emoji {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      background: rgba(248, 35, 28,0.10);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 34px;
-      transition: background 0.3s ease, transform 0.3s ease;
-    }
-    .story:hover .story-emoji {
-      background: rgba(248, 35, 28,0.20);
-      transform: scale(1.08);
-    }
-    .story-title {
-      font-size: 18px;
-      font-weight: 800;
-      color: #1a1a2e;
-      line-height: 1.25;
-    }
-    .story-cta {
-      margin-top: 6px;
-      font-size: 13px;
-      font-weight: 700;
-      color: #f8231c;
-      letter-spacing: 0.3px;
-    }
+    .back-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(248,35,28,0.42); }
 
-    @media (max-width: 900px) {
-      .stories { grid-template-columns: repeat(2, 1fr); }
+    .ck-head { padding: 2px 4px 0; }
+    .ck-eyebrow {
+      display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      color: #f8231c; background: rgba(248,35,28,0.10);
+      padding: 4px 12px; border-radius: 999px; text-transform: uppercase;
     }
-    @media (max-width: 560px) {
-      .stories { grid-template-columns: 1fr; }
-      .wrap { padding: 100px 20px 60px; }
+    .ck-title { font-size: 26px; line-height: 1.05; margin-top: 8px; }
+    .ck-title .accent { color: #f8231c; }
+    .ck-sub { font-size: 12.5px; color: #6a6a82; margin-top: 4px; line-height: 1.45; }
+
+    .ck-list { display: flex; flex-direction: column; gap: 10px; margin-top: 2px; }
+    .ck-item {
+      display: flex; align-items: center; gap: 12px;
+      width: 100%; text-align: left;
+      padding: 12px 14px;
+      background: #fff;
+      border: 1.5px solid rgba(0,0,0,0.06);
+      border-radius: 16px;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+      font-family: 'Poppins', sans-serif;
     }
-  
-    /* ===== v5-theme-patch: bosque + cielo titilante + entrada ===== */
-    body { background: #fff8f5 !important; }
-    .bg-video { position: fixed; inset: 0; width: 100vw; height: 100vh; object-fit: cover; z-index: -2; pointer-events: none; }
-    .bg-veil { position: fixed; inset: 0; background: linear-gradient(180deg, rgba(255,250,247,0.82) 0%, rgba(255,248,245,0.72) 50%, rgba(255,250,247,0.85) 100%); z-index: -1; pointer-events: none; }
-    .twinkle { position: fixed; width: 5px; height: 5px; z-index: 0; pointer-events: none; border-radius: 50%; background: radial-gradient(circle, rgba(255,250,210,0.9) 0%, rgba(248,160,10,0.35) 60%, transparent 75%); animation: twinkleV5 3.2s ease-in-out infinite; }
-    @keyframes twinkleV5 { 0%,100% { opacity: 0.12; transform: scale(0.7); } 50% { opacity: 0.55; transform: scale(1.15); } }
-    .wrap { animation: pageInV5 0.7s cubic-bezier(.2,.8,.2,1) both; }
-    @keyframes pageInV5 { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
-  
+    .ck-item:hover { transform: translateY(-2px); box-shadow: 0 12px 22px rgba(248,35,28,0.14); border-color: rgba(248,35,28,0.30); }
+    .ck-emoji {
+      flex-shrink: 0;
+      width: 42px; height: 42px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      background: rgba(248,35,28,0.10);
+      transition: background 0.18s ease, transform 0.18s ease;
+    }
+    .ck-item:hover .ck-emoji { background: rgba(248,35,28,0.18); transform: scale(1.06); }
+    .ck-label { font-size: 14.5px; font-weight: 700; color: #1a1a2e; line-height: 1.2; }
+    .ck-cta { font-size: 11.5px; font-weight: 600; color: #6a6a82; margin-top: 1px; }
+
+    .ck-item.is-active {
+      background: #f8231c; border-color: #f8231c;
+      box-shadow: 0 12px 26px rgba(248,35,28,0.32);
+    }
+    .ck-item.is-active .ck-label { color: #fff; }
+    .ck-item.is-active .ck-cta { color: rgba(255,255,255,0.85); }
+    .ck-item.is-active .ck-emoji { background: rgba(255,255,255,0.22); }
+
+    /* ----- Lector (80%) ----- */
+    .reader { flex: 1; position: relative; height: 100vh; overflow: hidden; }
+    .reader iframe {
+      width: 100%; height: 100%;
+      border: 0; display: block; background: transparent;
+      opacity: 0; transition: opacity 0.45s ease;
+    }
+    .reader iframe.is-ready { opacity: 1; }
+
+    .placeholder {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 14px; text-align: center; padding: 24px;
+      transition: opacity 0.35s ease;
+    }
+    .placeholder.is-hidden { opacity: 0; pointer-events: none; }
+    .ph-book { font-size: clamp(56px, 9vh, 96px); animation: phFloat 3.6s ease-in-out infinite; }
+    @keyframes phFloat { 0%,100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-12px) rotate(3deg); } }
+    .ph-title { font-family: 'Chewy','Poppins',sans-serif; font-size: clamp(24px, 3.4vw, 38px); color: #1a1a2e; }
+    .ph-title .accent { color: #f8231c; }
+    .ph-sub { font-size: 15px; color: #6a6a82; max-width: 420px; line-height: 1.5; }
+
+    /* ----- Botón hamburguesa (solo celular) ----- */
+    .ck-toggle {
+      display: none;
+      position: fixed; top: 16px; left: 16px; z-index: 60;
+      width: 48px; height: 48px; border: 0; cursor: pointer;
+      border-radius: 14px; background: #f8231c; color: #fff;
+      box-shadow: 0 8px 20px rgba(248,35,28,0.38);
+      align-items: center; justify-content: center;
+    }
+    .ck-toggle svg { width: 24px; height: 24px; stroke: #fff; stroke-width: 2.4; fill: none; stroke-linecap: round; }
+    .scrim { display: none; }
+
+    /* ===== Celular: checklist colapsable (off-canvas) ===== */
+    @media (max-width: 768px) {
+      .ck-toggle { display: flex; }
+      .reader { width: 100%; }
+      .sidebar {
+        position: fixed; top: 0; left: 0; z-index: 70;
+        width: 82%; max-width: 360px; height: 100vh;
+        transform: translateX(-104%);
+        transition: transform 0.32s cubic-bezier(.2,.8,.2,1);
+        background: rgba(255,250,247,0.97);
+        padding-top: 74px;
+      }
+      .sidebar.is-open { transform: translateX(0); }
+      .scrim {
+        display: block; position: fixed; inset: 0; z-index: 65;
+        background: rgba(26,26,46,0.42);
+        opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+      }
+      .scrim.is-open { opacity: 1; pointer-events: auto; }
+    }
   </style>
 </head>
 <body>
 
-<video class="bg-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true"><source src="../../fondo.mp4" type="video/mp4" /></video>
-<div class="bg-veil" aria-hidden="true"></div>
+  <video class="bg-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true"><source src="../../fondo.mp4" type="video/mp4" /></video>
+  <div class="bg-veil" aria-hidden="true"></div>
 
+  <button class="ck-toggle" id="ck-toggle" aria-label="Abrir lista de cuentos">
+    <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+  </button>
+  <div class="scrim" id="scrim"></div>
 
-  <div class="back-bar">
-    <a href="../../index.html" class="back-btn" onclick="try{sessionStorage.setItem('alm_return','explorar');}catch(e){}">← Volver a Alimeythor</a>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <a href="../../index.html" class="back-btn" onclick="try{sessionStorage.setItem('alm_return','explorar');}catch(e){}">← Volver a Alimeythor</a>
+      <div class="ck-head">
+        <span class="ck-eyebrow">Cuentos</span>
+        <h1 class="ck-title">Elegí tu <span class="accent">historia</span></h1>
+        <p class="ck-sub">Seis cuentos para leer en familia. Tocá uno y se abre acá al lado.</p>
+      </div>
+      <div class="ck-list" id="ck-list"></div>
+    </aside>
+
+    <main class="reader">
+      <div class="placeholder" id="placeholder">
+        <div class="ph-book">📖</div>
+        <div class="ph-title">Elegí un <span class="accent">cuento</span></div>
+        <p class="ph-sub">Seleccioná una historia del menú para empezar a leer. El cuento se va a abrir en esta pantalla con todos sus efectos.</p>
+      </div>
+      <iframe id="frame" title="Cuento" allow="autoplay; fullscreen" allowfullscreen></iframe>
+    </main>
   </div>
 
-  <div class="wrap">
-    <span class="eyebrow">Cuentos</span>
-    <h1>Historias para <span class="accent">leer en familia</span></h1>
-    <p class="sub">Seis cuentos pensados para acompañar emociones, hábitos y vínculos. Clickeá uno para empezar.</p>
+  <script>
+    const CUENTOS = [
+      { file: 'cuento-bano-magico.html',        emoji: '🛁', title: 'El Baño Mágico' },
+      { file: 'cuento-sonrisa-magica.html',     emoji: '😊', title: 'La Sonrisa Mágica' },
+      { file: 'cuento-respeto-y-amor.html',     emoji: '💗', title: 'Respeto y Amor' },
+      { file: 'cuento-oveja-negra.html',        emoji: '🐑', title: 'La Oveja Negra' },
+      { file: 'cuento-frasco-brillante.html',   emoji: '✨', title: 'El Frasco Brillante' },
+      { file: 'cuento-gran-misterio-bano.html', emoji: '🔍', title: 'El Gran Misterio del Baño' }
+    ];
 
-    <div class="stories">
-      <a href="./cuento-bano-magico.html" class="story">
-        <div class="story-emoji">🛁</div>
-        <div class="story-title">El Baño Mágico</div>
-        <span class="story-cta">Leer cuento →</span>
-      </a>
-      <a href="./cuento-sonrisa-magica.html" class="story">
-        <div class="story-emoji">😊</div>
-        <div class="story-title">La Sonrisa Mágica</div>
-        <span class="story-cta">Leer cuento →</span>
-      </a>
-      <a href="./cuento-respeto-y-amor.html" class="story">
-        <div class="story-emoji">💗</div>
-        <div class="story-title">Respeto y Amor</div>
-        <span class="story-cta">Leer cuento →</span>
-      </a>
-      <a href="./cuento-oveja-negra.html" class="story">
-        <div class="story-emoji">🐑</div>
-        <div class="story-title">La Oveja Negra</div>
-        <span class="story-cta">Leer cuento →</span>
-      </a>
-      <a href="./cuento-frasco-brillante.html" class="story">
-        <div class="story-emoji">✨</div>
-        <div class="story-title">El Frasco Brillante</div>
-        <span class="story-cta">Leer cuento →</span>
-      </a>
-      <a href="./cuento-gran-misterio-bano.html" class="story">
-        <div class="story-emoji">🔍</div>
-        <div class="story-title">El Gran Misterio del Baño</div>
-        <span class="story-cta">Leer cuento →</span>
-      </a>
-    </div>
-  </div>
+    const listEl  = document.getElementById('ck-list');
+    const frame   = document.getElementById('frame');
+    const phEl     = document.getElementById('placeholder');
+    const sidebar = document.getElementById('sidebar');
+    const scrim   = document.getElementById('scrim');
+    const toggle  = document.getElementById('ck-toggle');
+    let activeIdx = -1;
 
+    // ----- Render del checklist -----
+    CUENTOS.forEach((c, i) => {
+      const b = document.createElement('button');
+      b.className = 'ck-item';
+      b.innerHTML = '<span class="ck-emoji">' + c.emoji + '</span>' +
+                    '<span><span class="ck-label">' + c.title + '</span>' +
+                    '<span class="ck-cta" style="display:block;">Leer cuento →</span></span>';
+      b.addEventListener('click', () => select(i));
+      listEl.appendChild(b);
+    });
 
-<script>
-(function(){ var S=[[6,14],[16,64],[9,86],[26,32],[38,78],[60,22],[72,66],[84,12],[90,48],[94,84]]; S.forEach(function(p,i){ var t=document.createElement('div'); t.className='twinkle'; t.style.left=p[0]+'vw'; t.style.top=p[1]+'vh'; t.style.animationDelay=(i*0.42)+'s'; t.style.animationDuration=(2.6+(i%4)*0.5)+'s'; document.body.appendChild(t); }); })();
-</script>
+    function select(i) {
+      if (i === activeIdx) { closeSidebar(); return; }
+      activeIdx = i;
+      Array.from(listEl.children).forEach((el, k) => el.classList.toggle('is-active', k === i));
+      // El cuento se "limpia" (fondo + botones internos) recién cuando termina de cargar
+      frame.classList.remove('is-ready');
+      frame.src = CUENTOS[i].file;
+      phEl.classList.add('is-hidden');
+      closeSidebar();
+    }
+
+    // ----- Al cargar el cuento: quitar su fondo y la cromática interna -----
+    frame.addEventListener('load', () => {
+      if (!frame.src) return;
+      try {
+        const doc = frame.contentDocument;
+        if (!doc) return;
+        // Fondo transparente para que se vea el bosque suave de Alimeythor
+        if (doc.documentElement) doc.documentElement.style.background = 'transparent';
+        if (doc.body) doc.body.style.background = 'transparent';
+        // Ocultar la cromática propia del cuento (su barra de volver, título y hint)
+        ['#back-to-alimeythor-overlay', '.title', '.hint'].forEach(sel => {
+          const node = doc.querySelector(sel);
+          if (node) node.style.display = 'none';
+        });
+        frame.classList.add('is-ready');
+      } catch (e) {
+        // si por algún motivo no se pudo limpiar, igual mostramos el cuento
+        frame.classList.add('is-ready');
+      }
+    });
+
+    // ----- Checklist colapsable (celular) -----
+    function openSidebar()  { sidebar.classList.add('is-open');  scrim.classList.add('is-open'); }
+    function closeSidebar() { sidebar.classList.remove('is-open'); scrim.classList.remove('is-open'); }
+    toggle.addEventListener('click', () => {
+      sidebar.classList.contains('is-open') ? closeSidebar() : openSidebar();
+    });
+    scrim.addEventListener('click', closeSidebar);
+
+    // ----- Estrellitas titilando del fondo -----
+    (function () {
+      const S = [[6,14],[16,64],[9,86],[26,32],[38,78],[60,22],[72,66],[84,12],[90,48],[94,84]];
+      S.forEach((p, i) => {
+        const t = document.createElement('div');
+        t.className = 'twinkle';
+        t.style.left = p[0] + 'vw'; t.style.top = p[1] + 'vh';
+        t.style.animationDelay = (i * 0.42) + 's';
+        t.style.animationDuration = (2.6 + (i % 4) * 0.5) + 's';
+        document.body.appendChild(t);
+      });
+    })();
+  </script>
 </body>
 </html>
