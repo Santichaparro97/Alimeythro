@@ -432,12 +432,13 @@
     }
     /* Iluminación del color de la card al pasar el mouse (igual que las áreas) */
     .showcase-card:hover {
-      transform: translateY(-8px);
+      transform: translateY(-8px) scale(1.07);
+      z-index: 5;                                 /* la card agrandada queda por encima de las otras */
       border-color: var(--accent);
       box-shadow:
         0 12px 0 var(--accent-soft),
-        0 28px 48px rgba(26,26,46,0.14),
-        0 0 40px var(--accent-glow),
+        0 30px 54px rgba(26,26,46,0.18),
+        0 0 48px var(--accent-glow),
         0 0 22px var(--accent-glow) inset;
     }
     .showcase-card--blue   { --accent: #33afed; --accent-soft: rgba(51,175,237,0.22); --accent-glow: rgba(51,175,237,0.42); }
@@ -494,8 +495,8 @@
     .showcase-stack .showcase-card:nth-child(3) { transform: translateX(-15px); }
     .showcase-stack .showcase-card:nth-child(2) { transform: translateX(25px); }
     .showcase-stack .showcase-card:nth-child(1):hover,
-    .showcase-stack .showcase-card:nth-child(3):hover { transform: translateX(-15px) translateY(-6px); }
-    .showcase-stack .showcase-card:nth-child(2):hover { transform: translateX(25px) translateY(-6px); }
+    .showcase-stack .showcase-card:nth-child(3):hover { transform: translateX(-15px) translateY(-8px) scale(1.07); z-index: 5; }
+    .showcase-stack .showcase-card:nth-child(2):hover { transform: translateX(25px) translateY(-8px) scale(1.07); z-index: 5; }
 
     /* ============================================================
        POR QUÉ — 4 áreas con pregunta identificatoria + solución

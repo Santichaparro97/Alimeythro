@@ -110,54 +110,51 @@
       margin-bottom: 36px;
     }
     .tab-btn {
-      background: #fff;
-      border: 2px solid rgba(248,35,28,0.10);
-      color: #1a1a2e;
-      padding: 14px 28px;
-      border-radius: 999px;
+      --c: 248,35,28;
+      background: transparent;
+      border: 0;
       cursor: pointer;
-      font-size: 19px;
-      font-weight: 400;
-      transition: transform 0.25s ease, background 0.2s ease, color 0.2s ease, box-shadow 0.25s ease;
+      color: #1a1a2e;
+      font-size: clamp(17px, 1.7vw, 22px);
+      font-weight: 500;
+      padding: 4px 2px;
       display: inline-flex;
       align-items: center;
-      gap: 10px;
-      box-shadow: 0 6px 0 rgba(248,35,28,0.18), 0 12px 22px rgba(248,35,28,0.08);
-      animation: tabFloat 3.6s ease-in-out infinite;
+      gap: 9px;
+      opacity: 0.7;
+      transition: transform 0.2s ease, opacity 0.2s ease;
     }
-    /* Desfasaje en ola para que no floten todos a la vez */
-    .tab-btn:nth-child(1) { animation-delay: 0s; }
-    .tab-btn:nth-child(2) { animation-delay: 0.35s; }
-    .tab-btn:nth-child(3) { animation-delay: 0.70s; }
-    .tab-btn:nth-child(4) { animation-delay: 1.05s; }
-    .tab-btn:nth-child(5) { animation-delay: 1.40s; }
-    .tab-btn:hover {
-      animation-play-state: paused;
-      transform: translateY(-5px) !important;
-      box-shadow: 0 9px 0 rgba(248,35,28,0.26), 0 16px 28px rgba(248,35,28,0.16);
+    /* Banda de subrayado suave (mismo formato que 'frecuentes'), un color por pestaña */
+    .tab-btn .tab-label {
+      padding: 0 7px;
+      border-radius: 5px;
+      -webkit-box-decoration-break: clone;
+      box-decoration-break: clone;
+      background: linear-gradient(180deg, transparent 32%, rgba(var(--c),0.22) 32%, rgba(var(--c),0.22) 92%, transparent 92%);
+      transition: background 0.2s ease;
     }
-    .tab-btn.is-active {
-      background: linear-gradient(135deg, #f8a00a, #f8231c);
-      color: #fff;
-      border-color: transparent;
-      box-shadow: 0 6px 0 #C42836, 0 12px 22px rgba(248,160,10,0.30);
+    .tab-btn:hover { opacity: 1; transform: translateY(-3px); }
+    /* La pestaña activa lleva el subrayado más marcado */
+    .tab-btn.is-active { opacity: 1; font-weight: 700; }
+    .tab-btn.is-active .tab-label {
+      background: linear-gradient(180deg, transparent 26%, rgba(var(--c),0.42) 26%, rgba(var(--c),0.42) 94%, transparent 94%);
     }
-    .tab-btn.is-active:hover { box-shadow: 0 9px 0 #C42836, 0 16px 28px rgba(248,160,10,0.40); }
+    /* Colores suaves por pestaña */
+    .tab-btn:nth-child(1) { --c: 248,35,28; }   /* rojo */
+    .tab-btn:nth-child(2) { --c: 248,160,10; }  /* naranja */
+    .tab-btn:nth-child(3) { --c: 63,180,17; }   /* verde */
+    .tab-btn:nth-child(4) { --c: 51,175,237; }  /* azul */
+    .tab-btn:nth-child(5) { --c: 237,28,185; }  /* violeta */
 
-    @keyframes tabFloat {
-      0%, 100% { transform: translateY(0); }
-      50%      { transform: translateY(-6px); }
-    }
     .tab-btn .tab-count {
-      background: rgba(0,0,0,0.08);
-      color: inherit;
+      background: rgba(var(--c),0.16);
+      color: #1a1a2e;
       font-size: 11px;
       font-weight: 700;
       padding: 2px 8px;
       border-radius: 999px;
       font-family: 'Poppins', sans-serif;
     }
-    .tab-btn.is-active .tab-count { background: rgba(255,255,255,0.30); }
 
     /* ============= GRID DE FOTOS ============= */
     .gallery {
@@ -276,7 +273,8 @@
       .lb-next { right: 8px; }
       .lb-btn { width: 44px; height: 44px; font-size: 20px; }
       .gallery { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
-      .tab-btn { font-size: 13px; padding: 10px 16px; }
+      .tabs { gap: 12px 18px; }
+      .tab-btn { font-size: 15px; padding: 3px 2px; gap: 6px; }
     }
   </style>
 </head>
@@ -345,7 +343,7 @@
       tabsEl.innerHTML = SECTIONS.map((s, i) => `
         <button class="tab-btn ${i === activeSection ? 'is-active' : ''}" data-idx="${i}" role="tab" aria-selected="${i === activeSection}">
           <span>${s.emoji}</span>
-          <span>${s.label}</span>
+          <span class="tab-label">${s.label}</span>
           <span class="tab-count">${s.count}</span>
         </button>
       `).join('');
