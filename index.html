@@ -401,11 +401,11 @@
     .hl--orange { background: linear-gradient(180deg, transparent 32%, rgba(248,160,10,0.28) 32%, rgba(248,160,10,0.28) 92%, transparent 92%); }
 
     /* Reveal on scroll (IntersectionObserver) */
-    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.65s ease, transform 0.65s cubic-bezier(.2,.8,.2,1); }
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(.2,.8,.2,1); }
     .reveal.is-visible { opacity: 1; transform: translateY(0); }
-    .reveal-d1 { transition-delay: 0.08s; }
-    .reveal-d2 { transition-delay: 0.16s; }
-    .reveal-d3 { transition-delay: 0.24s; }
+    .reveal-d1 { transition-delay: 0.1s; }
+    .reveal-d2 { transition-delay: 0.2s; }
+    .reveal-d3 { transition-delay: 0.3s; }
 
     /* ============================================================
        VITRINA — el contenido a 1 click (la sección estrella)
@@ -765,23 +765,27 @@
     .page-flip.is-on { display: block; }
     .page-flip__sheet {
       position: absolute; inset: 0;
-      transform-origin: right center;
-      transform: rotateY(-115deg);
+      transform-origin: left center;            /* lomo a la IZQUIERDA → voltea hacia la derecha */
+      transform: rotateY(110deg);
       backface-visibility: hidden;
+      border-radius: 0 14px 14px 0;             /* esquina libre redondeada = papel */
+      /* Gradiente que simula la curvatura del papel + brillo cálido */
       background:
-        radial-gradient(ellipse 120% 80% at 80% 50%, rgba(255,236,180,0.5) 0%, transparent 60%),
-        linear-gradient(105deg, #fff8ea 0%, #fdf0d6 45%, #f7e4be 100%);
-      box-shadow: -30px 0 60px rgba(120,80,20,0.18) inset, 0 0 40px rgba(248,180,40,0.25);
-      will-change: transform, opacity;
+        radial-gradient(ellipse 130% 90% at 18% 50%, rgba(255,238,190,0.55) 0%, transparent 58%),
+        linear-gradient(100deg, #fdf0d6 0%, #fff8ea 30%, #fdf2da 70%, #f3dcb0 100%);
+      box-shadow:
+        34px 0 60px rgba(120,80,20,0.16) inset,   /* sombra del lomo (izquierda) */
+        0 0 46px rgba(248,180,40,0.22);
+      will-change: transform;
     }
-    /* Borde dorado luminoso del canto que voltea */
+    /* Borde dorado luminoso del canto LIBRE (derecha) */
     .page-flip__sheet::before {
       content: '';
-      position: absolute; top: 0; bottom: 0; left: 0;
-      width: 10px;
-      background: linear-gradient(90deg, rgba(248,180,40,0.85), rgba(255,224,120,0));
+      position: absolute; top: 0; bottom: 0; right: 0;
+      width: 12px;
+      border-radius: 0 14px 14px 0;
+      background: linear-gradient(270deg, rgba(248,180,40,0.9), rgba(255,224,120,0));
     }
-    /* Líneas tenues tipo hoja de cuaderno/cuento */
     .page-flip__sheet::after {
       content: '✦';
       position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
@@ -789,11 +793,13 @@
       color: rgba(248,180,40,0.5);
       text-shadow: 0 0 16px rgba(248,180,40,0.6);
     }
-    .page-flip.is-on .page-flip__sheet { animation: pageTurn 0.72s cubic-bezier(.45,.05,.35,1) forwards; }
+    /* Curva suave + rebote leve = papel blando, no rígido */
+    .page-flip.is-on .page-flip__sheet { animation: pageTurn 0.85s cubic-bezier(.33,.0,.2,1) forwards; }
     @keyframes pageTurn {
-      0%   { transform: rotateY(-115deg); }
-      55%  { transform: rotateY(0deg); }
-      100% { transform: rotateY(0deg); }
+      0%   { transform: rotateY(110deg) skewY(5deg);  border-radius: 0 40% 40% 0 / 0 50% 50% 0; }
+      55%  { transform: rotateY(-7deg) skewY(-1.5deg); border-radius: 0 18px 18px 0; }
+      75%  { transform: rotateY(3deg)  skewY(0.5deg); }
+      100% { transform: rotateY(0deg)  skewY(0deg);   border-radius: 0 14px 14px 0; }
     }
 
     /* ============================================================
@@ -1635,13 +1641,17 @@
       document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
     })();
 
-    /* ===== Reveal on scroll (IO + fallback por rect) ===== */
+    /* ===== Reveal on scroll (IO + fallback por rect) =====
+       No revela mientras el splash cubre la pantalla, así el efecto
+       de "construcción" recién arranca cuando el usuario entra. */
     (function () {
       const els = Array.from(document.querySelectorAll('.reveal'));
+      function locked() { return document.body.classList.contains('splash-lock'); }
       function show(el) { el.classList.add('is-visible'); }
 
       if ('IntersectionObserver' in window) {
         const io = new IntersectionObserver((entries) => {
+          if (locked()) return;  // esperar a que se cierre el splash
           entries.forEach(en => {
             if (en.isIntersecting) { show(en.target); io.unobserve(en.target); }
           });
@@ -1649,17 +1659,20 @@
         els.forEach(e => io.observe(e));
       }
 
-      // Fallback: en entornos donde IO se throttlea, revelar por posición
       function rectCheck() {
+        if (locked()) return;
         const vh = window.innerHeight;
         els.forEach(el => {
           if (el.classList.contains('is-visible')) return;
           const r = el.getBoundingClientRect();
-          if (r.top < vh - 30 && r.bottom > 0) show(el);
+          // revelar lo que entró al viewport Y lo que ya pasó (evita quedar invisible al scrollear rápido)
+          if (r.top < vh - 30) show(el);
         });
       }
       window.addEventListener('scroll', rectCheck, { passive: true });
       window.addEventListener('load', rectCheck);
+      // expuesto para que el cierre del splash dispare el reveal de lo visible
+      window.__almRevealCheck = rectCheck;
       setTimeout(rectCheck, 300);
     })();
 
@@ -1704,7 +1717,7 @@
           e.preventDefault();
           flip.classList.add('is-on');
           // navegar cuando la hoja ya cubre la pantalla (~55% de la animación)
-          setTimeout(() => { window.location.href = href; }, 430);
+          setTimeout(() => { window.location.href = href; }, 500);
         });
       });
     })();
@@ -1922,6 +1935,8 @@
         setTimeout(() => {
           splash.classList.add('is-gone');
           document.body.classList.remove('splash-lock');
+          // ya entró: revelar lo visible (el resto aparece al scrollear)
+          if (window.__almRevealCheck) window.__almRevealCheck();
         }, 1050);
         // Fase 3: limpieza
         setTimeout(() => { splash.style.display = 'none'; }, 1700);
