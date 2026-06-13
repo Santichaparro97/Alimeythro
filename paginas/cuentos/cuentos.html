@@ -107,13 +107,41 @@
     .ck-item.is-active .ck-emoji { background: rgba(255,255,255,0.22); }
 
     /* ----- Lector (80%) ----- */
-    .reader { flex: 1; position: relative; height: 100vh; overflow: hidden; }
-    .reader iframe {
+    .reader {
+      flex: 1; position: relative; height: 100vh; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      padding: clamp(18px, 3.5vh, 42px) clamp(18px, 3vw, 54px);
+    }
+    /* Marco tipo tapa de cuento alrededor del libro (lo achica y le da borde de libro) */
+    .reader-stage {
+      position: relative;
       width: 100%; height: 100%;
-      border: 0; display: block; background: transparent;
+      max-width: 840px;
+      border-radius: 22px;
+      padding: clamp(12px, 2vh, 22px);
+      background: linear-gradient(150deg, #fff7ea 0%, #fdeccd 55%, #f6dfb4 100%);
+      box-shadow:
+        0 28px 56px rgba(120,80,20,0.22),
+        8px 10px 0 -3px #f1d8a6,            /* hojas apiladas (derecha/abajo) */
+        16px 20px 0 -6px #e8c98f,
+        24px 30px 0 -9px #dec083,
+        inset 0 0 0 2px rgba(248,180,40,0.38),
+        inset 0 0 0 7px rgba(255,255,255,0.7);
       opacity: 0; transition: opacity 0.45s ease;
     }
-    .reader iframe.is-ready { opacity: 1; }
+    .reader-stage.is-ready { opacity: 1; }
+    /* Lomo del libro (izquierda) */
+    .reader-stage::before {
+      content: ''; position: absolute;
+      top: 7%; bottom: 7%; left: calc(clamp(12px, 2vh, 22px) - 2px);
+      width: 11px; border-radius: 6px; pointer-events: none;
+      background: linear-gradient(90deg, rgba(170,115,28,0.30), rgba(170,115,28,0));
+    }
+    .reader-stage iframe {
+      width: 100%; height: 100%;
+      border: 0; display: block; background: transparent;
+      border-radius: 12px;
+    }
 
     .placeholder {
       position: absolute; inset: 0;
@@ -159,6 +187,8 @@
         opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
       }
       .scrim.is-open { opacity: 1; pointer-events: auto; }
+      .reader { padding: 14px; }
+      .reader-stage { max-width: none; padding: 12px; }
     }
   </style>
 </head>
@@ -189,7 +219,9 @@
         <div class="ph-title">Elegí un <span class="accent">cuento</span></div>
         <p class="ph-sub">Seleccioná una historia del menú para empezar a leer. El cuento se va a abrir en esta pantalla con todos sus efectos.</p>
       </div>
-      <iframe id="frame" title="Cuento" allow="autoplay; fullscreen" allowfullscreen></iframe>
+      <div class="reader-stage" id="reader-stage">
+        <iframe id="frame" title="Cuento" allow="autoplay; fullscreen" allowfullscreen></iframe>
+      </div>
     </main>
   </div>
 
@@ -205,6 +237,7 @@
 
     const listEl  = document.getElementById('ck-list');
     const frame   = document.getElementById('frame');
+    const stage   = document.getElementById('reader-stage');
     const phEl     = document.getElementById('placeholder');
     const sidebar = document.getElementById('sidebar');
     const scrim   = document.getElementById('scrim');
@@ -226,18 +259,18 @@
       if (i === activeIdx) { closeSidebar(); return; }
       activeIdx = i;
       Array.from(listEl.children).forEach((el, k) => el.classList.toggle('is-active', k === i));
-      // El cuento se "limpia" (fondo + botones internos) recién cuando termina de cargar
-      frame.classList.remove('is-ready');
+      // El marco aparece recién cuando el cuento terminó de cargar (mantenemos el cartel mientras tanto)
+      stage.classList.remove('is-ready');
       frame.src = CUENTOS[i].file;
-      phEl.classList.add('is-hidden');
       closeSidebar();
     }
 
-    // ----- Al cargar el cuento: quitar su fondo y la cromática interna -----
+    // ----- Al cargar el cuento: quitar su fondo, su cromática y arreglar la música -----
     frame.addEventListener('load', () => {
       if (!frame.src) return;
       try {
         const doc = frame.contentDocument;
+        const win = frame.contentWindow;
         if (!doc) return;
         // Fondo transparente para que se vea el bosque suave de Alimeythor
         if (doc.documentElement) doc.documentElement.style.background = 'transparent';
@@ -247,12 +280,34 @@
           const node = doc.querySelector(sel);
           if (node) node.style.display = 'none';
         });
-        frame.classList.add('is-ready');
-      } catch (e) {
-        // si por algún motivo no se pudo limpiar, igual mostramos el cuento
-        frame.classList.add('is-ready');
-      }
+        patchMusic(win, doc);
+      } catch (e) {}
+      phEl.classList.add('is-hidden');
+      stage.classList.add('is-ready');
     });
+
+    // Una vez que el usuario silencia la música, no vuelve a sonar sola
+    // (al pasar de página) hasta que la reactive con el ícono.
+    function patchMusic(win, doc) {
+      const btn = doc.getElementById('music');
+      if (!win || !win.startMusic || !btn) return;
+      const origStart = win.startMusic;
+      const origStop  = win.stopMusic || function () {};
+      let userOff = false;  // true cuando el usuario la apagó a propósito
+
+      // El arranque automático (vuelta de página) respeta el silencio del usuario
+      win.startMusic = function () {
+        if (userOff) return;
+        return origStart.apply(this, arguments);
+      };
+
+      // El ícono manda: apagar marca userOff; encender lo limpia y reproduce
+      btn.onclick = function () {
+        const isOn = !btn.classList.contains('off');
+        if (isOn) { userOff = true;  origStop.call(win); }
+        else      { userOff = false; origStart.call(win); }
+      };
+    }
 
     // ----- Checklist colapsable (celular) -----
     function openSidebar()  { sidebar.classList.add('is-open');  scrim.classList.add('is-open'); }
