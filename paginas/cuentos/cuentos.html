@@ -109,39 +109,47 @@
     /* ----- Lector (80%) ----- */
     .reader {
       flex: 1; position: relative; height: 100vh; overflow: hidden;
-      display: flex; align-items: center; justify-content: center;
-      padding: clamp(18px, 3.5vh, 42px) clamp(18px, 3vw, 54px);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: clamp(8px, 1.5vh, 18px);
+      padding: clamp(14px, 2.4vh, 30px) clamp(14px, 2vw, 36px);
     }
-    /* Marco tipo tapa de cuento alrededor del libro (lo achica y le da borde de libro) */
+    /* Contenedor del libro (el MARCO lo dibuja el propio libro adentro del iframe,
+       así borde exacto y escala junto con el cuento) */
     .reader-stage {
       position: relative;
-      width: 100%; height: 100%;
-      max-width: 840px;
-      border-radius: 22px;
-      padding: clamp(12px, 2vh, 22px);
-      background: linear-gradient(150deg, #fff7ea 0%, #fdeccd 55%, #f6dfb4 100%);
-      box-shadow:
-        0 28px 56px rgba(120,80,20,0.22),
-        8px 10px 0 -3px #f1d8a6,            /* hojas apiladas (derecha/abajo) */
-        16px 20px 0 -6px #e8c98f,
-        24px 30px 0 -9px #dec083,
-        inset 0 0 0 2px rgba(248,180,40,0.38),
-        inset 0 0 0 7px rgba(255,255,255,0.7);
+      width: 100%; max-width: 1220px;
+      flex: 1; min-height: 0;
       opacity: 0; transition: opacity 0.45s ease;
     }
     .reader-stage.is-ready { opacity: 1; }
-    /* Lomo del libro (izquierda) */
-    .reader-stage::before {
-      content: ''; position: absolute;
-      top: 7%; bottom: 7%; left: calc(clamp(12px, 2vh, 22px) - 2px);
-      width: 11px; border-radius: 6px; pointer-events: none;
-      background: linear-gradient(90deg, rgba(170,115,28,0.30), rgba(170,115,28,0));
-    }
     .reader-stage iframe {
       width: 100%; height: 100%;
       border: 0; display: block; background: transparent;
-      border-radius: 12px;
     }
+    /* Controles del padre: flechitas para pasar página + botón de audio */
+    .reader-controls {
+      display: none; align-items: center; justify-content: center;
+      gap: clamp(14px, 1.6vw, 24px);
+      flex-shrink: 0;
+    }
+    .reader-controls.is-ready { display: flex; }
+    .rc-btn {
+      border: 0; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      background: #f8231c; color: #fff;
+      box-shadow: 0 8px 20px rgba(248,35,28,0.34);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+    .rc-btn:hover { transform: translateY(-2px) scale(1.05); box-shadow: 0 12px 26px rgba(248,35,28,0.46); }
+    .rc-btn:active { transform: translateY(0) scale(0.97); }
+    .rc-btn svg { width: 26px; height: 26px; fill: none; stroke: #fff; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+    .rc-btn--nav { width: 58px; height: 58px; border-radius: 50%; }
+    .rc-btn--audio {
+      width: 50px; height: 50px; border-radius: 50%;
+      background: #fff; color: #f8231c; box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+    .rc-btn--audio svg { stroke: #f8231c; width: 22px; height: 22px; }
+    .rc-btn--audio.is-muted { background: #ffe3e1; }
 
     .placeholder {
       position: absolute; inset: 0;
@@ -187,8 +195,10 @@
         opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
       }
       .scrim.is-open { opacity: 1; pointer-events: auto; }
-      .reader { padding: 14px; }
-      .reader-stage { max-width: none; padding: 12px; }
+      .reader { padding: 12px 10px; gap: 8px; }
+      .reader-stage { max-width: none; }
+      .rc-btn--nav { width: 50px; height: 50px; }
+      .rc-btn--audio { width: 44px; height: 44px; }
     }
   </style>
 </head>
@@ -222,6 +232,17 @@
       <div class="reader-stage" id="reader-stage">
         <iframe id="frame" title="Cuento" allow="autoplay; fullscreen" allowfullscreen></iframe>
       </div>
+      <div class="reader-controls" id="reader-controls">
+        <button class="rc-btn rc-btn--nav" id="rc-prev" aria-label="Página anterior">
+          <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button class="rc-btn rc-btn--audio" id="rc-audio" aria-label="Activar o silenciar música">
+          <svg viewBox="0 0 24 24" id="rc-audio-svg"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19 5a9 9 0 010 14M15.5 8.5a5 5 0 010 7"/></svg>
+        </button>
+        <button class="rc-btn rc-btn--nav" id="rc-next" aria-label="Página siguiente">
+          <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
     </main>
   </div>
 
@@ -238,11 +259,24 @@
     const listEl  = document.getElementById('ck-list');
     const frame   = document.getElementById('frame');
     const stage   = document.getElementById('reader-stage');
+    const controls = document.getElementById('reader-controls');
+    const rcPrev  = document.getElementById('rc-prev');
+    const rcNext  = document.getElementById('rc-next');
+    const rcAudio = document.getElementById('rc-audio');
+    const rcAudioSvg = document.getElementById('rc-audio-svg');
     const phEl     = document.getElementById('placeholder');
     const sidebar = document.getElementById('sidebar');
     const scrim   = document.getElementById('scrim');
     const toggle  = document.getElementById('ck-toggle');
     let activeIdx = -1;
+    let audioCtl  = null;   // controlador de música del cuento activo
+
+    const SVG_AUDIO_ON  = '<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19 5a9 9 0 010 14M15.5 8.5a5 5 0 010 7"/>';
+    const SVG_AUDIO_OFF = '<path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>';
+    function setAudioIcon(muted) {
+      rcAudioSvg.innerHTML = muted ? SVG_AUDIO_OFF : SVG_AUDIO_ON;
+      rcAudio.classList.toggle('is-muted', muted);
+    }
 
     // ----- Render del checklist -----
     CUENTOS.forEach((c, i) => {
@@ -259,13 +293,15 @@
       if (i === activeIdx) { closeSidebar(); return; }
       activeIdx = i;
       Array.from(listEl.children).forEach((el, k) => el.classList.toggle('is-active', k === i));
-      // El marco aparece recién cuando el cuento terminó de cargar (mantenemos el cartel mientras tanto)
+      // El cuento aparece recién cuando terminó de cargar (mantenemos el cartel mientras tanto)
       stage.classList.remove('is-ready');
+      controls.classList.remove('is-ready');
+      audioCtl = null;
       frame.src = CUENTOS[i].file;
       closeSidebar();
     }
 
-    // ----- Al cargar el cuento: quitar su fondo, su cromática y arreglar la música -----
+    // ----- Al cargar el cuento: limpiar fondo/cromática, dibujar el marco y enganchar controles -----
     frame.addEventListener('load', () => {
       if (!frame.src) return;
       try {
@@ -275,22 +311,45 @@
         // Fondo transparente para que se vea el bosque suave de Alimeythor
         if (doc.documentElement) doc.documentElement.style.background = 'transparent';
         if (doc.body) doc.body.style.background = 'transparent';
-        // Ocultar la cromática propia del cuento (su barra de volver, título y hint)
-        ['#back-to-alimeythor-overlay', '.title', '.hint'].forEach(sel => {
+        // Ocultar la cromática propia del cuento (volver, título, hint) y SUS controles
+        // internos (eran casi invisibles sobre fondo claro; los reemplaza el padre)
+        ['#back-to-alimeythor-overlay', '.title', '.hint', '.ui', '.tools'].forEach(sel => {
           const node = doc.querySelector(sel);
           if (node) node.style.display = 'none';
         });
-        patchMusic(win, doc);
-      } catch (e) {}
+        // MARCO de tapa de cuento dibujado sobre la propia tapa del libro (.base):
+        // bordea exactamente las páginas y escala junto con el cuento.
+        const fr = doc.createElement('style');
+        fr.textContent = '.base{inset:-16px!important;border-radius:14px!important;' +
+          'background:linear-gradient(150deg,#fff7ea,#fdeccd 55%,#f6dfb4)!important;' +
+          'box-shadow:0 26px 52px rgba(120,80,20,.30),7px 9px 0 -3px #f1d8a6,' +
+          '14px 18px 0 -6px #e8c98f,24px 28px 0 -9px #dec083,' +
+          'inset 0 0 0 2px rgba(248,180,40,.45)!important;}';
+        doc.head.appendChild(fr);
+        // Música: respeta el silencio del usuario aunque pase de página
+        audioCtl = patchMusic(win, doc);
+        setAudioIcon(false);
+      } catch (e) { audioCtl = null; }
       phEl.classList.add('is-hidden');
       stage.classList.add('is-ready');
+      controls.classList.add('is-ready');
+    });
+
+    // Flechitas del padre → pasan página dentro del cuento
+    rcPrev.addEventListener('click', () => { try { frame.contentWindow.prev(); } catch (e) {} });
+    rcNext.addEventListener('click', () => { try { frame.contentWindow.next(); } catch (e) {} });
+    // Audio del padre → prende/apaga la música cuando el usuario quiera
+    rcAudio.addEventListener('click', () => {
+      if (!audioCtl) return;
+      const muted = audioCtl.toggle();   // devuelve true si quedó silenciado
+      setAudioIcon(muted);
     });
 
     // Una vez que el usuario silencia la música, no vuelve a sonar sola
-    // (al pasar de página) hasta que la reactive con el ícono.
+    // (al pasar de página) hasta que la reactive. Devuelve un controlador para el padre.
     function patchMusic(win, doc) {
       const btn = doc.getElementById('music');
-      if (!win || !win.startMusic || !btn) return;
+      if (!win || !win.startMusic) return null;
       const origStart = win.startMusic;
       const origStop  = win.stopMusic || function () {};
       let userOff = false;  // true cuando el usuario la apagó a propósito
@@ -301,11 +360,12 @@
         return origStart.apply(this, arguments);
       };
 
-      // El ícono manda: apagar marca userOff; encender lo limpia y reproduce
-      btn.onclick = function () {
-        const isOn = !btn.classList.contains('off');
-        if (isOn) { userOff = true;  origStop.call(win); }
-        else      { userOff = false; origStart.call(win); }
+      const isOn = () => btn && !btn.classList.contains('off');
+      return {
+        toggle: function () {
+          if (isOn()) { userOff = true;  origStop.call(win);  return true; }
+          else        { userOff = false; origStart.call(win); return false; }
+        }
       };
     }
 
