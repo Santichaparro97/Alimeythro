@@ -233,35 +233,13 @@
     .trust-badge p { font-size: 13.5px; font-weight: 600; color: #1a1a2e; line-height: 1.35; }
     .trust-badge p span { color: #2a8a0a; }
 
-    /* Personaje en el hero — protagonista con flotado + giro de "cambio de vestuario" */
+    /* Personaje en el hero — protagonista con flotado */
     .hero-character { position: relative; display: flex; justify-content: center; overflow: visible; }
-    /* Capa que flota e inclina (rotación Z) — independiente del giro 3D */
-    .hero-stage {
+    .hero-character img {
+      width: clamp(300px, 38vw, 520px);
+      filter: drop-shadow(0 26px 36px rgba(0,0,0,0.26));
       animation: floatyTilt 3.8s ease-in-out infinite;
       transform-origin: 50% 90%;
-    }
-    /* Capa que gira en el eje vertical (rotateY) revelando la otra imagen */
-    .hero-spin {
-      display: grid;
-      place-items: end center;      /* alinea las 3 imágenes por su base (pies) */
-      transform: perspective(1400px) rotateY(0deg);
-      transform-style: preserve-3d;
-      transition: transform 0.62s cubic-bezier(.4,.05,.2,1);
-      will-change: transform;
-    }
-    .hero-face {
-      grid-area: 1 / 1;
-      align-self: end;
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-    }
-    .hero-face--back { transform: rotateY(180deg); }
-    .hero-face img {
-      display: block;
-      /* mismo ancho para las 3; ancladas por la base → coinciden y giran alineadas */
-      width: clamp(300px, 38vw, 520px);
-      height: auto;
-      filter: drop-shadow(0 26px 36px rgba(0,0,0,0.26));
     }
     @keyframes floaty {
       0%, 100% { transform: translateY(0) rotate(-1.5deg); }
@@ -1365,12 +1343,7 @@
         </div>
         <div class="hero-character">
           <div class="char-blob hero-blob"></div>
-          <div class="hero-stage">
-            <div class="hero-spin" id="hero-spin">
-              <div class="hero-face hero-face--front"><img id="hero-face-front" src="./inicio/1.png" alt="Alimeythor, el malvavisco mágico"></div>
-              <div class="hero-face hero-face--back"><img id="hero-face-back" src="./inicio/2.png" alt=""></div>
-            </div>
-          </div>
+          <img src="./inicio/1.png" alt="Alimeythor, el malvavisco mágico">
         </div>
       </div>
     </div>
@@ -1802,30 +1775,6 @@
       }));
       // Limpieza al terminar la animación
       setTimeout(() => { if (flip) flip.classList.remove('is-on', 'is-back'); }, 1500);
-    })();
-
-    /* ===== Personaje del hero: giro tipo "cambio de vestuario" entre 3 imágenes ===== */
-    (function () {
-      const spin  = document.getElementById('hero-spin');
-      const front = document.getElementById('hero-face-front');
-      const back  = document.getElementById('hero-face-back');
-      if (!spin || !front || !back) return;
-
-      const imgs = ['./inicio/1.png', './inicio/2.png', './inicio/3.png'];
-      let idx = 0;   // imagen actualmente visible
-      let rot = 0;   // rotación acumulada (múltiplos de 180)
-      back.src = imgs[1]; // próxima a revelar
-
-      setInterval(function () {
-        const next = (idx + 1) % imgs.length;
-        // La cara oculta (la que NO se ve ahora) recibe la próxima imagen,
-        // así el giro la "descubre" sin verse espejada (backface-visibility).
-        if (rot % 360 === 0) back.src = imgs[next];
-        else                 front.src = imgs[next];
-        rot += 180;
-        spin.style.transform = 'perspective(1400px) rotateY(' + rot + 'deg)';
-        idx = next;
-      }, 2000);
     })();
 
     /* ===== "Descubrí más": se desvanece al scrollear, reaparece arriba ===== */
