@@ -519,24 +519,41 @@
     .area-card {
       --acc: #33afed;
       --acc-soft: rgba(51,175,237,0.14);
+      --mx: 50%; --my: 50%;                       /* posición del cursor dentro de la carta */
+      position: relative;
+      overflow: hidden;
       background: rgba(255,255,255,0.94);
       border-radius: 24px;
       border-left: 6px solid var(--acc);
       padding: clamp(22px, 2.6vw, 32px) clamp(20px, 2.4vw, 30px);
       box-shadow: 0 8px 0 var(--acc-soft), 0 18px 34px rgba(26,26,46,0.08);
-      transition: transform 0.3s cubic-bezier(.2,.8,.2,1), box-shadow 0.35s ease, border-color 0.35s ease;
+      transition: box-shadow 0.35s ease, border-color 0.35s ease;
     }
-    /* Al pasar el mouse: glow de color + hundimiento 3D (como si el mouse la apretara) */
+    /* Al pasar el mouse: glow de color (el hundimiento es localizado, lo da ::after) */
     .area-card:hover {
-      transform: translateY(3px) scale(0.978);   /* baja y se achica = se hunde */
       border-color: var(--acc);
       box-shadow:
-        0 2px 0 var(--acc-soft),                  /* repisa casi aplastada contra la superficie */
-        0 5px 12px rgba(26,26,46,0.10),           /* sombra más cerca = menos elevación */
-        0 0 38px var(--acc-glow),                 /* glow de color (se mantiene) */
-        inset 0 4px 14px rgba(26,26,46,0.13),     /* presión desde arriba */
+        0 6px 0 var(--acc-soft),
+        0 14px 30px rgba(26,26,46,0.10),
+        0 0 38px var(--acc-glow),
         inset 0 0 22px var(--acc-glow);
     }
+    /* Hoyuelo de profundidad que sigue al cursor: solo se hunde esa parte */
+    .area-card::after {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 0.18s ease;
+      mix-blend-mode: multiply;
+      background: radial-gradient(150px circle at var(--mx) var(--my),
+        rgba(150,150,172,1) 0%,
+        rgba(196,196,212,1) 36%,
+        rgba(255,255,255,1) 62%);
+    }
+    .area-card:hover::after { opacity: 1; }
     .area-card--blue   { --acc: #33afed; --acc-soft: rgba(51,175,237,0.16); --acc-glow: rgba(51,175,237,0.42); }
     .area-card--orange { --acc: #f8a00a; --acc-soft: rgba(248,160,10,0.18); --acc-glow: rgba(248,160,10,0.44); }
     .area-card--violet { --acc: #ed1cb9; --acc-soft: rgba(237,28,185,0.13); --acc-glow: rgba(237,28,185,0.40); }
@@ -1786,6 +1803,25 @@
       setTimeout(() => { if (flip) flip.classList.remove('is-on', 'is-back'); }, 1500);
     })();
 
+    /* ===== Profundidad localizada en las cartas de "emociones": se hunde donde está el mouse ===== */
+    (function () {
+      if (!window.matchMedia || !window.matchMedia('(hover: hover)').matches) return;
+      document.querySelectorAll('.area-card').forEach((card) => {
+        let raf = null, px = 50, py = 50;
+        function apply() {
+          raf = null;
+          card.style.setProperty('--mx', px.toFixed(1) + '%');
+          card.style.setProperty('--my', py.toFixed(1) + '%');
+        }
+        card.addEventListener('mousemove', (e) => {
+          const r = card.getBoundingClientRect();
+          px = ((e.clientX - r.left) / r.width) * 100;
+          py = ((e.clientY - r.top) / r.height) * 100;
+          if (!raf) raf = requestAnimationFrame(apply);
+        });
+      });
+    })();
+
     /* ===== Efecto lupa en el título principal: las letras bajo el cursor crecen ===== */
     (function () {
       const h1 = document.querySelector('.hero h1');
@@ -1814,8 +1850,8 @@
       splitNode(h1);
 
       const chars = Array.from(h1.querySelectorAll('.mag-ch'));
-      const R = 58;        // radio de influencia de la "lupa" (px)
-      const BOOST = 0.20;  // crecimiento máximo (sutil, ~20%)
+      const R = 62;        // radio de influencia de la "lupa" (px)
+      const BOOST = 0.30;  // crecimiento máximo (más notorio, ~30%)
       let raf = null, mx = 0, my = 0;
 
       function update() {
