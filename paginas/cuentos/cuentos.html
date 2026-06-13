@@ -322,9 +322,15 @@
         const fr = doc.createElement('style');
         fr.textContent = '.base{inset:-16px!important;border-radius:14px!important;' +
           'background:linear-gradient(150deg,#fff7ea,#fdeccd 55%,#f6dfb4)!important;' +
-          'box-shadow:0 26px 52px rgba(120,80,20,.30),7px 9px 0 -3px #f1d8a6,' +
-          '14px 18px 0 -6px #e8c98f,24px 28px 0 -9px #dec083,' +
-          'inset 0 0 0 2px rgba(248,180,40,.45)!important;}';
+          'box-shadow:' +
+            /* hojas apiladas en el borde DERECHO (tonos alternados = se distingue cada hoja) */
+            '7px 0 0 0 #fff5e1,14px 0 0 0 #ecd29a,21px 0 0 0 #fbe9c4,28px 0 0 0 #e3bf80,' +
+            /* hojas apiladas ABAJO */
+            '0 7px 0 0 #fff5e1,0 14px 0 0 #ecd29a,0 21px 0 0 #fbe9c4,0 28px 0 0 #e3bf80,' +
+            /* relleno de la esquina inferior derecha + sombra de profundidad */
+            '28px 28px 0 0 #e3bf80,0 34px 60px rgba(120,80,20,.34),' +
+            /* filete dorado interno */
+            'inset 0 0 0 2px rgba(248,180,40,.5)!important;}';
         doc.head.appendChild(fr);
         // Música: respeta el silencio del usuario aunque pase de página
         audioCtl = patchMusic(win, doc);
