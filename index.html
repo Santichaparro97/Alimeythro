@@ -243,6 +243,7 @@
     /* Capa que gira en el eje vertical (rotateY) revelando la otra imagen */
     .hero-spin {
       display: grid;
+      place-items: end center;      /* alinea las 3 imágenes por su base (pies) */
       transform: perspective(1400px) rotateY(0deg);
       transform-style: preserve-3d;
       transition: transform 0.62s cubic-bezier(.4,.05,.2,1);
@@ -250,13 +251,16 @@
     }
     .hero-face {
       grid-area: 1 / 1;
+      align-self: end;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
     }
     .hero-face--back { transform: rotateY(180deg); }
     .hero-face img {
       display: block;
+      /* mismo ancho para las 3; ancladas por la base → coinciden y giran alineadas */
       width: clamp(300px, 38vw, 520px);
+      height: auto;
       filter: drop-shadow(0 26px 36px rgba(0,0,0,0.26));
     }
     @keyframes floaty {
@@ -1821,7 +1825,7 @@
         rot += 180;
         spin.style.transform = 'perspective(1400px) rotateY(' + rot + 'deg)';
         idx = next;
-      }, 1000);
+      }, 2000);
     })();
 
     /* ===== "Descubrí más": se desvanece al scrollear, reaparece arriba ===== */
