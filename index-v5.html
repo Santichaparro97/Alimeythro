@@ -802,6 +802,32 @@
       100% { transform: rotateY(0deg)  skewY(0deg);   border-radius: 0 14px 14px 0; }
     }
 
+    /* ---- VUELTA: hoja que se voltea para el OTRO lado (volver a la web) ----
+       Al regresar de un cuento/juego/música, la hoja arranca cubriendo la
+       pantalla y se despega hacia la IZQUIERDA, destapando la web. */
+    .page-flip.is-back .page-flip__sheet {
+      transform-origin: right center;            /* lomo a la DERECHA → se abre hacia la izquierda */
+      transform: rotateY(0deg);
+      border-radius: 14px 0 0 14px;
+      box-shadow:
+        -34px 0 60px rgba(120,80,20,0.16) inset,  /* sombra del lomo (derecha) */
+        0 0 46px rgba(248,180,40,0.22);
+      animation: pageTurnBack 0.9s cubic-bezier(.33,.0,.2,1) forwards;
+    }
+    /* mantiene la hoja cubriendo la pantalla un instante antes de despegarse */
+    .page-flip.is-back.is-paused .page-flip__sheet { animation-play-state: paused; }
+    /* el canto libre y la estrella se reflejan al lado contrario */
+    .page-flip.is-back .page-flip__sheet::before {
+      right: auto; left: 0;
+      border-radius: 14px 0 0 14px;
+      background: linear-gradient(90deg, rgba(248,180,40,0.9), rgba(255,224,120,0));
+    }
+    @keyframes pageTurnBack {
+      0%   { transform: rotateY(0deg)    skewY(0deg);    border-radius: 14px 0 0 14px; }
+      25%  { transform: rotateY(-6deg)   skewY(-0.5deg); }
+      100% { transform: rotateY(-115deg) skewY(4deg);   border-radius: 40% 0 0 40% / 50% 0 0 50%; }
+    }
+
     /* ============================================================
        FOOTER
        ============================================================ */
@@ -1720,6 +1746,31 @@
           setTimeout(() => { window.location.href = href; }, 500);
         });
       });
+    })();
+
+    /* ===== Vuelta desde una subpágina: hoja al revés + aterrizar en Explorar ===== */
+    (function () {
+      let ret = null;
+      try { ret = sessionStorage.getItem('alm_return'); sessionStorage.removeItem('alm_return'); } catch (e) {}
+      if (!ret) return;
+
+      const flip = document.getElementById('page-flip');
+      // La hoja cubre la pantalla de inmediato para ocultar el salto de scroll
+      if (flip) flip.classList.add('is-on', 'is-back', 'is-paused');
+
+      // Aterrizar SIEMPRE en la sección Explorar (donde estaba antes de salir)
+      const target = document.getElementById(ret) || document.getElementById('explorar');
+      if (target) target.scrollIntoView({ behavior: 'auto', block: 'start' });
+
+      // Revelar el contenido visible en esa posición (el resto aparece al scrollear)
+      if (window.__almRevealCheck) window.__almRevealCheck();
+
+      // Tras un instante cubierto, la hoja se despega hacia la izquierda (volver a la web)
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        setTimeout(() => { if (flip) flip.classList.remove('is-paused'); }, 230);
+      }));
+      // Limpieza al terminar la animación
+      setTimeout(() => { if (flip) flip.classList.remove('is-on', 'is-back'); }, 1500);
     })();
 
     /* ===== "Descubrí más": se desvanece al scrollear, reaparece arriba ===== */
