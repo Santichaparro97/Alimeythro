@@ -3,491 +3,1906 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Alimeythor — Alimenta Tu Alma</title>
+  <title>Alimeythor — Cuentos, juegos y videos para crecer en familia</title>
+  <meta name="description" content="Plataforma digital con cuentos, canciones y juegos para que los chicos de 4 a 9 años aprendan a sentir, imaginar y crecer en familia." />
   <link rel="icon" href="./favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Merriweather:wght@400;700;800;900&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Chewy con display=block: evita el salto de layout del título (espera la fuente) -->
+  <link href="https://fonts.googleapis.com/css2?family=Chewy&display=block" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+  <style>
+    /* ============================================================
+       ALIMEYTHOR v5 — Rediseño UX
+       Principios: valor visible en 5 segundos, scroll natural,
+       confianza temprana, un CTA claro por sección.
+       Paleta: rojo #f8231c · verde #3fb411 · celeste #33afed ·
+               violeta #ed1cb9 · naranja #f8a00a · amarillo #e8ed0b
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: #1a1a2e;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      background: #fff8f5;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    button { font-family: inherit; }
 
-  <link rel="stylesheet" href="./css/01-base.css">
-  <link rel="stylesheet" href="./css/02-overrides.css">
-  <link rel="stylesheet" href="./css/03-fluid-responsive.css">
-  <link rel="stylesheet" href="./css/04-modal-comments.css">
+    h1, h2, h3, .btn, .logo-text { font-family: 'Chewy', 'Poppins', sans-serif; font-weight: 400; letter-spacing: 0.4px; }
 
-  <!-- GSAP + ScrollTrigger + Lenis -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+    /* ===== Fondo bosque global — misma imagen que el splash ===== */
+    .bg-image {
+      position: fixed; inset: 0;
+      background: #f3e6cf url('./inicio/fondo.png') center/cover no-repeat;
+      z-index: -3;
+      pointer-events: none;
+    }
+    .bg-veil {
+      position: fixed; inset: 0;
+      background: linear-gradient(180deg, rgba(255,250,247,0.82) 0%, rgba(255,248,245,0.72) 50%, rgba(255,250,247,0.85) 100%);
+      z-index: -2;
+      pointer-events: none;
+    }
+    /* Efectos de partículas de fondo en toda la web (detrás del contenido) */
+    .web-fx {
+      position: fixed; inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .web-fx .twinkle { position: absolute; }
+    .web-dust {
+      position: absolute;
+      bottom: -12px;
+      width: var(--sz, 6px); height: var(--sz, 6px);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,240,180,0.9) 0%, rgba(248,200,80,0.5) 45%, rgba(248,160,10,0) 75%);
+      opacity: 0;
+      animation: floatUp var(--dur, 8s) ease-in var(--delay, 0s) infinite;
+    }
+
+    .container { max-width: 1140px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 40px); }
+
+    /* ============================================================
+       HEADER — 5 ítems claros + CTA persistente
+       ============================================================ */
+    .header {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+      background: transparent;
+      transform: translateY(0);
+      transition: transform 0.35s ease, box-shadow 0.3s ease;
+    }
+    .header.is-scrolled { box-shadow: 0 4px 24px rgba(26,26,46,0.06); }
+    .header.is-hidden { transform: translateY(-105%); }
+    .header-inner {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 16px;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 10px clamp(16px, 3vw, 32px);
+    }
+    .logo {
+      display: inline-flex; align-items: center; gap: 12px;
+      justify-self: start;
+    }
+    .logo-img { height: clamp(44px, 4vw, 58px); width: auto; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.15)); }
+    .logo-text {
+      font-size: clamp(20px, 1.6vw, 27px);
+      padding: 0 8px;
+      background: linear-gradient(180deg, transparent 30%, rgba(248,35,28,0.22) 30%, rgba(248,35,28,0.22) 90%, transparent 90%);
+      border-radius: 4px;
+    }
+    .nav { display: flex; gap: clamp(14px, 2vw, 30px); justify-self: center; }
+    .nav a {
+      font-size: 14.5px; font-weight: 600; color: #1a1a2e;
+      padding: 6px 2px;
+      border-bottom: 2.5px solid transparent;
+      transition: color 0.2s ease, border-color 0.2s ease;
+      white-space: nowrap;
+    }
+    .nav a:hover, .nav a.active { color: #f8231c; border-bottom-color: #f8231c; }
+    .header-cta {
+      justify-self: end;
+      font-family: 'Chewy', sans-serif;
+      font-size: 15px;
+      background: #f8231c; color: #fff;
+      padding: 10px 22px; border-radius: 999px;
+      box-shadow: 0 5px 0 #b51410, 0 8px 18px rgba(248,35,28,0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      white-space: nowrap;
+    }
+    .header-cta:hover { transform: translateY(-2px); box-shadow: 0 7px 0 #b51410, 0 12px 22px rgba(248,35,28,0.4); }
+
+    /* Hamburguesa */
+    .nav-toggle {
+      display: none;
+      width: 44px; height: 44px;
+      background: #fff; border: 1.5px solid rgba(248,35,28,0.2);
+      border-radius: 12px; cursor: pointer;
+      flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+      box-shadow: 0 4px 0 rgba(248,35,28,0.16);
+      justify-self: end;
+    }
+    .nav-toggle span { width: 22px; height: 3px; background: #f8231c; border-radius: 2px; transition: transform 0.3s ease, opacity 0.2s ease; }
+    .nav-toggle.is-open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+    .nav-toggle.is-open span:nth-child(2) { opacity: 0; }
+    .nav-toggle.is-open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+    .nav-mobile {
+      position: fixed; inset: 0; z-index: 99;
+      background: rgba(255,245,243,0.97); backdrop-filter: blur(14px);
+      display: none; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+      padding: 80px 26px 40px;
+    }
+    .nav-mobile.is-open { display: flex; }
+    .nav-mobile a {
+      width: 100%; max-width: 340px; text-align: center;
+      font-family: 'Chewy', sans-serif; font-size: 21px;
+      background: #fff; padding: 15px; border-radius: 16px;
+      border: 2px solid rgba(248,35,28,0.14);
+      box-shadow: 0 5px 0 rgba(248,35,28,0.16);
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .nav-mobile a:active, .nav-mobile a:hover { background: #f8231c; color: #fff; }
+
+    /* ============================================================
+       HERO — todo visible, scroll libre, CTA único claro
+       ============================================================ */
+    .hero {
+      min-height: 100svh;
+      display: flex; align-items: center;
+      padding: 88px 0 28px;
+      position: relative;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 0.95fr;
+      gap: clamp(0px, 1vw, 16px);
+      align-items: center;
+      position: relative;
+    }
+    .hero-text { position: relative; z-index: 2; }
+    .hero-character { z-index: 0; margin-left: clamp(-70px, -6%, -24px); }
+    .hero-blob { left: 42% !important; width: 124%; height: 98%; }
+    .eyebrow {
+      display: inline-block;
+      font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      color: #1a1a2e;
+      background: rgba(255,255,255,0.75);
+      border: 1.5px solid rgba(248,35,28,0.25);
+      padding: 7px 16px; border-radius: 999px;
+      margin-bottom: 18px;
+    }
+    .hero h1 {
+      font-size: clamp(34px, 4.6vw, 64px);
+      line-height: 1.08;
+      margin-bottom: 16px;
+    }
+    .hero h1 .hl-red { color: #f8231c; }
+    .hero-sub {
+      font-size: clamp(16px, 1.2vw, 19px);
+      color: #3d3d52;
+      font-weight: 500;
+      max-width: 54ch;
+      margin-bottom: 26px;
+    }
+    .hero-ctas { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-bottom: 26px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 16px 32px; border-radius: 999px;
+      font-size: 18px; cursor: pointer; border: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-primary {
+      background: #f8231c; color: #fff;
+      box-shadow: 0 7px 0 #b51410, 0 14px 26px rgba(248,35,28,0.32);
+    }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 0 #b51410, 0 18px 30px rgba(248,35,28,0.42); }
+    .btn-ghost {
+      background: rgba(255,255,255,0.85); color: #1a1a2e;
+      border: 2px solid rgba(26,26,46,0.12);
+      box-shadow: 0 5px 0 rgba(26,26,46,0.08);
+      font-size: 16px;
+      padding: 14px 26px;
+    }
+    .btn-ghost:hover { transform: translateY(-2px); border-color: rgba(248,35,28,0.35); color: #f8231c; }
+
+    /* Badge de confianza — protagonista, no nota al pie */
+    .trust-badge {
+      display: inline-flex; align-items: center; gap: 12px;
+      background: rgba(255,255,255,0.88);
+      border: 1.5px solid rgba(63,180,17,0.35);
+      border-radius: 999px;
+      padding: 9px 20px 9px 10px;
+      box-shadow: 0 6px 16px rgba(26,26,46,0.07);
+    }
+    .trust-badge img {
+      width: 44px; height: 44px; border-radius: 50%;
+      object-fit: cover; object-position: top center;
+      border: 2.5px solid #3fb411;
+    }
+    .trust-badge p { font-size: 13.5px; font-weight: 600; color: #1a1a2e; line-height: 1.35; }
+    .trust-badge p span { color: #2a8a0a; }
+
+    /* Personaje en el hero — protagonista con flotado */
+    .hero-character { position: relative; display: flex; justify-content: center; overflow: visible; }
+    .hero-character img {
+      width: clamp(300px, 38vw, 520px);
+      filter: drop-shadow(0 26px 36px rgba(0,0,0,0.26));
+      animation: floatyTilt 3.8s ease-in-out infinite;
+      transform-origin: 50% 90%;
+    }
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+      50%      { transform: translateY(-16px) rotate(1.5deg); }
+    }
+    /* Personaje del hero: inclinado hacia afuera (derecha) + flotado suave */
+    @keyframes floatyTilt {
+      0%, 100% { transform: translateY(0) rotate(7deg); }
+      50%      { transform: translateY(-16px) rotate(9.5deg); }
+    }
+    .hero-character::after {
+      content: '';
+      position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+      width: 55%; height: 22px;
+      background: radial-gradient(ellipse, rgba(26,26,46,0.16) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: shadowPulse 3.6s ease-in-out infinite;
+    }
+    @keyframes shadowPulse {
+      0%, 100% { transform: translateX(-50%) scaleX(1); opacity: 1; }
+      50%      { transform: translateX(-50%) scaleX(0.82); opacity: 0.6; }
+    }
+
+    /* Banda de frases emocionales — visibles, sin lock */
+    .hero-phrases {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      margin-top: 30px;
+    }
+    .phrase-pill {
+      font-family: 'Chewy', sans-serif;
+      font-size: 15px;
+      background: rgba(255,255,255,0.85);
+      border: 1.5px solid rgba(248,35,28,0.18);
+      padding: 9px 18px; border-radius: 999px;
+      box-shadow: 0 4px 0 rgba(248,35,28,0.12);
+      color: #1a1a2e;
+    }
+    .phrase-pill em { font-style: normal; color: #f8231c; }
+
+    /* Indicador de scroll */
+    .scroll-hint {
+      position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+      z-index: 40;
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      color: #1a1a2e; font-size: 12px; font-weight: 800; letter-spacing: 0.4px;
+      text-shadow:
+        0 0 4px rgba(255,216,80,0.95),
+        0 0 10px rgba(248,190,40,0.85),
+        0 0 18px rgba(248,160,10,0.6),
+        0 0 30px rgba(248,160,10,0.4);
+      opacity: 1;
+      transition: opacity 0.4s ease;
+      animation: hintBob 2s ease-in-out infinite;
+    }
+    .scroll-hint.is-hidden { opacity: 0; pointer-events: none; }
+    @keyframes hintBob { 0%,100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 6px); } }
+
+    /* ============================================================
+       SECCIONES — base con reveal suave
+       ============================================================ */
+    .section { padding: clamp(64px, 8vw, 110px) 0; position: relative; }
+    .section-head { text-align: center; max-width: 680px; margin: 0 auto clamp(34px, 4.5vw, 56px); }
+    .section-head h2 { font-size: clamp(28px, 3.4vw, 46px); line-height: 1.12; margin-bottom: 12px; }
+    .section-head p { color: #5a5a72; font-size: clamp(15px, 1.05vw, 17.5px); }
+
+    /* ============================================================
+       SPLIT 50/50 — mitad personaje protagonista, mitad contenido
+       ============================================================ */
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: clamp(0px, 1vw, 14px);
+      min-height: min(78vh, 620px);
+      position: relative;
+      overflow: visible;
+    }
+    .split.reverse .char-stage { order: 2; }
+    .split.reverse .split-content { order: 1; }
+
+    /* Escenario del personaje con panel curvo de color detrás.
+       El personaje invade levemente la zona del texto, POR DETRÁS. */
+    .char-stage {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: clamp(320px, 46vh, 540px);
+      z-index: 0;
+      overflow: visible;
+    }
+    /* Solape sutil hacia el contenido según el lado del personaje */
+    .split:not(.reverse) .char-stage { margin-right: clamp(-70px, -6%, -24px); }
+    .split.reverse .char-stage { margin-left: clamp(-70px, -6%, -24px); }
+    /* Paneles de color detrás de los personajes — eliminados */
+    .char-blob, .hero-blob { display: none !important; }
+    @keyframes blobMorph {
+      0%, 100% { border-radius: 46% 54% 57% 43% / 52% 44% 56% 48%; transform: translate(-50%, -50%) rotate(0deg); }
+      50%      { border-radius: 54% 46% 44% 56% / 46% 56% 44% 54%; transform: translate(-50%, -50%) rotate(8deg); }
+    }
+    .char-stage img {
+      position: relative;
+      z-index: 1;
+      width: clamp(240px, 30vw, 440px);
+      filter: drop-shadow(0 26px 36px rgba(0,0,0,0.26));
+      transform-origin: 50% 92%;
+    }
+    /* Personaje a la izquierda → inclinado hacia el contenido (derecha) */
+    .split:not(.reverse) .char-stage img { animation: introTiltR 3.8s ease-in-out infinite; }
+    @keyframes introTiltR {
+      0%, 100% { transform: translateY(0) rotate(6deg); }
+      50%      { transform: translateY(-14px) rotate(8.5deg); }
+    }
+    /* Personaje a la derecha → inclinado hacia el contenido (izquierda) */
+    .split.reverse .char-stage img { animation: introTiltL 3.8s ease-in-out infinite; }
+    @keyframes introTiltL {
+      0%, 100% { transform: translateY(0) rotate(-6deg); }
+      50%      { transform: translateY(-14px) rotate(-8.5deg); }
+    }
+    .split-content { position: relative; z-index: 2; }
+    .split-content .section-head { text-align: left; margin: 0 0 clamp(20px, 2.4vw, 30px); max-width: 100%; }
+    .split.reverse .split-content .section-head { text-align: left; }
+    /* Título centrado a todo el ancho (Explorar) */
+    .section-head--center { text-align: center; max-width: 680px; margin: 0 auto clamp(14px, 2vw, 26px); }
+    .section-head--center h2 { font-size: clamp(20px, 2.4vw, 33px); }
+    /* Subo solo el título (transform) para aumentar la distancia a las cards */
+    #explorar .section-head--center { margin-bottom: clamp(10px, 1.6vw, 20px); transform: translateY(36px); }
+    #explorar .section-head--center p { font-size: clamp(13px, 0.9vw, 15px); }
+    /* Las cards y el personaje no se tocan */
+    #explorar .split-content { transform: translateY(-26px); }
+    /* Split comprimido — entra entero en pantalla */
+    .split--compact { min-height: auto; gap: clamp(0px, 0.5vw, 10px); }
+    .split--compact .char-stage { min-height: clamp(260px, 38vh, 410px); }
+    /* Explorar: usa más ancho + más separación personaje/cards + personaje más grande */
+    #explorar .container { max-width: 1320px; }
+    #explorar .split { gap: clamp(30px, 6vw, 110px); }
+    #explorar .char-stage { margin-right: 0 !important; }   /* sin solape: separados */
+    #explorar .char-stage img { width: clamp(280px, 33vw, 495px); margin-top: clamp(18px, 5vh, 60px); }
+    #explorar .showcase-stack { gap: clamp(8px, 1vw, 13px); }
+    #explorar .showcase-stack .showcase-card { padding: clamp(10px, 1.2vw, 15px) clamp(13px, 1.5vw, 18px); gap: 14px; }
+    #explorar .showcase-icon { width: 50px; height: 50px; font-size: 25px; }
+    #explorar .showcase-card h3 { font-size: clamp(15px, 1.3vw, 18px); }
+    #explorar .showcase-card p { font-size: 12.5px; margin-bottom: 8px; }
+    #explorar .showcase-cta { font-size: 14px; padding: 9px 22px; }
+    #explorar .showcase-tag { font-size: 9.5px; }
+    /* Explorar: padding vertical reducido para comprimir */
+    #explorar.section { padding-top: clamp(40px, 5vw, 70px); padding-bottom: clamp(40px, 5vw, 70px); }
+    /* El FAQ dentro del split ocupa toda su mitad */
+    .split-content .faq-wrap { max-width: 100%; margin: 0; }
+    /* Colores de panel curvo por sección */
+    #explorar .char-blob { --blob: rgba(51,175,237,0.18); }   /* celeste */
+    #preguntas .char-blob { --blob: rgba(232,237,11,0.22); }  /* amarillo */
+    .hero-blob { --blob: rgba(248,35,28,0.13); }              /* rojo suave */
+    .hl { padding: 0 7px; border-radius: 5px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+    .hl--red    { background: linear-gradient(180deg, transparent 32%, rgba(248,35,28,0.20) 32%, rgba(248,35,28,0.20) 92%, transparent 92%); }
+    .hl--green  { background: linear-gradient(180deg, transparent 32%, rgba(63,180,17,0.25) 32%, rgba(63,180,17,0.25) 92%, transparent 92%); }
+    .hl--blue   { background: linear-gradient(180deg, transparent 32%, rgba(51,175,237,0.25) 32%, rgba(51,175,237,0.25) 92%, transparent 92%); }
+    .hl--violet { background: linear-gradient(180deg, transparent 32%, rgba(237,28,185,0.18) 32%, rgba(237,28,185,0.18) 92%, transparent 92%); }
+    .hl--orange { background: linear-gradient(180deg, transparent 32%, rgba(248,160,10,0.28) 32%, rgba(248,160,10,0.28) 92%, transparent 92%); }
+
+    /* Reveal on scroll (IntersectionObserver) */
+    .reveal { opacity: 0; transform: translateY(26px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(.2,.8,.2,1); }
+    .reveal.is-visible { opacity: 1; transform: translateY(0); }
+    .reveal-d1 { transition-delay: 0.1s; }
+    .reveal-d2 { transition-delay: 0.2s; }
+    .reveal-d3 { transition-delay: 0.3s; }
+
+    /* ============================================================
+       VITRINA — el contenido a 1 click (la sección estrella)
+       ============================================================ */
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(16px, 2.4vw, 28px);
+    }
+    .showcase-card {
+      --accent: #f8231c;
+      --accent-soft: rgba(248,35,28,0.10);
+      --accent-glow: rgba(248,35,28,0.42);
+      background: rgba(255,255,255,0.93);
+      border-radius: 28px;
+      padding: clamp(28px, 3vw, 40px) clamp(22px, 2.4vw, 32px);
+      text-align: center;
+      border: 2px solid transparent;
+      box-shadow: 0 8px 0 var(--accent-soft), 0 20px 38px rgba(26,26,46,0.09);
+      transition: transform 0.3s cubic-bezier(.2,.8,.2,1), box-shadow 0.35s ease, border-color 0.35s ease;
+      display: flex; flex-direction: column; align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Iluminación del color de la card al pasar el mouse (igual que las áreas) */
+    .showcase-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--accent);
+      box-shadow:
+        0 12px 0 var(--accent-soft),
+        0 28px 48px rgba(26,26,46,0.14),
+        0 0 40px var(--accent-glow),
+        0 0 22px var(--accent-glow) inset;
+    }
+    .showcase-card--blue   { --accent: #33afed; --accent-soft: rgba(51,175,237,0.22); --accent-glow: rgba(51,175,237,0.42); }
+    .showcase-card--violet { --accent: #ed1cb9; --accent-soft: rgba(237,28,185,0.18); --accent-glow: rgba(237,28,185,0.40); }
+    .showcase-card--green  { --accent: #3fb411; --accent-soft: rgba(63,180,17,0.22); --accent-glow: rgba(63,180,17,0.42); }
+    .showcase-icon {
+      width: clamp(76px, 7vw, 96px); height: clamp(76px, 7vw, 96px);
+      border-radius: 28px;
+      background: var(--accent-soft);
+      display: flex; align-items: center; justify-content: center;
+      font-size: clamp(38px, 3.6vw, 48px);
+      margin-bottom: 18px;
+      transition: transform 0.3s ease;
+    }
+    .showcase-card:hover .showcase-icon { transform: scale(1.12) rotate(-4deg); }
+    .showcase-card h3 { font-size: clamp(21px, 1.8vw, 26px); margin-bottom: 8px; }
+    .showcase-card p { color: #5a5a72; font-size: 14.5px; margin-bottom: 20px; flex: 1; }
+    .showcase-cta {
+      font-family: 'Chewy', sans-serif;
+      font-size: 16px;
+      color: #fff; background: var(--accent);
+      padding: 12px 28px; border-radius: 999px;
+      box-shadow: 0 5px 0 rgba(0,0,0,0.18);
+      transition: transform 0.2s ease;
+    }
+    .showcase-card:hover .showcase-cta { transform: scale(1.05); }
+    .showcase-tag {
+      position: absolute; top: 16px; right: 16px;
+      font-size: 10.5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+      background: rgba(63,180,17,0.14); color: #2a8a0a;
+      padding: 4px 11px; border-radius: 999px;
+    }
+
+    /* Cards apiladas escalonadas (modo split) — la del medio sale hacia afuera */
+    .showcase-stack {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(14px, 1.6vw, 20px);
+    }
+    .showcase-stack .showcase-card {
+      flex-direction: row;
+      text-align: left;
+      align-items: center;
+      gap: 18px;
+      padding: clamp(16px, 1.8vw, 24px) clamp(18px, 2vw, 26px);
+      overflow: visible;
+    }
+    .showcase-stack .showcase-icon { margin-bottom: 0; flex-shrink: 0; }
+    .showcase-stack .showcase-body { flex: 1; display: flex; flex-direction: column; align-items: flex-start; }
+    .showcase-stack .showcase-card p { margin-bottom: 12px; }
+    .showcase-stack .showcase-tag { position: static; align-self: flex-start; margin-bottom: 6px; }
+    /* Escalonado tipo "›": medio +25px derecha, arriba/abajo -15px izquierda */
+    .showcase-stack .showcase-card:nth-child(1),
+    .showcase-stack .showcase-card:nth-child(3) { transform: translateX(-15px); }
+    .showcase-stack .showcase-card:nth-child(2) { transform: translateX(25px); }
+    .showcase-stack .showcase-card:nth-child(1):hover,
+    .showcase-stack .showcase-card:nth-child(3):hover { transform: translateX(-15px) translateY(-6px); }
+    .showcase-stack .showcase-card:nth-child(2):hover { transform: translateX(25px) translateY(-6px); }
+
+    /* ============================================================
+       POR QUÉ — 4 áreas con pregunta identificatoria + solución
+       El padre se reconoce en la pregunta; la respuesta muestra
+       el trabajo profesional detrás de cada área.
+       ============================================================ */
+    .why { background: rgba(255,255,255,0.62); }
+    .areas-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: clamp(16px, 2.2vw, 26px);
+      margin-bottom: clamp(34px, 4vw, 52px);
+    }
+    .area-card {
+      --acc: #33afed;
+      --acc-soft: rgba(51,175,237,0.14);
+      background: rgba(255,255,255,0.94);
+      border-radius: 24px;
+      border-left: 6px solid var(--acc);
+      padding: clamp(22px, 2.6vw, 32px) clamp(20px, 2.4vw, 30px);
+      box-shadow: 0 8px 0 var(--acc-soft), 0 18px 34px rgba(26,26,46,0.08);
+      transition: transform 0.3s cubic-bezier(.2,.8,.2,1), box-shadow 0.35s ease, border-color 0.35s ease;
+    }
+    /* Iluminación sutil del color de la card al pasar el mouse */
+    .area-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--acc);
+      box-shadow:
+        0 12px 0 var(--acc-soft),
+        0 22px 44px rgba(26,26,46,0.12),
+        0 0 40px var(--acc-glow),
+        0 0 22px var(--acc-glow) inset;
+    }
+    .area-card--blue   { --acc: #33afed; --acc-soft: rgba(51,175,237,0.16); --acc-glow: rgba(51,175,237,0.42); }
+    .area-card--orange { --acc: #f8a00a; --acc-soft: rgba(248,160,10,0.18); --acc-glow: rgba(248,160,10,0.44); }
+    .area-card--violet { --acc: #ed1cb9; --acc-soft: rgba(237,28,185,0.13); --acc-glow: rgba(237,28,185,0.40); }
+    .area-card--green  { --acc: #3fb411; --acc-soft: rgba(63,180,17,0.16); --acc-glow: rgba(63,180,17,0.42); }
+    .area-chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--acc-soft);
+      padding: 6px 16px; border-radius: 999px;
+      font-size: 13px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
+      color: #1a1a2e;
+      margin-bottom: 14px;
+    }
+    .area-chip .em { font-size: 18px; }
+    .area-q {
+      font-family: 'Chewy', sans-serif;
+      font-size: clamp(19px, 1.8vw, 24px);
+      line-height: 1.25;
+      color: #1a1a2e;
+      margin-bottom: 10px;
+    }
+    .area-a { font-size: 14.5px; color: #4a4a5e; line-height: 1.7; }
+    .area-a b { color: #1a1a2e; }
+
+    /* Sello profesional — la promesa de respaldo */
+    .pro-seal {
+      display: flex; align-items: center; gap: 18px;
+      max-width: 680px; margin: 0 auto clamp(30px, 3.6vw, 46px);
+      background: rgba(255,255,255,0.94);
+      border: 2px solid rgba(63,180,17,0.35);
+      border-radius: 22px;
+      padding: 18px 26px;
+      box-shadow: 0 8px 0 rgba(63,180,17,0.14), 0 16px 30px rgba(26,26,46,0.08);
+    }
+    .pro-seal img {
+      width: 64px; height: 64px; border-radius: 50%;
+      object-fit: cover; object-position: top center;
+      border: 3px solid #3fb411;
+      flex-shrink: 0;
+    }
+    .pro-seal .seal-title { font-family: 'Chewy', sans-serif; font-size: 19px; color: #1a1a2e; margin-bottom: 2px; }
+    .pro-seal .seal-text { font-size: 13.5px; color: #5a5a72; line-height: 1.5; }
+    .pro-seal .seal-text b { color: #2a8a0a; }
+
+    /* Cita al final, debajo de los botones de redes (cerca) */
+    #comunidad .final-quote { margin: clamp(22px, 3.2vh, 40px) auto 0; }
+    .quote-band {
+      max-width: 760px; margin: 0 auto; text-align: center;
+      padding: clamp(26px, 3.4vw, 42px) clamp(22px, 3vw, 48px);
+      background: rgba(255,255,255,0.9);
+      border-radius: 30px;
+      border: 2px dashed rgba(237,28,185,0.35);
+      position: relative;
+    }
+    .quote-band::before {
+      content: '💭';
+      position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
+      font-size: 34px;
+      background: #fff; border-radius: 50%; padding: 4px 8px;
+      box-shadow: 0 4px 12px rgba(26,26,46,0.1);
+    }
+    .quote-band blockquote {
+      font-family: 'Chewy', sans-serif;
+      font-size: clamp(19px, 2vw, 26px);
+      line-height: 1.4;
+      color: #1a1a2e;
+    }
+    .quote-band blockquote em { font-style: normal; color: #ed1cb9; }
+    .quote-band cite { display: block; margin-top: 12px; font-size: 13px; color: #6a6a82; font-style: normal; font-weight: 600; }
+
+    /* ============================================================
+       HISTORIA — Alicia, el ancla de confianza
+       ============================================================ */
+    .story-grid {
+      display: grid;
+      grid-template-columns: minmax(260px, 400px) 1fr;
+      gap: clamp(28px, 4vw, 60px);
+      align-items: center;
+    }
+    .story-photo { position: relative; }
+    .story-photo img {
+      border-radius: 30px;
+      border: 6px solid #fff;
+      box-shadow: 0 24px 48px rgba(26,26,46,0.18), 0 8px 0 rgba(248,160,10,0.25);
+      transform: rotate(-2deg);
+      transition: transform 0.4s ease;
+    }
+    .story-photo:hover img { transform: rotate(0deg) scale(1.02); }
+    .story-photo::after {
+      content: '❤️';
+      position: absolute; top: -14px; right: -8px;
+      font-size: 38px;
+      transform: rotate(12deg);
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.18));
+    }
+    .story-text h2 { font-size: clamp(26px, 3vw, 40px); line-height: 1.15; margin-bottom: 20px; }
+    .story-block { margin-bottom: 18px; }
+    .story-block h3 {
+      font-size: 18px; color: #b56e00;
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 5px;
+    }
+    .story-block p { color: #4a4a5e; font-size: 15.5px; line-height: 1.7; max-width: 58ch; }
+    .story-sign {
+      margin-top: 24px;
+      display: inline-flex; align-items: center; gap: 14px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 18px;
+      padding: 12px 22px;
+      border: 1.5px solid rgba(248,160,10,0.3);
+    }
+    .story-sign .sign-name { font-family: 'Chewy', sans-serif; font-size: 21px; color: #1a1a2e; }
+    .story-sign .sign-role { font-size: 12.5px; color: #6a6a82; font-weight: 600; }
+
+    /* ============================================================
+       FAQ
+       ============================================================ */
+    .faq-wrap { max-width: 780px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+    .faq-item {
+      background: rgba(255,255,255,0.93);
+      border: 2px solid rgba(232,237,11,0.0);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(26,26,46,0.06);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .faq-item.is-open {
+      border-color: rgba(196,200,0,0.55);
+      box-shadow: 0 14px 30px rgba(232,237,11,0.22);
+    }
+    .faq-q {
+      width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 16px;
+      padding: 19px 24px;
+      background: transparent; border: none; cursor: pointer;
+      font-size: 16.5px; font-weight: 700; color: #1a1a2e; text-align: left;
+    }
+    .faq-q .arrow {
+      width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+      background: rgba(232,237,11,0.25);
+      display: flex; align-items: center; justify-content: center;
+      color: #8a6d00; font-size: 17px;
+      transition: transform 0.35s ease;
+    }
+    .faq-item.is-open .faq-q .arrow { transform: rotate(180deg); }
+    .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s ease; padding: 0 24px; }
+    .faq-item.is-open .faq-a { max-height: 400px; padding-bottom: 20px; }
+    .faq-a p { color: #5a5a72; font-size: 15px; line-height: 1.7; }
+
+    /* ============================================================
+       CTA FINAL + COMUNIDAD
+       ============================================================ */
+    .final {
+      text-align: center;
+      background: rgba(255,255,255,0.66);
+    }
+    .final h2 { font-size: clamp(28px, 3.6vw, 48px); line-height: 1.12; margin-bottom: 14px; }
+    .final-sub { color: #5a5a72; font-size: clamp(15px, 1.1vw, 18px); max-width: 560px; margin: 0 auto 30px; }
+    .final-ctas { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-bottom: 46px; }
+
+    .social-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+    .social-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.92);
+      border: 2px solid rgba(248,35,28,0.16);
+      padding: 12px 24px; border-radius: 999px;
+      font-weight: 700; font-size: 14.5px;
+      box-shadow: 0 5px 0 rgba(248,35,28,0.13);
+      transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+    .social-btn:hover { transform: translateY(-3px); border-color: #f8231c; color: #f8231c; }
+
+    /* ============================================================
+       MODAL — Compartí tu experiencia (localStorage demo)
+       ============================================================ */
+    .com-backdrop {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(26,26,46,0.55); backdrop-filter: blur(8px);
+      display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    .com-backdrop.is-open { display: flex; }
+    .com-modal {
+      background: #fff; width: 100%; max-width: 640px;
+      max-height: calc(100vh - 40px);
+      border-radius: 26px; padding: 30px 28px;
+      display: flex; flex-direction: column; overflow: hidden;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+      position: relative;
+    }
+    .com-modal h3 { font-size: 26px; margin-bottom: 4px; }
+    .com-modal .com-sub { font-size: 13.5px; color: #6a6a82; margin-bottom: 18px; }
+    .com-close {
+      position: absolute; top: 14px; right: 14px;
+      width: 38px; height: 38px; border-radius: 50%; border: none;
+      background: rgba(0,0,0,0.06); cursor: pointer; font-size: 17px;
+    }
+    .com-form { display: grid; gap: 12px; background: #fff5f5; border-radius: 16px; padding: 18px; margin-bottom: 18px; }
+    .com-form .row2 { display: grid; grid-template-columns: 1fr 120px; gap: 12px; }
+    .com-form label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 4px; }
+    .com-form input, .com-form textarea {
+      width: 100%; padding: 11px 13px; border-radius: 11px;
+      border: 1.5px solid rgba(0,0,0,0.1); font-family: 'Poppins', sans-serif; font-size: 14px;
+    }
+    .com-form input:focus, .com-form textarea:focus { outline: none; border-color: #f8231c; }
+    .com-form textarea { min-height: 84px; resize: vertical; }
+    .com-stars { display: flex; gap: 6px; font-size: 26px; }
+    .com-stars .star { cursor: pointer; color: #ddd; transition: color 0.2s, transform 0.15s; }
+    .com-stars .star.active { color: #FFC93D; }
+    .com-stars .star:hover { transform: scale(1.15); }
+    .com-submit {
+      font-family: 'Chewy', sans-serif; font-size: 16px;
+      background: #f8231c; color: #fff; border: none;
+      padding: 12px 26px; border-radius: 999px; cursor: pointer;
+      justify-self: start;
+      box-shadow: 0 5px 0 #b51410;
+    }
+    .com-list { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+    .com-item { background: #fff; border: 1px solid rgba(0,0,0,0.07); border-radius: 13px; padding: 13px 16px; }
+    .com-item .meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 5px; font-size: 13px; }
+    .com-item .meta b { color: #1a1a2e; }
+    .com-item .meta .stars { color: #FFC93D; }
+    .com-item .meta .when { color: #8a8aa0; font-size: 11.5px; }
+    .com-item .text { font-size: 13.5px; color: #4a4a5e; }
+    .com-empty { text-align: center; color: #8a8aa0; font-style: italic; padding: 18px; font-size: 14px; }
+
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    .footer {
+      background: #1a1a2e; color: #b8bcd0;
+      padding: 46px 0 26px;
+    }
+    .footer-grid {
+      display: grid; grid-template-columns: 1fr auto;
+      gap: 28px; align-items: center;
+      margin-bottom: 28px;
+    }
+    .footer-brand { display: flex; align-items: center; gap: 12px; }
+    .footer-brand img { height: 48px; }
+    .footer-brand span { font-family: 'Chewy', sans-serif; font-size: 24px; color: #fff; }
+    .footer-nav { display: flex; flex-wrap: wrap; gap: 20px; }
+    .footer-nav a { font-size: 13.5px; transition: color 0.2s; }
+    .footer-nav a:hover { color: #ff6b66; }
+    .footer-copy { text-align: center; font-size: 12px; color: #6a6a82; padding-top: 22px; border-top: 1px solid rgba(255,255,255,0.07); }
+
+    /* ============================================================
+       MOBILE ≤768px
+       ============================================================ */
+    @media (max-width: 768px) {
+      .nav, .header-cta { display: none; }
+      .nav-toggle { display: flex; }
+      .header-inner { grid-template-columns: 1fr auto; }
+
+      .hero { padding-top: 92px; min-height: auto; }
+      .hero-grid { grid-template-columns: 1fr; gap: 18px; }
+      .hero-character { order: -1; }
+      .hero-character img { width: clamp(170px, 48vw, 240px); }
+
+      /* Split 50/50 → apila en mobile (personaje arriba, contenido abajo) */
+      .split, .split.reverse { grid-template-columns: 1fr; gap: 22px; min-height: auto; }
+      .split .char-stage, .split.reverse .char-stage { order: -1; min-height: clamp(220px, 42vh, 320px); margin: 0 !important; }
+      .split .split-content, .split.reverse .split-content { order: 1; }
+      .char-stage img { width: clamp(180px, 50vw, 280px); }
+      .char-blob, .split:not(.reverse) .char-blob, .split.reverse .char-blob { left: 50% !important; width: 80%; }
+      .hero-character { margin-left: 0 !important; }
+      .hero-blob { left: 50% !important; width: 86%; }
+      .split-content .section-head { text-align: center; }
+      .showcase-stack .showcase-card,
+      .showcase-stack .showcase-card:nth-child(1),
+      .showcase-stack .showcase-card:nth-child(2),
+      .showcase-stack .showcase-card:nth-child(3) { transform: none; }
+      .showcase-stack .showcase-card:hover { transform: translateY(-6px); }
+      .hero h1 { font-size: clamp(30px, 8.4vw, 38px); text-align: center; }
+      .hero .eyebrow { display: block; text-align: center; margin-left: auto; margin-right: auto; max-width: fit-content; }
+      .hero-sub { text-align: center; margin-left: auto; margin-right: auto; font-size: 15px; }
+      .hero-ctas { justify-content: center; }
+      .btn-primary { width: 100%; justify-content: center; }
+      .btn-ghost { width: 100%; justify-content: center; }
+      .trust-badge { margin: 0 auto; display: flex; max-width: fit-content; }
+      .hero-text { display: flex; flex-direction: column; align-items: center; }
+      .hero-phrases { justify-content: center; }
+      .phrase-pill { font-size: 13px; padding: 8px 14px; }
+      .scroll-hint { display: none; }
+
+      .showcase-grid { grid-template-columns: 1fr; gap: 14px; }
+      .showcase-card { flex-direction: row; text-align: left; align-items: center; gap: 16px; padding: 20px 18px; }
+      .showcase-icon { width: 64px; height: 64px; font-size: 32px; margin-bottom: 0; flex-shrink: 0; border-radius: 20px; }
+      .showcase-body { flex: 1; }
+      .showcase-card h3 { font-size: 19px; }
+      .showcase-card p { font-size: 13px; margin-bottom: 10px; }
+      .showcase-cta { font-size: 14px; padding: 9px 20px; }
+      .showcase-tag { top: 10px; right: 12px; font-size: 9px; }
+
+      .areas-grid { grid-template-columns: 1fr; gap: 14px; }
+      .area-q { font-size: 18px; }
+      .area-a { font-size: 13.5px; }
+      .pro-seal { flex-direction: column; text-align: center; padding: 20px 18px; }
+
+      .story-grid { grid-template-columns: 1fr; gap: 26px; }
+      .story-photo { max-width: 300px; margin: 0 auto; }
+      .story-text { text-align: center; }
+      .story-block h3 { justify-content: center; }
+      .story-block p { margin: 0 auto; }
+      .story-sign { margin-left: auto; margin-right: auto; }
+
+      .final-ctas .btn { width: 100%; justify-content: center; }
+      .com-backdrop { padding: 0; }
+      .com-modal { max-width: 100%; height: 100vh; max-height: 100vh; border-radius: 0; }
+      .com-form .row2 { grid-template-columns: 1fr; }
+
+      .footer-grid { grid-template-columns: 1fr; text-align: center; }
+      .footer-brand { justify-content: center; }
+      .footer-nav { justify-content: center; }
+    }
+
+    /* Cielo de estrellitas titilando (decorativo, fijo) */
+    .twinkle {
+      position: fixed;
+      width: 5px; height: 5px;
+      z-index: 0;
+      pointer-events: none;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,250,210,0.9) 0%, rgba(248,160,10,0.35) 60%, transparent 75%);
+      animation: twinkle 3.2s ease-in-out infinite;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.12; transform: scale(0.7); }
+      50%      { opacity: 0.55; transform: scale(1.15); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      /* La estrella guía y las chispas quedan activas: son decorativas,
+         sutiles y centrales a la identidad de la web. */
+    }
+
+    /* ============================================================
+       SPLASH DE INICIO — bienvenida con los 3 personajes
+       ============================================================ */
+    .splash {
+      position: fixed; inset: 0;
+      z-index: 9000;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: clamp(10px, 1.6vh, 22px);
+      background: #f3e6cf url('./inicio/fondo.png') center/cover no-repeat;
+      overflow: hidden;
+      transition: opacity 0.7s ease, visibility 0.7s ease;
+    }
+    .splash.is-gone { opacity: 0; visibility: hidden; pointer-events: none; }
+    body.splash-lock { overflow: hidden; }
+
+    /* Velo de color que cambia con cada personaje */
+    .splash-tint {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 70% at 50% 55%, var(--tint, rgba(248,160,10,0.12)) 0%, transparent 70%),
+                  linear-gradient(180deg, rgba(255,250,240,0.30) 0%, rgba(255,248,240,0.10) 45%, rgba(255,250,240,0.42) 100%);
+      transition: background 0.8s ease;
+      pointer-events: none;
+    }
+
+    /* Estrellitas titilando dentro del splash */
+    .splash-stars { position: absolute; inset: 0; pointer-events: none; }
+    .splash-stars i {
+      position: absolute; width: 6px; height: 6px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,250,210,0.95) 0%, rgba(248,160,10,0.4) 60%, transparent 75%);
+      animation: twinkleV5 3s ease-in-out infinite;
+    }
+
+    /* Wordmark gigante detrás de los personajes */
+    .splash-wordmark {
+      position: absolute;
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      font-family: 'Chewy', sans-serif;
+      font-size: clamp(60px, 16vw, 240px);
+      line-height: 1;
+      letter-spacing: 2px;
+      color: #f8231c;
+      -webkit-text-stroke: 0.9px rgba(0,0,0,0.6);
+      text-stroke: 0.9px rgba(0,0,0,0.6);
+      text-shadow:
+        0 0 4px rgba(0,0,0,0.3),
+        0 0 9px rgba(0,0,0,0.2),
+        0 3px 10px rgba(0,0,0,0.16);
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 1;
+      animation: wordmarkIn 0.9s cubic-bezier(.2,.8,.2,1) both;
+    }
+    @keyframes wordmarkIn { from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+
+    /* Escenario coverflow 3D — los 3 personajes apilados con profundidad */
+    .splash-stage {
+      position: relative; z-index: 2;
+      width: 100%;
+      max-width: 980px;
+      height: clamp(300px, 46vh, 520px);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .splash-track {
+      position: relative;
+      width: 100%; height: 100%;
+      transform-style: preserve-3d;
+      perspective: 1400px;
+    }
+    .splash-char {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: clamp(220px, 32vw, 440px);
+      /* el div maneja la POSICIÓN coverflow; la img interna, el flotado */
+      transform: translate(-50%, -50%);
+      transition:
+        transform 0.8s cubic-bezier(.4,0,.2,1),
+        opacity 0.8s ease,
+        filter 0.8s ease;
+      will-change: transform, opacity, filter;
+      backface-visibility: hidden;
+    }
+    .splash-char img { width: 100%; height: auto; display: block; }
+    /* CENTRO — protagonista (tamaño 7), al frente, nítido */
+    .splash-char.pos-center {
+      transform: translate(-50%, -50%) translateZ(120px) scale(1);
+      opacity: 1;
+      filter: drop-shadow(0 30px 40px rgba(0,0,0,0.30));
+      z-index: 3;
+    }
+    .splash-char.pos-center img { animation: floaty 3.6s ease-in-out infinite; }
+    /* LADO IZQUIERDO — bien chico (resalta el crecer al centro), nítido y brillante */
+    .splash-char.pos-left {
+      transform: translate(-50%, -50%) translateX(-310px) translateZ(-190px) scale(0.46) rotateY(32deg);
+      opacity: 1;
+      filter: drop-shadow(0 26px 34px rgba(0,0,0,0.28));
+      z-index: 1;
+      cursor: pointer;
+    }
+    /* LADO DERECHO — bien chico (resalta el crecer al centro), nítido y brillante */
+    .splash-char.pos-right {
+      transform: translate(-50%, -50%) translateX(310px) translateZ(-190px) scale(0.46) rotateY(-32deg);
+      opacity: 1;
+      filter: drop-shadow(0 26px 34px rgba(0,0,0,0.28));
+      z-index: 1;
+      cursor: pointer;
+    }
+    .splash-char.pos-left:hover, .splash-char.pos-right:hover {
+      filter: drop-shadow(0 30px 40px rgba(0,0,0,0.34));
+    }
+
+    /* Partículas de pasto mágico — polen dorado que sube del piso */
+    .splash-particles {
+      position: absolute; inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      overflow: hidden;
+    }
+    .splash-particles b {
+      position: absolute;
+      bottom: -12px;
+      width: var(--sz, 6px); height: var(--sz, 6px);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,240,180,0.95) 0%, rgba(248,200,80,0.55) 45%, rgba(248,160,10,0) 75%);
+      opacity: 0;
+      animation: floatUp var(--dur, 7s) ease-in var(--delay, 0s) infinite;
+    }
+    @keyframes floatUp {
+      0%   { transform: translate(0, 0) scale(0.6); opacity: 0; }
+      12%  { opacity: var(--maxop, 0.8); }
+      85%  { opacity: var(--maxop, 0.8); }
+      100% { transform: translate(var(--drift, 0px), calc(-1 * var(--rise, 80vh))) scale(1.05); opacity: 0; }
+    }
+
+    .splash-dots { position: relative; z-index: 2; display: flex; gap: 9px; }
+    .splash-dots .dot {
+      width: 9px; height: 9px; border-radius: 50%;
+      background: rgba(26,26,46,0.22);
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+    .splash-dots .dot.is-on { background: #f8231c; transform: scale(1.25); }
+
+    .splash-enter {
+      position: absolute; z-index: 4;
+      left: 50%; bottom: clamp(64px, 15vh, 140px);
+      transform: translateX(-50%);
+      font-family: 'Chewy', sans-serif; font-size: clamp(18px, 2vw, 24px);
+      color: #fff; background: #f8231c; border: none; cursor: pointer;
+      padding: 16px 42px; border-radius: 999px;
+      box-shadow: 0 8px 0 #b51410, 0 16px 30px rgba(248,35,28,0.4);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      animation: enterPulse 2.4s ease-in-out infinite;
+    }
+    .splash-enter:hover { transform: translateX(-50%) translateY(-3px); box-shadow: 0 11px 0 #b51410, 0 20px 34px rgba(248,35,28,0.5); }
+    @keyframes enterPulse {
+      0%, 100% { box-shadow: 0 8px 0 #b51410, 0 16px 30px rgba(248,35,28,0.4); }
+      50%      { box-shadow: 0 8px 0 #b51410, 0 16px 38px rgba(248,35,28,0.62); }
+    }
+    .splash-hint {
+      position: absolute; z-index: 4;
+      left: 50%; bottom: clamp(38px, 9vh, 90px);
+      transform: translateX(-50%);
+      font-size: 12.5px; color: rgba(26,26,46,0.55); font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* ===== Animación de ENTRADA: personajes se esconden,
+       el título se expande hacia adelante y da paso a la web ===== */
+    .splash.is-leaving .splash-char {
+      opacity: 0 !important;
+      transform: translate(-50%, -50%) translateY(40px) scale(0.4) !important;
+      transition: transform 0.45s ease, opacity 0.45s ease !important;
+      pointer-events: none;
+    }
+    .splash.is-leaving .splash-dots,
+    .splash.is-leaving .splash-enter,
+    .splash.is-leaving .splash-hint {
+      opacity: 0 !important;
+      transition: opacity 0.3s ease !important;
+      pointer-events: none;
+    }
+    /* Partículas y estrellas de fondo: desaparecen al instante en la intro */
+    .splash.is-leaving .splash-stars,
+    .splash.is-leaving .splash-particles {
+      opacity: 0 !important;
+      transition: none !important;
+    }
+    .splash.is-leaving .splash-wordmark {
+      animation: wordmarkZoom 1.25s cubic-bezier(.55,0,.85,0.6) forwards;
+    }
+    @keyframes wordmarkZoom {
+      0%   { transform: translate(-50%,-50%) scale(1);   opacity: 0.9; }
+      45%  { transform: translate(-50%,-50%) scale(2.2);  opacity: 1; }
+      100% { transform: translate(-50%,-50%) scale(13);  opacity: 0; }
+    }
+    /* El velo del splash se aclara mientras el título se expande → revela la web */
+    .splash.is-leaving .splash-tint { opacity: 0; transition: opacity 0.9s ease 0.35s; }
+
+    /* ===== POLVO DE HADAS — estalla del centro al 50% del zoom del título ===== */
+    .fairy-burst {
+      position: fixed; inset: 0;
+      z-index: 9500;
+      pointer-events: none;
+      overflow: hidden;
+      display: none;
+    }
+    .fairy-burst.is-on { display: block; }
+    .fairy-dust {
+      position: absolute;
+      left: 50%; top: 50%;
+      width: var(--sz, 6px); height: var(--sz, 6px);
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff 0%, var(--col, #ffd24a) 45%, transparent 72%);
+      box-shadow: 0 0 6px var(--col, #ffd24a), 0 0 12px var(--col, #ffd24a);
+      opacity: 0;
+      will-change: transform, opacity;
+      animation: fairyFly var(--dur, 1.2s) cubic-bezier(.15,.6,.3,1) var(--delay, 0s) forwards;
+    }
+    @keyframes fairyFly {
+      0%   { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
+      12%  { opacity: 1; }
+      70%  { opacity: 1; }
+      100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1.1) rotate(var(--rot, 180deg)); opacity: 0; }
+    }
+    /* Destello de portal — luz que llena la pantalla en el pico y revela la web */
+    .fairy-flash {
+      position: fixed; inset: 0;
+      z-index: 9400;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, rgba(255,252,238,0.95) 0%, rgba(255,226,150,0.55) 38%, rgba(255,200,120,0) 72%);
+      opacity: 0;
+    }
+    .fairy-flash.is-on { animation: portalFlash 1.4s ease-out forwards; }
+    @keyframes portalFlash {
+      0%   { opacity: 0; }
+      45%  { opacity: 0.9; }
+      100% { opacity: 0; }
+    }
+
+    @media (max-width: 768px) {
+      .splash-wordmark { font-size: clamp(46px, 19vw, 110px); }
+      .splash-stage { height: clamp(280px, 44vh, 400px); }
+      .splash-char { width: clamp(175px, 58vw, 260px); }
+      .splash-char.pos-left  { transform: translate(-50%, -50%) translateX(-118px) translateZ(-140px) scale(0.44) rotateY(30deg); }
+      .splash-char.pos-right { transform: translate(-50%, -50%) translateX(118px) translateZ(-140px) scale(0.44) rotateY(-30deg); }
+    }
+
+    /* ============================================================
+       NOTEBOOKS — pantallas de poca altura (1280×800 y similares)
+       Compacta todo para que cada sección entre sin recortes.
+       Solo desktop angosto/bajo (ancho ≥769 para no pisar mobile).
+       ============================================================ */
+    @media (min-width: 769px) and (max-height: 820px) {
+      /* Secciones: padding vertical chico */
+      .section { padding: 38px 0 !important; }
+      #explorar.section { padding: 16px 0 34px !important; }
+
+      /* HERO entra en una pantalla */
+      .hero { min-height: auto; padding: 64px 0 18px; }
+      .hero-grid { gap: clamp(0px, 1vw, 14px); }
+      .hero h1 { font-size: clamp(26px, 2.6vw, 40px); margin-bottom: 12px; }
+      .hero-sub { font-size: 15px; margin-bottom: 18px; }
+      .hero-ctas { margin-bottom: 18px; }
+      .hero-character img { width: clamp(220px, 26vw, 360px); }
+      .hero-phrases { margin-top: 18px; }
+      .trust-badge { padding: 7px 16px 7px 8px; }
+      .trust-badge img { width: 38px; height: 38px; }
+
+      /* SPLIT (Explorar/Preguntas) compactos */
+      .split, .split--compact { min-height: auto; }
+      .char-stage { min-height: clamp(240px, 38vh, 360px) !important; }
+      .char-stage img { width: clamp(210px, 24vw, 330px); }
+      #explorar .char-stage img { width: clamp(260px, 31vw, 415px); margin-top: clamp(10px, 3vh, 30px); }
+      #explorar .char-stage { min-height: clamp(220px, 34vh, 340px) !important; }
+
+      /* Títulos de sección más chicos y con menos margen */
+      .section-head { margin-bottom: 18px !important; }
+      .section-head h2 { font-size: clamp(24px, 2.6vw, 38px); margin-bottom: 8px; }
+      .section-head p { font-size: 14.5px; }
+
+      /* EXPLORAR: cards apiladas más compactas */
+      .showcase-stack { gap: 10px; }
+      .showcase-stack .showcase-card { padding: 13px 16px; }
+      .showcase-icon { width: 50px !important; height: 50px !important; font-size: 25px !important; }
+      .showcase-card h3 { font-size: 18px; margin-bottom: 4px; }
+      .showcase-card p { font-size: 13px; margin-bottom: 8px; }
+
+      /* POR QUÉ: 4 áreas bien compactas (es la sección más cargada) */
+      .why .section-head { margin-bottom: 14px !important; }
+      .areas-grid { gap: 10px; margin-bottom: 14px; }
+      .area-card { padding: 12px 15px; border-left-width: 5px; }
+      .area-q { font-size: clamp(15px, 1.35vw, 19px); margin-bottom: 5px; line-height: 1.2; }
+      .area-a { font-size: 12.5px; line-height: 1.45; }
+      .area-chip { margin-bottom: 7px; padding: 4px 11px; font-size: 11.5px; }
+      .pro-seal { padding: 9px 16px; margin-bottom: 12px; gap: 12px; }
+      .pro-seal img { width: 44px; height: 44px; }
+      .pro-seal .seal-title { font-size: 16px; }
+      .pro-seal .seal-text { font-size: 12px; }
+      .quote-band { padding: 16px 26px; }
+      .quote-band::before { font-size: 26px; top: -16px; }
+      .quote-band blockquote { font-size: clamp(15px, 1.5vw, 20px); }
+      .quote-band cite { margin-top: 8px; font-size: 12px; }
+
+      /* HISTORIA compacta */
+      .story-grid { gap: clamp(24px, 3vw, 44px); }
+      .story-photo img { border-width: 5px; }
+      .story-text h2 { font-size: clamp(22px, 2.4vw, 34px); margin-bottom: 14px; }
+      .story-block { margin-bottom: 12px; }
+      .story-block p { font-size: 14px; line-height: 1.55; }
+      .story-sign { margin-top: 16px; padding: 10px 18px; }
+
+      /* FAQ compacto */
+      .faq-q { padding: 14px 20px; font-size: 15.5px; }
+      .faq-item.is-open .faq-a { padding-bottom: 16px; }
+      .faq-a p { font-size: 14px; line-height: 1.55; }
+
+      /* COMUNIDAD compacta */
+      .final h2 { font-size: clamp(26px, 3vw, 42px); margin-bottom: 12px; }
+      .final-sub { font-size: 15px; margin-bottom: 22px; }
+      .final-ctas { margin-bottom: 30px; }
+      .social-row { gap: 10px; }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Script EARLY: ocultar body + neutralizar Lenis si venimos de subpágina -->
-  <script src="./js/01-fast-return-early.js"></script>
+  <!-- ====================== SPLASH DE INICIO ====================== -->
+  <div class="splash" id="splash" aria-label="Pantalla de bienvenida">
+    <div class="splash-tint" id="splash-tint"></div>
+    <div class="splash-stars" id="splash-stars" aria-hidden="true"></div>
+    <div class="splash-particles" id="splash-particles" aria-hidden="true"></div>
 
+    <div class="splash-stage" id="splash-stage">
+      <div class="splash-track" id="splash-track">
+        <div class="splash-char" data-i="0"><img src="./inicio/1.png?v=2" alt="Alimeythor saludando"></div>
+        <div class="splash-char" data-i="1"><img src="./inicio/2.png" alt="Alimeythor con cepillo de dientes"></div>
+        <div class="splash-char" data-i="2"><img src="./inicio/3.png" alt="Alimeythor con jabón"></div>
+      </div>
+    </div>
 
-  <!-- ====================== FONDO GLOBAL ESTÁTICO ====================== -->
-  <video
-    class="story-stack__bg global-bg"
-    autoplay muted loop playsinline preload="auto"
-    disablepictureinpicture disableremoteplayback
-    aria-hidden="true"
-  >
-    <source src="./fondo.mp4" type="video/mp4" />
-  </video>
-  <div class="global-veil" aria-hidden="true"></div>
+    <button class="splash-enter" id="splash-enter" type="button">Entrar al mundo ✨</button>
+    <p class="splash-hint">Tocá el botón o presioná Enter</p>
+  </div>
+
+  <!-- Polvo de hadas (hermanos del splash para persistir al desvanecerse) -->
+  <div class="fairy-flash" id="fairy-flash" aria-hidden="true"></div>
+  <div class="fairy-burst" id="fairy-burst" aria-hidden="true"></div>
+
+  <!-- Fondo bosque (misma imagen que el splash) -->
+  <div class="bg-image" aria-hidden="true"></div>
+  <div class="bg-veil" aria-hidden="true"></div>
+  <div class="web-fx" id="web-fx" aria-hidden="true"></div>
 
   <!-- ====================== HEADER ====================== -->
-  <header class="site-header">
+  <header class="header" id="header">
     <div class="header-inner">
-      <a href="#" class="logo"><img class="logo-img" src="./logo-alimeythor.png" alt="Alimeythor"><span class="logo-text">Alimeythor</span></a>
-      <nav class="nav-desktop">
+      <a href="#" class="logo">
+        <img class="logo-img" src="./logo-alimeythor.png" alt="Logo Alimeythor">
+        <span class="logo-text">Alimeythor</span>
+      </a>
+      <nav class="nav">
         <a href="#" class="active">Inicio</a>
-        <a href="#padres">Padres</a>
-        <a href="#que-es">Qué es Alimeythor</a>
-        <a href="#emociones">Emociones vs Pantallas</a>
-        <a href="#presentacion">Presentación</a>
-        <a href="#faq">FAQ</a>
+        <a href="#explorar">Explorar</a>
+        <a href="#historia">Nuestra historia</a>
+        <a href="#preguntas">Preguntas</a>
         <a href="#comunidad">Comunidad</a>
       </nav>
-      <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-mobile" type="button">
+      <a href="#explorar" class="header-cta">Empezar →</a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú" aria-expanded="false" type="button">
         <span></span><span></span><span></span>
       </button>
     </div>
   </header>
 
-  <!-- Overlay del menú mobile -->
   <div class="nav-mobile" id="nav-mobile" aria-hidden="true">
-    <nav class="nav-mobile-inner">
-      <a href="#" class="active">Inicio</a>
-      <a href="#padres">Padres</a>
-      <a href="#que-es">Qué es Alimeythor</a>
-      <a href="#emociones">Emociones vs Pantallas</a>
-      <a href="#presentacion">Presentación</a>
-      <a href="#faq">FAQ</a>
-      <a href="#comunidad">Comunidad</a>
-    </nav>
+    <a href="#">Inicio</a>
+    <a href="#explorar">Explorar</a>
+    <a href="#historia">Nuestra historia</a>
+    <a href="#preguntas">Preguntas</a>
+    <a href="#comunidad">Comunidad</a>
   </div>
 
-  <!-- ====================== STORY STACK (hero + quien + alicia pineadas) ====================== -->
-  <section class="story-stack">
-    <div class="story-stack__sticky">
-
-      <!-- Panel 1 — TOP-LEFT (neutralizado) -->
-      <article class="story-panel" data-pos="top-left" id="quien" style="display:none;"></article>
-
-      <!-- Panel 2 — CENTER: HERO protagonista -->
-      <article class="story-panel" data-pos="center" style="top:50%; left:6%; transform:translateY(-50%); width:min(720px,48%); max-width:720px; text-align:left; align-items:flex-start;">
-        <span class="eyebrow" style="color:#1a1a2e; background:rgba(255,255,255,0.55);">Para familias en la era de las pantallas</span>
-        <h1 style="font-size:clamp(38px,4.6vw,66px); line-height:1.08; font-weight:900; margin:0;">Cuentos, juegos y videos que vuelven a <span class="pink" style="-webkit-text-stroke:0.6px rgba(0,0,0,0.35); paint-order:stroke fill;">conectar a tu familia</span></h1>
-        <p style="text-align:left; max-width:100%; margin-top:18px; font-size:18px; line-height:1.65;">
-          Alimeythor es una plataforma digital con cuentos, juegos y videos pensados
-          para crecer y aprender con momentos reales.
-        </p>
-        <div class="btn-group" style="justify-content:flex-start; margin-top:22px;">
-          <a href="#que-es" class="btn btn--primary">Entrar al mundo</a>
-          <a href="#presentacion" class="btn btn--outline">Conocé Alimeythor</a>
+  <!-- ====================== HERO ====================== -->
+  <section class="hero">
+    <div class="container" style="width:100%;">
+      <div class="hero-grid">
+        <div class="hero-text">
+          <span class="eyebrow">Para familias con chicos de 4 a 9 años</span>
+          <h1>Cuentos, juegos y videos que vuelven a <span class="hl-red">conectar a tu familia</span></h1>
+          <p class="hero-sub">
+            Alimeythor es una plataforma digital pensada para que los chicos aprendan a
+            sentir, imaginar y crecer — compartiendo momentos reales con vos.
+          </p>
+          <div class="hero-ctas">
+            <a href="#explorar" class="btn btn-primary">✨ Explorar el mundo</a>
+            <a href="#historia" class="btn btn-ghost">Conocé nuestra historia</a>
+          </div>
+          <div class="trust-badge">
+            <img src="./alicia-presentacion.png" alt="Alicia, creadora de Alimeythor">
+            <p>Creado por <span>Alicia</span> — Madre de 4 hijos y Lic. en Enfermería.<br>Pensado para familias reales.</p>
+          </div>
         </div>
-        <p style="font-size:15px; font-weight:700; color:#1a1a2e; background:rgba(248, 35, 28,0.12); border:1px solid rgba(248, 35, 28,0.30); padding:10px 18px; border-radius:999px; margin-top:18px; max-width:100%; display:inline-block; text-align:left;">Creado por una Madre de 4 hijos y Lic. en Enfermería. Pensado para familias reales.</p>
-      </article>
-
-      <!-- Burbujas centradas EXACTAMENTE entre el texto principal y el personaje -->
-      <div id="hero-burbujas" style="position:absolute; top:50%; left:calc(6% + 48vw + 24px); right:calc(30px + 320px + 24px); transform:translateY(-50%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; z-index:3;">
-        <div class="hero-burbuja" style="background:#fff; border:1px solid rgba(248, 35, 28,0.18); border-radius:18px; padding:22px 24px; text-align:center; color:#1a1a2e; font-weight:900; font-size:19px; line-height:1.22; width:100%; max-width:420px; letter-spacing:-0.2px;">Las emociones también merecen un <span class="pink">mundo propio</span></div>
-        <div class="hero-burbuja" style="background:#fff; border:1px solid rgba(248, 35, 28,0.18); border-radius:18px; padding:22px 24px; text-align:center; color:#1a1a2e; font-weight:900; font-size:19px; line-height:1.22; width:100%; max-width:420px; letter-spacing:-0.2px;">Detrás de cada pantalla, hay un <span class="pink">niño imaginando</span></div>
-        <div class="hero-burbuja" style="background:#fff; border:1px solid rgba(248, 35, 28,0.18); border-radius:18px; padding:22px 24px; text-align:center; color:#1a1a2e; font-weight:900; font-size:19px; line-height:1.22; width:100%; max-width:420px; letter-spacing:-0.2px;">Hay mundos que entretienen, y otros que <span class="pink">dejan huella</span></div>
-      </div>
-
-      <!-- Panel 3 — BOTTOM-LEFT (neutralizado) -->
-      <article class="story-panel" data-pos="bottom-left" id="alicia" style="display:none;"></article>
-
-    </div>
-  </section>
-
-  <!-- ====================== PADRES ====================== -->
-  <section id="padres" class="section section--white section--centered" data-char-side="left" data-char-gap="5" data-char-against="edge">
-    <div class="container">
-      <div class="text-block reveal">
-        <span class="eyebrow">Sección Padres</span>
-        <h2>Un mundo donde las <span class="hl">emociones</span> crecen en familia</h2>
-        <div class="divider"></div>
-        <p>UN ESPACIO DONDE TRABAJAMOS CON..</p>
-      </div>
-      <div class="cards-grid cards-grid--4 reveal">
-        <article class="card">
-          <div class="card-icon">💭</div>
-          <h4>Imaginación</h4>
-          <p>Un lugar donde la imaginación y las emociones crecen juntas.</p>
-        </article>
-        <article class="card">
-          <div class="card-icon">🤝</div>
-          <h4>Conexión</h4>
-          <p>Un espacio para fortalecer y conectar el vínculo familiar.</p>
-        </article>
-        <article class="card">
-          <div class="card-icon">🌟</div>
-          <h4>Valores</h4>
-          <p>Experiencias que ayudan a construir emociones y valores positivos.</p>
-        </article>
-        <article class="card">
-          <div class="card-icon">🌿</div>
-          <h4>Bienestar</h4>
-          <p>Pequeñas experiencias que inspiran hábitos más saludables.</p>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- ====================== QUÉ ES ALIMEYTHOR ====================== -->
-  <section id="que-es" class="section section--navy section--centered" data-char-side="right" data-char-gap="5" data-char-against="edge" data-char-costume="verano">
-    <div class="container">
-      <div class="text-block reveal">
-        <span class="eyebrow">El universo</span>
-        <h2>¿Qué es <span class="hl">Alimeythor</span>?</h2>
-        <div class="divider"></div>
-        <p class="lead">
-          Un universo interactivo que transforma historias, juegos y experiencias
-          digitales en momentos reales de aprendizaje y conexión.
-        </p>
-      </div>
-
-      <div class="cards-grid reveal">
-        <article class="card">
-          <div class="card-icon">📖</div>
-          <h4>Cuentos y música</h4>
-          <p>Relatos, canciones y videos que acompañan cada emoción.</p>
-          <a href="./paginas/cuentos/biblioteca.html" class="btn btn--outline">Explorar</a>
-        </article>
-        <article class="card">
-          <div class="card-icon">🎮</div>
-          <h4>Juegos y descargables</h4>
-          <p>Experiencias interactivas para aprender jugando en familia.</p>
-          <a href="./paginas/juegos/juegos-descargables.html" class="btn btn--outline">Explorar</a>
-        </article>
-        <article class="card">
-          <div class="card-icon">🌍</div>
-          <h4>Pase mágico</h4>
-          <p>Un mundo entero por descubrir, lleno de personajes y aventuras.</p>
-          <a href="#universo" class="btn btn--outline">Explorar</a>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- ====================== EMOCIONES VS PANTALLAS ====================== -->
-  <section id="emociones" class="section section--white section--centered" data-char-side="right" data-char-gap="5" data-char-against="edge" data-char-costume="pileta">
-    <div class="container">
-      <div class="text-block reveal">
-        <span class="eyebrow">El equilibrio</span>
-        <h2><span class="hl">Emociones</span> vs. Pantallas</h2>
-        <div class="divider"></div>
-        <p>En un mundo lleno de estímulos, conectar emocionalmente también necesita tiempo.</p>
-      </div>
-      <div class="cards-grid cards-grid--2 reveal">
-        <article class="card"><p style="font-size:17px;font-style:italic;color:#1a1a2e;max-width:none;">Detrás de cada pantalla, todavía hay un niño buscando conexión, imaginación y compañía.</p></article>
-        <article class="card"><p style="font-size:17px;font-style:italic;color:#1a1a2e;max-width:none;">Criar en la era digital puede ser difícil. Crear momentos reales puede ser posible.</p></article>
-        <article class="card"><p style="font-size:17px;font-style:italic;color:#1a1a2e;max-width:none;">No buscamos apagar pantallas. Buscamos encender emociones.</p></article>
-        <article class="card"><p style="font-size:17px;font-style:italic;color:#1a1a2e;max-width:none;">Conectar de verdad empieza por estar presentes.</p></article>
-      </div>
-    </div>
-  </section>
-
-  <!-- ====================== PRESENTACIÓN ====================== -->
-  <section id="presentacion" class="section section--cream section--centered" data-char-side="right" data-char-gap="5" data-char-against="edge" data-char-costume="pileta">
-    <div class="container">
-      <div class="presentacion-grid" style="display:grid; grid-template-columns: minmax(300px, 420px) 1fr; gap:56px; align-items:start;">
-        <div style="display:flex; flex-direction:column; align-items:flex-start; gap:14px;">
-          <span class="eyebrow">Co-fundadora de Alimeythor</span>
-          <img src="./alicia-presentacion.png" alt="Alicia, co-fundadora de Alimeythor" style="width:100%; border-radius:20px; box-shadow:0 20px 44px rgba(0,0,0,0.18);" />
+        <div class="hero-character">
+          <div class="char-blob hero-blob"></div>
+          <img src="./personajeflotante.png" alt="Alimeythor, el malvavisco mágico">
         </div>
-        <div class="text-block reveal" style="text-align:left; align-items:flex-start;">
-          <h2>Criar con intención no necesita títulos. Necesita <span class="hl">decisión</span>.</h2>
-          <div class="divider"></div>
-          <h3 style="font-weight:900; text-transform:uppercase; margin-top:24px;">CON EL TIEMPO ENTENDÍ ALGO…</h3>
-          <p>Los niños crecen rodeados de pantallas, estímulos y contenido constante. Pero muchas veces falta algo esencial: emociones, imaginación y tiempo compartido.</p>
-          <h3 style="font-weight:900; text-transform:uppercase; margin-top:24px;">ASÍ NACIÓ ALIMEYTHOR</h3>
-          <p>Un universo pensado para transformar cuentos, juegos y videos digitales en momentos que puedan acompañar emocionalmente a las familias.</p>
-          <h3 style="font-weight:900; text-transform:uppercase; margin-top:24px;">MI OBJETIVO</h3>
-          <p>Crear un espacio donde las familias puedan imaginar, sentir y crecer compartiendo experiencias reales.</p>
+      </div>
+    </div>
+    <div class="scroll-hint" aria-hidden="true">
+      <span>Descubrí más</span>
+      <span style="font-size:18px;">⌄</span>
+    </div>
+  </section>
+
+  <!-- ====================== VITRINA / EXPLORAR ====================== -->
+  <section class="section" id="explorar">
+    <div class="container">
+      <div class="section-head section-head--center reveal">
+        <h2>¿Qué van a encontrar <span class="hl hl--red">hoy</span>?</h2>
+        <p>Todo el contenido está listo para usar. Elegí por dónde empezar:</p>
+      </div>
+      <div class="split split--compact reveal">
+        <div class="char-stage">
+          <img src="./inicio/explorar.png" alt="Alimeythor explorador">
+        </div>
+        <div class="split-content">
+          <div class="showcase-stack">
+            <a href="./paginas/cuentos/cuentos.html" class="showcase-card showcase-card--blue">
+              <div class="showcase-icon">📖</div>
+              <div class="showcase-body">
+                <span class="showcase-tag">6 cuentos</span>
+                <h3>Cuentos para leer juntos</h3>
+                <p>Historias breves sobre emociones, hábitos y vínculos.</p>
+                <span class="showcase-cta">Leer un cuento →</span>
+              </div>
+            </a>
+            <a href="./paginas/musica/musica.html" class="showcase-card showcase-card--violet">
+              <div class="showcase-icon">🎵</div>
+              <div class="showcase-body">
+                <span class="showcase-tag">9 canciones</span>
+                <h3>Canciones de Alimeythor</h3>
+                <p>Música original para cada momento del día.</p>
+                <span class="showcase-cta">Escuchar música →</span>
+              </div>
+            </a>
+            <a href="./paginas/juegos/juegos-descargables.html" class="showcase-card showcase-card--green">
+              <div class="showcase-icon">🎮</div>
+              <div class="showcase-body">
+                <span class="showcase-tag">Juego + stickers</span>
+                <h3>Juegos y descargables</h3>
+                <p>Un juego interactivo y planchas de stickers para imprimir.</p>
+                <span class="showcase-cta">Jugar ahora →</span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== POR QUÉ ALIMEYTHOR ====================== -->
+  <section class="section why">
+    <div class="container">
+      <div class="section-head reveal">
+        <h2>Un mundo donde las <span class="hl hl--green">emociones</span> crecen en familia</h2>
+        <p>Estas son las cuatro áreas que trabajamos en cada cuento, canción y juego. Si te identificás con alguna, Alimeythor es para tu familia.</p>
+      </div>
+      <div class="areas-grid">
+        <div class="area-card area-card--blue reveal">
+          <span class="area-chip"><span class="em">💭</span> Imaginación</span>
+          <h3 class="area-q">¿Sentís que las pantallas le apagan la creatividad?</h3>
+          <p class="area-a">En Alimeythor cada cuento y juego lo invita a <b>crear sus propios mundos</b>. La imaginación se entrena como un músculo — y es la base con la que los chicos procesan sus emociones.</p>
+        </div>
+        <div class="area-card area-card--orange reveal reveal-d1">
+          <span class="area-chip"><span class="em">🤝</span> Conexión</span>
+          <h3 class="area-q">¿Cuesta encontrar momentos juntos sin distracciones?</h3>
+          <p class="area-a">Cada actividad está pensada para hacerse <b>de a dos: vos y tu hijo</b>. Porque el vínculo no se construye con más tiempo, sino con momentos de calidad compartida.</p>
+        </div>
+        <div class="area-card area-card--violet reveal reveal-d2">
+          <span class="area-chip"><span class="em">🌟</span> Valores</span>
+          <h3 class="area-q">¿Querés enseñarle empatía y respeto, pero no sabés por dónde empezar?</h3>
+          <p class="area-a">Las historias de Alimeythor muestran los valores <b>en acción</b>: los chicos los incorporan viéndolos vivir en sus personajes, no escuchando sermones.</p>
+        </div>
+        <div class="area-card area-card--green reveal reveal-d3">
+          <span class="area-chip"><span class="em">🌿</span> Bienestar</span>
+          <h3 class="area-q">¿Dormir, bañarse o comer se vuelven una batalla cada día?</h3>
+          <p class="area-a">Trabajamos las rutinas con herramientas que las <b>transforman en juego</b>: hábitos saludables que se construyen con magia, no con gritos.</p>
+        </div>
+      </div>
+      <div class="pro-seal reveal">
+        <img src="./alicia-presentacion.png" alt="Alicia, Lic. en Enfermería">
+        <div>
+          <div class="seal-title">Detrás de cada contenido hay mirada profesional</div>
+          <div class="seal-text"><b>Alicia</b> — Lic. en Enfermería y madre de 4 hijos. Más de 30 años acompañando familias.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== NUESTRA HISTORIA ====================== -->
+  <section class="section" id="historia">
+    <div class="container">
+      <div class="story-grid">
+        <div class="story-photo reveal">
+          <img src="./alicia-presentacion.png" alt="Alicia mostrando el libro de Alimeythor">
+        </div>
+        <div class="story-text reveal reveal-d1">
+          <h2>Criar con intención no necesita títulos. Necesita <span class="hl hl--orange">decisión</span>.</h2>
+          <div class="story-block">
+            <h3>💡 Con el tiempo entendí algo…</h3>
+            <p>Los niños crecen rodeados de pantallas, estímulos y contenido constante. Pero muchas veces falta algo esencial: emociones, imaginación y tiempo compartido.</p>
+          </div>
+          <div class="story-block">
+            <h3>🫧 Así nació Alimeythor</h3>
+            <p>Un universo pensado para transformar cuentos, juegos y videos digitales en momentos que puedan acompañar emocionalmente a las familias.</p>
+          </div>
+          <div class="story-block">
+            <h3>🎯 Mi objetivo</h3>
+            <p>Crear un espacio donde las familias puedan imaginar, sentir y crecer compartiendo experiencias reales.</p>
+          </div>
+          <div class="story-sign">
+            <div>
+              <div class="sign-name">Alicia ✍️</div>
+              <div class="sign-role">Co-fundadora · Madre de 4 hijos · Lic. en Enfermería</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- ====================== FAQ ====================== -->
-  <section id="faq" class="section section--white section--centered" data-char-side="left" data-char-gap="5" data-char-against="edge">
+  <section class="section" id="preguntas">
     <div class="container">
-      <div class="text-block reveal">
-        <span class="eyebrow">Dudas frecuentes</span>
-        <h2>Preguntas <span class="hl">frecuentes</span></h2>
-        <div class="divider"></div>
-      </div>
-
-      <div class="faq-list reveal">
-        <div class="faq-item">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span>¿Para qué edades es Alimeythor?</span>
-            <span class="faq-arrow" aria-hidden="true">⌄</span>
-          </button>
-          <div class="faq-answer">
-            <p>Está pensado para chicos de 4 a 7 años, con contenido adaptado a cada etapa de su desarrollo emocional.</p>
-          </div>
+      <div class="split reverse reveal">
+        <div class="char-stage">
+          <div class="char-blob"></div>
+          <img src="./inicio/preguntas.png" alt="Alimeythor con anteojos">
         </div>
-
-        <div class="faq-item">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span>¿Qué es el Pase Mágico?</span>
-            <span class="faq-arrow" aria-hidden="true">⌄</span>
-          </button>
-          <div class="faq-answer">
-            <p>Es la llave de entrada al Mundo Alimeythor. Te da acceso a cuentos, canciones, juegos y actividades para trabajar en familia las emociones y los valores, con nuevas sorpresas todo el tiempo.</p>
+        <div class="split-content">
+          <div class="section-head">
+            <h2>Preguntas <span class="hl hl--blue">frecuentes</span></h2>
+            <p>Lo que toda mamá y papá quiere saber antes de empezar.</p>
           </div>
-        </div>
-
-        <div class="faq-item">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span>¿Hace cuánto existe Alimeythor?</span>
-            <span class="faq-arrow" aria-hidden="true">⌄</span>
-          </button>
-          <div class="faq-answer">
-            <p>El personaje nació hace 2 años y fue creciendo junto a las familias que lo acompañan, sumando herramientas para que cada experiencia se sienta cercana y real.</p>
-          </div>
-        </div>
-
-        <div class="faq-item">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span>¿Por qué necesito Mundo Alimeythor?</span>
-            <span class="faq-arrow" aria-hidden="true">⌄</span>
-          </button>
-          <div class="faq-answer">
-            <p>Porque criar no es solo acompañar, también es construir vínculo. Mundo Alimeythor convierte cada cuento, canción y juego en una oportunidad para conectar y disfrutar en familia. Las historias de hoy son los recuerdos de mañana.</p>
+          <div class="faq-wrap">
+            <div class="faq-item">
+              <button class="faq-q" type="button" aria-expanded="false">
+                <span>¿Para qué edades es Alimeythor?</span>
+                <span class="arrow">⌄</span>
+              </button>
+              <div class="faq-a"><p>Está pensado para chicos de 4 a 9 años, con contenido adaptado a cada etapa de su desarrollo emocional.</p></div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-q" type="button" aria-expanded="false">
+                <span>¿Qué es el Pase Mágico?</span>
+                <span class="arrow">⌄</span>
+              </button>
+              <div class="faq-a"><p>Es la llave de entrada al Mundo Alimeythor. Te da acceso a cuentos, canciones, juegos y actividades para trabajar en familia las emociones y los valores, con nuevas sorpresas todo el tiempo.</p></div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-q" type="button" aria-expanded="false">
+                <span>¿Hace cuánto existe Alimeythor?</span>
+                <span class="arrow">⌄</span>
+              </button>
+              <div class="faq-a"><p>El personaje nació hace 2 años y fue creciendo junto a las familias que lo acompañan, sumando herramientas para que cada experiencia se sienta cercana y real.</p></div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-q" type="button" aria-expanded="false">
+                <span>¿Por qué necesito Mundo Alimeythor?</span>
+                <span class="arrow">⌄</span>
+              </button>
+              <div class="faq-a"><p>Porque criar no es solo acompañar, también es construir vínculo. Mundo Alimeythor convierte cada cuento, canción y juego en una oportunidad para conectar y disfrutar en familia. Las historias de hoy son los recuerdos de mañana.</p></div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ====================== COMUNIDAD ====================== -->
-  <section id="comunidad" class="section section--final" data-char-side="right" data-char-gap="5" data-char-against="edge" data-char-costume="pileta">
+  <!-- ====================== CTA FINAL + COMUNIDAD ====================== -->
+  <section class="section final" id="comunidad">
     <div class="container">
-      <div class="text-block reveal" style="margin: 0 auto; align-items: center;">
-        <h2 style="font-size:clamp(30px,4vw,48px); font-weight:900; color:#1a1a2e;">Sumate a la comunidad de <span class="hl">ALIMEYTHOR</span> y viví la experiencia completa</h2>
-      </div>
-      <div class="cards-grid reveal">
-        <article class="card">
-          <div class="card-icon">📱</div>
-          <h4>Redes</h4>
-          <p>Seguinos en Instagram, TikTok y YouTube.</p>
-          <div class="btn-group">
-            <a href="https://www.instagram.com/alimeythor/?hl=es" target="_blank" rel="noopener noreferrer" class="btn btn--outline">Instagram</a>
-            <a href="https://www.tiktok.com/@alimeythor" target="_blank" rel="noopener noreferrer" class="btn btn--outline">TikTok</a>
-            <a href="https://www.youtube.com/@MundoAlimeythor" target="_blank" rel="noopener noreferrer" class="btn btn--outline">YouTube</a>
-          </div>
-        </article>
-        <article class="card">
-          <div class="card-icon">📸</div>
-          <h4>Eventos</h4>
-          <p>Mirá las fotos de nuestros encuentros.</p>
-          <div class="btn-group">
-            <a href="./paginas/eventos/eventos.html" class="btn btn--outline">Ver fotos</a>
-          </div>
-        </article>
-        <article class="card">
-          <div class="card-icon">🎬</div>
-          <h4>Experiencias reales</h4>
-          <p>Historias en video de familias como la tuya.</p>
-          <div class="btn-group">
-            <a href="#" class="btn btn--outline">Ver videos</a>
-          </div>
-        </article>
+      <div class="reveal">
+        <h2>La aventura empieza con <span class="hl hl--red">un cuento</span></h2>
+        <p class="final-sub">Sumate a la comunidad de familias que ya viven la experiencia Alimeythor.</p>
+        <div class="final-ctas">
+          <a href="#explorar" class="btn btn-primary">✨ Explorar el mundo</a>
+          <button class="btn btn-ghost" id="com-open" type="button">💬 Compartir tu experiencia</button>
+        </div>
+        <div class="social-row">
+          <a href="https://www.instagram.com/alimeythor/?hl=es" target="_blank" rel="noopener noreferrer" class="social-btn">📸 Instagram</a>
+          <a href="https://www.tiktok.com/@alimeythor" target="_blank" rel="noopener noreferrer" class="social-btn">🎵 TikTok</a>
+          <a href="https://www.youtube.com/@MundoAlimeythor" target="_blank" rel="noopener noreferrer" class="social-btn">▶️ YouTube</a>
+          <a href="./paginas/eventos/eventos.html" class="social-btn">🎪 Ver nuestros eventos</a>
+        </div>
+        <div class="quote-band final-quote">
+          <blockquote>No buscamos apagar pantallas. Buscamos <em>encender emociones</em>.</blockquote>
+          <cite>La idea que guía todo lo que hacemos</cite>
+        </div>
       </div>
     </div>
   </section>
-
-  <!-- ====================== CTA FINAL — Compartir tu experiencia ====================== -->
-  <div style="text-align:center; padding: 60px 32px 80px;">
-    <a href="#" id="com-open" class="btn btn--primary" style="font-size:21px; padding:22px 46px;">Compartir tu experiencia</a>
-  </div>
 
   <!-- ====================== FOOTER ====================== -->
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <span class="footer-logo">Alimeythor</span>
-      <nav class="footer-nav">
-        <a href="#padres">Padres</a>
-        <a href="#que-es">Qué es Alimeythor</a>
-        <a href="#emociones">Emociones vs Pantallas</a>
-        <a href="#presentacion">Presentación</a>
-        <a href="#faq">FAQ</a>
-        <a href="#comunidad">Comunidad</a>
-      </nav>
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <img src="./logo-alimeythor.png" alt="">
+          <span>Alimeythor</span>
+        </div>
+        <nav class="footer-nav">
+          <a href="#explorar">Explorar</a>
+          <a href="#historia">Nuestra historia</a>
+          <a href="#preguntas">Preguntas</a>
+          <a href="#comunidad">Comunidad</a>
+        </nav>
+      </div>
+      <p class="footer-copy">© 2026 Alimeythor — Alimenta Tu Alma. Todos los derechos reservados.</p>
     </div>
-    <p class="footer-copy">© 2025 Alimeythor — Alimenta Tu Alma. Todos los derechos reservados.</p>
   </footer>
 
-  <!-- ====================== PERSONAJE FLOTANTE ======================
-       Estructura por capas (cada una dueña de sus propios transforms):
-       · .floating-character    → scroll position (x/y entre secciones)
-       · .floating-character__bob → idle floating constante (yPercent yoyo)
-       · .floating-character__img → mouse follow + drag (rotación, micro x/y)
-  -->
-  <div class="floating-character" data-floating-character aria-hidden="true">
-    <div class="floating-character__bob" style="position: relative;">
-      <img
-        class="floating-character__img"
-        data-layer="a"
-        src="./personajeflotante.png"
-        alt=""
-        loading="eager"
-        decoding="async"
-        draggable="false"
-      />
-      <img
-        class="floating-character__img floating-character__img--ghost"
-        data-layer="b"
-        src="./personajeflotante.png"
-        alt=""
-        loading="eager"
-        decoding="async"
-        draggable="false"
-      />
-    </div>
-  </div>
-
-  <!-- ============================================================
-       SCRIPTS
-  ============================================================ -->
-  <!-- ====== MOTOR: animaciones, hero pin, storytelling, personaje ====== -->
-  <script src="./js/02-engine.js"></script>
-  <script src="./js/03-character.js"></script>
-
-
-  <!-- ====================== EXTRAS — scripts independientes ====================== -->
-  <!-- ====== EXTRAS: H3 Presentación + Active link tracking ====== -->
-  <script src="./js/04-h3-active-link.js"></script>
-
-
-  <!-- ====================== FAQ — Acordeón (script independiente) ====================== -->
-  <!-- ====== FAQ Acordeón ====== -->
-  <script src="./js/05-faq.js"></script>
-
-
-  <!-- ====== MODAL: Compartí tu experiencia ====== -->
-  <div class="com-backdrop" id="com-modal" role="dialog" aria-modal="true" aria-labelledby="com-title" aria-hidden="true">
+  <!-- ====================== MODAL EXPERIENCIA ====================== -->
+  <div class="com-backdrop" id="com-modal" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="com-modal">
       <button class="com-close" id="com-close" type="button" aria-label="Cerrar">✕</button>
-      <h2 id="com-title">Compartí tu experiencia</h2>
-      <p class="com-sub">Tu historia ayuda a otras familias a descubrir Alimeythor. Contanos cómo fue.</p>
-
-      <div id="com-demo-note" class="com-demo-note" style="display:none;">
-        Modo demo local: los comentarios solo se guardan en este navegador. Configurá Firebase para que se compartan entre usuarios (instrucciones al pie del archivo).
-      </div>
-
+      <h3>Compartí tu experiencia</h3>
+      <p class="com-sub">Tu historia ayuda a otras familias a descubrir Alimeythor.</p>
       <form class="com-form" id="com-form">
-        <div class="com-row">
-          <div class="com-field">
+        <div class="row2">
+          <div>
             <label for="com-name">Tu nombre</label>
             <input type="text" id="com-name" placeholder="Ej: María" maxlength="60" required>
           </div>
-          <div class="com-field">
+          <div>
             <label for="com-age">Edad hijo/a</label>
-            <input type="number" id="com-age" placeholder="Ej: 5" min="0" max="18" required>
+            <input type="number" id="com-age" placeholder="5" min="0" max="18" required>
           </div>
         </div>
-        <div class="com-field">
+        <div>
           <label>Tu valoración</label>
-          <div class="com-stars" id="com-stars" role="radiogroup" aria-label="Valoración">
-            <span class="star" data-val="1" role="radio" aria-label="1 estrella">★</span>
-            <span class="star" data-val="2" role="radio" aria-label="2 estrellas">★</span>
-            <span class="star" data-val="3" role="radio" aria-label="3 estrellas">★</span>
-            <span class="star" data-val="4" role="radio" aria-label="4 estrellas">★</span>
-            <span class="star" data-val="5" role="radio" aria-label="5 estrellas">★</span>
+          <div class="com-stars" id="com-stars">
+            <span class="star" data-v="1">★</span><span class="star" data-v="2">★</span><span class="star" data-v="3">★</span><span class="star" data-v="4">★</span><span class="star" data-v="5">★</span>
           </div>
         </div>
-        <div class="com-field">
+        <div>
           <label for="com-text">Tu experiencia</label>
           <textarea id="com-text" placeholder="Contanos cómo viviste Alimeythor en familia…" maxlength="500" required></textarea>
         </div>
-        <button type="submit" class="com-submit" id="com-submit">Publicar mi experiencia</button>
+        <button type="submit" class="com-submit" id="com-submit">Publicar</button>
       </form>
-
-      <div class="com-list-title">Experiencias compartidas</div>
-      <div class="com-list" id="com-list">
-        <div class="com-empty">Sé el primero en compartir tu experiencia ✨</div>
-      </div>
+      <div class="com-list" id="com-list"></div>
     </div>
   </div>
 
-  <!-- Firebase SDK (compat) — para guardar/leer comentarios en la nube -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
   <script>
-    /* ===========================================================
-       PEGÁ ACÁ TU CONFIG DE FIREBASE
-       1) Crear proyecto gratuito en https://console.firebase.google.com
-       2) Add Web App → copiá el objeto firebaseConfig que te muestra
-       3) Activá Firestore Database (modo test)
-       4) Pegá los valores en lugar de "PEGAR_AQUI"
-       Mientras estos valores estén con "PEGAR_AQUI",
-       el modal funciona en modo DEMO local (localStorage).
-       =========================================================== */
-    const FIREBASE_CONFIG = {
-      apiKey: "PEGAR_AQUI",
-      authDomain: "PEGAR_AQUI",
-      projectId: "PEGAR_AQUI",
-      storageBucket: "PEGAR_AQUI",
-      messagingSenderId: "PEGAR_AQUI",
-      appId: "PEGAR_AQUI"
-    };
-  </script>
+    /* ============================================================
+       v5 — Scripts livianos, sin dependencias.
+       ============================================================ */
 
-  <!-- ====== Lógica del modal de comentarios ====== -->
-  <script src="./js/06-comments.js"></script>
+    /* ===== Header: sombra al scrollear + link activo ===== */
+    (function () {
+      const header = document.getElementById('header');
+      const links = Array.from(document.querySelectorAll('.nav a'));
+      const sections = links
+        .map(l => {
+          const href = l.getAttribute('href');
+          if (!href || href === '#') return null;
+          return { link: l, el: document.querySelector(href) };
+        })
+        .filter(x => x && x.el);
 
+      let lastY = window.scrollY;
+      function onScroll() {
+        const y = window.scrollY;
+        header.classList.toggle('is-scrolled', y > 20);
 
-  <!-- ====== Fast return: posicionar instantáneo y mostrar body ====== -->
-  <script src="./js/07-fast-return-late.js"></script>
+        // Auto-hide: esconder bajando, mostrar subiendo o cerca del tope
+        const diff = y - lastY;
+        if (y < 80) {
+          header.classList.remove('is-hidden');
+        } else if (diff > 6) {
+          header.classList.add('is-hidden');
+        } else if (diff < -6) {
+          header.classList.remove('is-hidden');
+        }
+        lastY = y;
 
-  <!-- Menú hamburguesa mobile -->
-  <script>
+        const probe = window.innerHeight * 0.35;
+        let active = null;
+        for (const { link, el } of sections) {
+          const r = el.getBoundingClientRect();
+          if (r.top <= probe && r.bottom > probe) { active = link; break; }
+        }
+        links.forEach(l => l.classList.remove('active'));
+        if (active) active.classList.add('active');
+        else if (window.scrollY < 200) links[0].classList.add('active');
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      // Mouse cerca del tope → mostrar header
+      window.addEventListener('mousemove', (e) => {
+        if (e.clientY < 70) header.classList.remove('is-hidden');
+      }, { passive: true });
+      onScroll();
+    })();
+
+    /* ===== Menú mobile ===== */
     (function () {
       const btn = document.getElementById('nav-toggle');
       const menu = document.getElementById('nav-mobile');
-      if (!btn || !menu) return;
-
-      function open() {
-        btn.classList.add('is-open');
-        menu.classList.add('is-open');
-        btn.setAttribute('aria-expanded', 'true');
-        menu.setAttribute('aria-hidden', 'false');
-        document.body.classList.add('nav-open');
-      }
       function close() {
-        btn.classList.remove('is-open');
-        menu.classList.remove('is-open');
-        btn.setAttribute('aria-expanded', 'false');
-        menu.setAttribute('aria-hidden', 'true');
-        document.body.classList.remove('nav-open');
+        btn.classList.remove('is-open'); menu.classList.remove('is-open');
+        btn.setAttribute('aria-expanded', 'false'); menu.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
       }
-      function toggle() {
-        if (menu.classList.contains('is-open')) close();
-        else open();
+      btn.addEventListener('click', () => {
+        const open = !menu.classList.contains('is-open');
+        btn.classList.toggle('is-open', open); menu.classList.toggle('is-open', open);
+        btn.setAttribute('aria-expanded', String(open)); menu.setAttribute('aria-hidden', String(!open));
+        document.body.style.overflow = open ? 'hidden' : '';
+      });
+      menu.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+    })();
+
+    /* ===== Reveal on scroll (IO + fallback por rect) ===== */
+    (function () {
+      const els = Array.from(document.querySelectorAll('.reveal'));
+      function show(el) { el.classList.add('is-visible'); }
+
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach(en => {
+            if (en.isIntersecting) { show(en.target); io.unobserve(en.target); }
+          });
+        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+        els.forEach(e => io.observe(e));
       }
 
-      btn.addEventListener('click', toggle);
-      // Click en cualquier link del menú → cerrar
-      menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', close));
-      // Escape → cerrar
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && menu.classList.contains('is-open')) close();
-      });
-      // Click fuera de los links (sobre el overlay) → cerrar
-      menu.addEventListener('click', (e) => {
-        if (e.target === menu) close();
+      // Fallback: en entornos donde IO se throttlea, revelar por posición
+      function rectCheck() {
+        const vh = window.innerHeight;
+        els.forEach(el => {
+          if (el.classList.contains('is-visible')) return;
+          const r = el.getBoundingClientRect();
+          if (r.top < vh - 30 && r.bottom > 0) show(el);
+        });
+      }
+      window.addEventListener('scroll', rectCheck, { passive: true });
+      window.addEventListener('load', rectCheck);
+      setTimeout(rectCheck, 300);
+    })();
+
+    /* ===== FAQ acordeón ===== */
+    (function () {
+      const items = document.querySelectorAll('.faq-item');
+      items.forEach(item => {
+        item.querySelector('.faq-q').addEventListener('click', () => {
+          const wasOpen = item.classList.contains('is-open');
+          items.forEach(i => i.classList.remove('is-open'));
+          if (!wasOpen) item.classList.add('is-open');
+        });
       });
     })();
-  </script>
 
+    /* ===== Cielo de estrellitas titilando ===== */
+    (function () {
+      const SPOTS = [
+        [6, 14], [16, 64], [9, 86], [26, 32], [38, 78],
+        [60, 22], [72, 66], [84, 12], [90, 48], [94, 84]
+      ];
+      SPOTS.forEach(([xPct, yPct], i) => {
+        const t = document.createElement('div');
+        t.className = 'twinkle';
+        t.style.left = xPct + 'vw';
+        t.style.top = yPct + 'vh';
+        t.style.animationDelay = (i * 0.42) + 's';
+        t.style.animationDuration = (2.6 + (i % 4) * 0.5) + 's';
+        document.body.appendChild(t);
+      });
+    })();
+
+    /* ===== "Descubrí más": se desvanece al scrollear, reaparece arriba ===== */
+    (function () {
+      const hint = document.querySelector('.scroll-hint');
+      if (!hint) return;
+      let scheduled = false;
+      function update() {
+        scheduled = false;
+        hint.classList.toggle('is-hidden', window.scrollY > 40);
+      }
+      window.addEventListener('scroll', function () {
+        if (scheduled) return;
+        scheduled = true;
+        requestAnimationFrame(update);
+      }, { passive: true });
+      update();
+    })();
+
+    /* ===== Modal experiencia (localStorage) ===== */
+    (function () {
+      const modal = document.getElementById('com-modal');
+      const openB = document.getElementById('com-open');
+      const closeB = document.getElementById('com-close');
+      const form = document.getElementById('com-form');
+      const list = document.getElementById('com-list');
+      const stars = document.querySelectorAll('#com-stars .star');
+      const KEY = 'alm_v5_comentarios';
+      let rating = 5;
+
+      const get = () => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { return []; } };
+      const save = (a) => { try { localStorage.setItem(KEY, JSON.stringify(a)); } catch (e) {} };
+      const esc = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+      function paint(n) { stars.forEach(s => s.classList.toggle('active', +s.dataset.v <= n)); }
+      paint(5);
+      stars.forEach(s => {
+        s.addEventListener('click', () => { rating = +s.dataset.v; paint(rating); });
+        s.addEventListener('mouseenter', () => paint(+s.dataset.v));
+        s.addEventListener('mouseleave', () => paint(rating));
+      });
+
+      function render() {
+        const arr = get().slice().reverse();
+        list.innerHTML = arr.length
+          ? arr.map(c => `<div class="com-item">
+              <div class="meta"><b>${esc(c.name)}</b><span class="stars">${'★'.repeat(c.rating)}${'☆'.repeat(5-c.rating)}</span><span class="when">hijo/a ${c.age} años</span></div>
+              <div class="text">${esc(c.text)}</div>
+            </div>`).join('')
+          : '<div class="com-empty">Sé la primera familia en compartir su experiencia ✨</div>';
+      }
+      function open() { modal.classList.add('is-open'); modal.setAttribute('aria-hidden','false'); document.body.style.overflow = 'hidden'; render(); }
+      function close() { modal.classList.remove('is-open'); modal.setAttribute('aria-hidden','true'); document.body.style.overflow = ''; }
+
+      openB.addEventListener('click', open);
+      closeB.addEventListener('click', close);
+      modal.addEventListener('click', e => { if (e.target === modal) close(); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('is-open')) close(); });
+
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        const name = document.getElementById('com-name').value.trim();
+        const age = document.getElementById('com-age').value.trim();
+        const text = document.getElementById('com-text').value.trim();
+        if (!name || !age || !text) return;
+        const arr = get();
+        arr.push({ name: name.slice(0,60), age: parseInt(age,10), rating, text: text.slice(0,500), at: Date.now() });
+        save(arr);
+        form.reset(); rating = 5; paint(5);
+        const sb = document.getElementById('com-submit');
+        sb.textContent = '¡Gracias! 💛';
+        setTimeout(() => { sb.textContent = 'Publicar'; }, 1600);
+        render();
+      });
+    })();
+
+    /* ===== Splash de inicio: 3 personajes, auto-rotación, entrada ===== */
+    (function () {
+      const splash = document.getElementById('splash');
+      if (!splash) return;
+
+      // ¿Mostrar el splash?
+      //  - SÍ: primera entrada (referrer externo o vacío) y recargas (F5).
+      //  - NO: cuando se vuelve navegando desde una subpágina interna del sitio.
+      let showSplash = true;
+      try {
+        const navEntry = performance.getEntriesByType('navigation')[0];
+        const isReload = navEntry ? navEntry.type === 'reload' : false;
+        const ref = document.referrer || '';
+        const sameOrigin = ref && ref.indexOf(location.origin) === 0;
+        const homeUrl = location.href.replace(/[?#].*$/, '');
+        const refUrl  = ref.replace(/[?#].*$/, '');
+        const fromInternalSubpage = sameOrigin && refUrl !== homeUrl; // vino de otra página del sitio
+        if (fromInternalSubpage && !isReload) showSplash = false;
+      } catch (e) {}
+
+      if (!showSplash) {
+        splash.classList.add('is-gone');
+        splash.style.display = 'none';
+        return; // entra directo a la web, sin animación
+      }
+
+      document.body.classList.add('splash-lock');
+
+      // Tinte de color de fondo por personaje central
+      const TINTS = [
+        'rgba(248,160,10,0.16)',  // q.png — cálido dorado
+        'rgba(51,175,237,0.16)',  // 2.png — celeste
+        'rgba(63,180,17,0.16)'    // 3.png — verde
+      ];
+      const N = 3;
+      let active = 0;
+      let timer = null;
+      let busy = false;  // evita disparos durante la transición
+
+      const chars  = Array.from(document.querySelectorAll('.splash-char'));
+      const tintEl = document.getElementById('splash-tint');
+      const dots   = document.querySelectorAll('#splash-dots .dot');
+
+      // Coloca cada personaje en su posición según el activo (coverflow)
+      function layout() {
+        chars.forEach((el) => {
+          const i = +el.dataset.i;
+          el.classList.remove('pos-center', 'pos-left', 'pos-right');
+          if (i === active)               el.classList.add('pos-center');
+          else if (i === (active + 1) % N) el.classList.add('pos-right');
+          else                             el.classList.add('pos-left');
+        });
+        tintEl.style.setProperty('--tint', TINTS[active]);
+        dots.forEach((d, i) => d.classList.toggle('is-on', i === active));
+      }
+
+      function go(dir) {
+        if (busy) return;
+        busy = true;
+        active = (active + (dir === 'prev' ? N - 1 : 1)) % N;
+        layout();
+        restart();
+        setTimeout(() => { busy = false; }, 500);
+      }
+      function autoNext() { active = (active + 1) % N; layout(); }
+      function restart() { clearInterval(timer); timer = setInterval(autoNext, 1500); }
+
+      // Click en los personajes laterales → rotan hacia ese lado
+      chars.forEach((el) => {
+        el.addEventListener('click', () => {
+          if (el.classList.contains('pos-left'))  go('prev');
+          else if (el.classList.contains('pos-right')) go('next');
+        });
+      });
+      // Puntos
+      dots.forEach((d) => {
+        d.addEventListener('click', () => {
+          if (busy || +d.dataset.i === active) return;
+          busy = true; active = +d.dataset.i; layout(); restart();
+          setTimeout(() => { busy = false; }, 500);
+        });
+      });
+
+      // (Estrellitas del splash eliminadas — solo polen y personajes)
+
+      // Partículas de pasto mágico — polen dorado subiendo desde todo el piso
+      const partBox = document.getElementById('splash-particles');
+      const PARTICLES = 68;
+      for (let i = 0; i < PARTICLES; i++) {
+        const p = document.createElement('b');
+        const sz = 4 + Math.random() * 7;                 // 4–11px
+        p.style.setProperty('--sz', sz.toFixed(1) + 'px');
+        p.style.left = (Math.random() * 100).toFixed(2) + 'vw';
+        p.style.setProperty('--dur', (5 + Math.random() * 5).toFixed(1) + 's');   // 5–10s
+        p.style.setProperty('--delay', (Math.random() * 8).toFixed(1) + 's');
+        p.style.setProperty('--rise', (62 + Math.random() * 34).toFixed(0) + 'vh'); // sube 62–96vh
+        p.style.setProperty('--drift', ((Math.random() - 0.5) * 80).toFixed(0) + 'px'); // deriva ±40px
+        p.style.setProperty('--maxop', (0.45 + Math.random() * 0.4).toFixed(2));   // 0.45–0.85
+        partBox.appendChild(p);
+      }
+
+      // Entrar a la web
+      // Genera la explosión de polvo de hadas multicolor desde el centro
+      function spawnFairyDust() {
+        const burst = document.getElementById('fairy-burst');
+        const flash = document.getElementById('fairy-flash');
+        if (!burst) return;
+        const COLORS = ['#ffd24a', '#ffe07a', '#f8b41e', '#fff0b0', '#ffc63a', '#ffcf55'];
+        const maxR = Math.max(window.innerWidth, window.innerHeight) * 0.78;
+        const COUNT = 550;
+        burst.classList.add('is-on');
+        if (flash) flash.classList.add('is-on');
+        for (let i = 0; i < COUNT; i++) {
+          const d = document.createElement('span');
+          d.className = 'fairy-dust';
+          const ang = Math.random() * Math.PI * 2;
+          const dist = 160 + Math.random() * maxR;
+          d.style.setProperty('--tx', (Math.cos(ang) * dist).toFixed(0) + 'px');
+          d.style.setProperty('--ty', (Math.sin(ang) * dist).toFixed(0) + 'px');
+          d.style.setProperty('--sz', (3 + Math.random() * 8).toFixed(1) + 'px');
+          d.style.setProperty('--col', COLORS[(Math.random() * COLORS.length) | 0]);
+          d.style.setProperty('--dur', (0.9 + Math.random() * 0.8).toFixed(2) + 's');
+          d.style.setProperty('--delay', (Math.random() * 0.25).toFixed(2) + 's');
+          d.style.setProperty('--rot', (Math.random() * 540 - 270).toFixed(0) + 'deg');
+          burst.appendChild(d);
+        }
+      }
+
+      let leaving = false;
+      function enter() {
+        if (leaving) return;
+        leaving = true;
+        clearInterval(timer);
+        // Fase 1: personajes/partículas se esconden + SOLO el título se expande
+        splash.classList.add('is-leaving');
+        // Fase 2: el título llega cerca del máximo y el splash se desvanece revelando la web
+        setTimeout(() => {
+          splash.classList.add('is-gone');
+          document.body.classList.remove('splash-lock');
+        }, 1050);
+        // Fase 3: limpieza
+        setTimeout(() => { splash.style.display = 'none'; }, 1700);
+      }
+      document.getElementById('splash-enter').addEventListener('click', enter);
+      document.addEventListener('keydown', function onKey(e) {
+        if (splash.classList.contains('is-gone')) { document.removeEventListener('keydown', onKey); return; }
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); enter(); }
+      });
+
+      layout();
+      restart();
+    })();
+
+    /* ===== Partículas de fondo de TODA la web — mismo efecto que el splash,
+       sutil para no distraer la lectura (detrás del contenido, z-index -1) ===== */
+    (function () {
+      const fx = document.getElementById('web-fx');
+      if (!fx) return;
+
+      // Estrellitas titilando distribuidas por la pantalla
+      const STARS = [[7,14],[18,62],[11,84],[28,30],[41,76],[59,24],[73,60],[86,16],[91,50],[68,86],[48,12],[34,52]];
+      STARS.forEach(([x, y], i) => {
+        const s = document.createElement('div');
+        s.className = 'twinkle';
+        s.style.left = x + 'vw'; s.style.top = y + 'vh';
+        s.style.animationDelay = (i * 0.45) + 's';
+        s.style.animationDuration = (2.8 + (i % 4) * 0.6) + 's';
+        fx.appendChild(s);
+      });
+
+      // Polen dorado subiendo desde el piso — más cantidad
+      const DUST = 26;
+      for (let i = 0; i < DUST; i++) {
+        const d = document.createElement('div');
+        d.className = 'web-dust';
+        d.style.left = (Math.random() * 100).toFixed(2) + 'vw';
+        d.style.setProperty('--sz', (3 + Math.random() * 5).toFixed(1) + 'px');
+        d.style.setProperty('--dur', (7 + Math.random() * 6).toFixed(1) + 's');
+        d.style.setProperty('--delay', (Math.random() * 9).toFixed(1) + 's');
+        d.style.setProperty('--rise', (60 + Math.random() * 36).toFixed(0) + 'vh');
+        d.style.setProperty('--drift', ((Math.random() - 0.5) * 70).toFixed(0) + 'px');
+        d.style.setProperty('--maxop', (0.3 + Math.random() * 0.35).toFixed(2));
+        fx.appendChild(d);
+      }
+    })();
+  </script>
 </body>
 </html>
