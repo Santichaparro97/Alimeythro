@@ -330,7 +330,20 @@
             /* relleno de la esquina inferior derecha + sombra de profundidad */
             '28px 28px 0 0 #e3bf80,0 34px 60px rgba(120,80,20,.34),' +
             /* filete dorado interno */
-            'inset 0 0 0 2px rgba(248,180,40,.5)!important;}';
+            'inset 0 0 0 2px rgba(248,180,40,.5)!important;}' +
+          /* Anillado sutil tipo cuaderno espiralado en el centro del cuento */
+          '.book::before{content:"";position:absolute;top:2%;bottom:2%;left:50%;' +
+            'width:30px;transform:translateX(-50%);z-index:61;pointer-events:none;border-radius:8px;' +
+            'background-image:repeating-linear-gradient(to bottom,' +
+              'transparent 0 9px,' +
+              'rgba(0,0,0,.26) 9px 10px,' +            /* sombra superior del anillo */
+              'rgba(255,255,255,.8) 10px 12px,' +      /* brillo metálico */
+              'rgba(170,130,60,.85) 12px 17px,' +      /* cuerpo dorado */
+              'rgba(60,40,10,.45) 17px 19px,' +        /* sombra inferior */
+              'transparent 19px 24px);' +
+            '-webkit-mask-image:linear-gradient(to right,transparent,#000 32%,#000 68%,transparent);' +
+            'mask-image:linear-gradient(to right,transparent,#000 32%,#000 68%,transparent);' +
+            'filter:drop-shadow(0 1px 1px rgba(0,0,0,.22));opacity:.7;}';
         doc.head.appendChild(fr);
         // Música: respeta el silencio del usuario aunque pase de página
         audioCtl = patchMusic(win, doc);
