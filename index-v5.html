@@ -413,12 +413,22 @@
     .hl--violet { background: linear-gradient(180deg, transparent 32%, rgba(237,28,185,0.18) 32%, rgba(237,28,185,0.18) 92%, transparent 92%); }
     .hl--orange { background: linear-gradient(180deg, transparent 32%, rgba(248,160,10,0.28) 32%, rgba(248,160,10,0.28) 92%, transparent 92%); }
 
-    /* Reveal on scroll (IntersectionObserver) */
-    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(.2,.8,.2,1); }
-    .reveal.is-visible { opacity: 1; transform: translateY(0); }
-    .reveal-d1 { transition-delay: 0.1s; }
-    .reveal-d2 { transition-delay: 0.2s; }
-    .reveal-d3 { transition-delay: 0.3s; }
+    /* Reveal on scroll — efecto de "armado de web" más fuerte y bidireccional */
+    .reveal {
+      opacity: 0;
+      transform: translateY(56px) scale(0.85) rotate(-2deg);
+      filter: blur(5px);
+      transition: opacity 0.5s ease, transform 0.72s cubic-bezier(.2,.85,.25,1), filter 0.5s ease;
+      will-change: transform, opacity, filter;
+    }
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1) rotate(0deg);
+      filter: blur(0);
+    }
+    .reveal-d1 { transition-delay: 0.09s; }
+    .reveal-d2 { transition-delay: 0.18s; }
+    .reveal-d3 { transition-delay: 0.27s; }
 
     /* ============================================================
        VITRINA — el contenido a 1 click (la sección estrella)
@@ -534,7 +544,7 @@
       border-left: 6px solid var(--acc);
       padding: clamp(13px, 1.6vw, 20px) clamp(20px, 2.4vw, 30px);
       box-shadow: 0 8px 0 var(--acc-soft), 0 18px 34px rgba(26,26,46,0.08);
-      transition: transform 0.12s ease-out, box-shadow 0.35s ease, border-color 0.35s ease;
+      transition: transform 0.72s cubic-bezier(.2,.85,.25,1), box-shadow 0.35s ease, border-color 0.35s ease;
     }
     /* Al pasar el mouse (desktop) o al tocar (celular, .is-lit): glow de color */
     .area-card:hover,
@@ -1705,28 +1715,28 @@
     (function () {
       const els = Array.from(document.querySelectorAll('.reveal'));
       function locked() { return document.body.classList.contains('splash-lock'); }
-      function show(el) { el.classList.add('is-visible'); }
+      function set(el, vis) { el.classList.toggle('is-visible', vis); }
+      const hasIO = 'IntersectionObserver' in window;
 
-      if ('IntersectionObserver' in window) {
+      // Bidireccional: en vista → se arma; fuera de vista → se desarma (al subir o bajar)
+      if (hasIO) {
         const io = new IntersectionObserver((entries) => {
           if (locked()) return;  // esperar a que se cierre el splash
-          entries.forEach(en => {
-            if (en.isIntersecting) { show(en.target); io.unobserve(en.target); }
-          });
-        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+          entries.forEach(en => set(en.target, en.isIntersecting));
+        }, { threshold: 0.14, rootMargin: '0px 0px -12% 0px' });
         els.forEach(e => io.observe(e));
       }
 
+      // Chequeo por posición: fallback sin IO + disparo al cerrar el splash
       function rectCheck() {
         if (locked()) return;
         const vh = window.innerHeight;
         els.forEach(el => {
-          if (el.classList.contains('is-visible')) return;
           const r = el.getBoundingClientRect();
-          // revelar lo que entró al viewport Y lo que ya pasó (evita quedar invisible al scrollear rápido)
-          if (r.top < vh - 30) show(el);
+          set(el, r.top < vh * 0.88 && r.bottom > vh * 0.08);
         });
       }
+      // Siempre por scroll (arma/desarma en ambos sentidos, sin depender de que IO dispare)
       window.addEventListener('scroll', rectCheck, { passive: true });
       window.addEventListener('load', rectCheck);
       // expuesto para que el cierre del splash dispare el reveal de lo visible
@@ -1823,6 +1833,9 @@
           card.style.transform =
             'perspective(680px) rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg) scale(0.99)';
         }
+        card.addEventListener('mouseenter', () => {
+          card.style.transition = 'transform 0.09s ease-out';   // tilt ágil (sin chocar con el reveal de 0.72s)
+        });
         card.addEventListener('mousemove', (e) => {
           const r = card.getBoundingClientRect();
           oxf = (e.clientX - r.left) / r.width;
@@ -1832,6 +1845,7 @@
         card.addEventListener('mouseleave', () => {
           if (raf) { cancelAnimationFrame(raf); raf = null; }
           card.style.transform = '';
+          card.style.transition = '';   // vuelve a la transición lenta (para el reveal)
         });
       });
     })();
