@@ -131,6 +131,10 @@
       .music-grid { grid-template-columns: 1fr; overflow: visible; align-items: start; }
       .playlist { overflow: visible; }
       #pl-list { overflow: visible; flex: none; min-height: 0; }
+      /* Controles más fáciles de tocar/arrastrar en celular */
+      .player-progress { height: 12px !important; }
+      .player-progress-knob { width: 20px !important; height: 20px !important; }
+      .player-volume input[type="range"] { height: 26px; }
     }
 
     /* ============= NOW PLAYING CARD ============= */
@@ -191,6 +195,7 @@
       position: relative;
       cursor: pointer;
       margin-bottom: 8px;
+      touch-action: none;            /* arrastrar para buscar sin scrollear la página */
     }
     .player-progress-fill {
       position: absolute;
@@ -662,12 +667,27 @@
       subtitleEl.textContent = 'Mundo Alimeythor';
     });
 
-    progressEl.addEventListener('click', (e) => {
-      if (!isFinite(audio.duration)) return;
+    // Barra de progreso: arrastrable para elegir el minuto (toque y mouse)
+    let seeking = false;
+    function seekFromX(clientX) {
+      if (!isFinite(audio.duration) || audio.duration <= 0) return;
       const rect = progressEl.getBoundingClientRect();
-      const pct = (e.clientX - rect.left) / rect.width;
+      let pct = (clientX - rect.left) / rect.width;
+      pct = Math.max(0, Math.min(1, pct));
       audio.currentTime = pct * audio.duration;
+      fillEl.style.width = (pct * 100) + '%';
+      knobEl.style.left = (pct * 100) + '%';
+      curTimeEl.textContent = fmt(pct * audio.duration);
+    }
+    progressEl.addEventListener('pointerdown', (e) => {
+      seeking = true;
+      try { progressEl.setPointerCapture(e.pointerId); } catch (err) {}
+      seekFromX(e.clientX);
+      e.preventDefault();
     });
+    progressEl.addEventListener('pointermove', (e) => { if (seeking) seekFromX(e.clientX); });
+    progressEl.addEventListener('pointerup',   () => { seeking = false; });
+    progressEl.addEventListener('pointercancel', () => { seeking = false; });
 
     // Click en items + acciones
     listEl.addEventListener('click', (e) => {
