@@ -230,7 +230,7 @@
     .btn-ghost:hover { transform: translateY(-2px); border-color: rgba(248,35,28,0.35); color: #f8231c; }
 
     /* CTA "Desbloquear Pase Mágico" — tarjeta blanca con relieves dorados, centrada */
-    .pase-cta { text-align: center; margin-top: clamp(6px, 1.1vw, 14px); }
+    .pase-cta { text-align: center; margin-top: -16px; }   /* ~30px más arriba */
     .pase-card { max-width: 300px; margin: 0 auto; }
     .showcase-card.showcase-card--gold {
       --accent: #d99400;
@@ -922,6 +922,7 @@
       .split .split-content, .split.reverse .split-content { order: 0; }
       .split-content .section-head { text-align: center; }
       #explorar.section { padding-top: 46px; }   /* más separación entre Hero y Explorar (mobile) */
+      .pase-cta { margin-top: 10px; }             /* en mobile el personaje no está → sin margen negativo */
       #explorar .split { gap: 0; }
       #explorar .section-head--center { transform: none; margin-bottom: 18px; }
       #explorar .split-content { transform: none; }
@@ -1457,9 +1458,8 @@
       </div>
       <div class="pase-cta reveal">
         <a href="./paginas/planes/pase-magico.html" class="showcase-card showcase-card--gold pase-card">
-          <div class="showcase-icon">🔓</div>
           <div class="showcase-body">
-            <h3>Desbloquear Pase Mágico</h3>
+            <h3>Desbloquear Pase Mágico 🔓</h3>
             <p>Acceso total a Mundo Alimeythor.</p>
             <span class="showcase-cta">Ver planes →</span>
           </div>
