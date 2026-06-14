@@ -1664,8 +1664,8 @@
   <section class="section final" id="comunidad">
     <div class="container">
       <div class="reveal">
-        <h2>La aventura empieza con <span class="hl hl--red">un cuento</span></h2>
-        <p class="final-sub">Sumate a la comunidad de familias que ya viven la experiencia Alimeythor.</p>
+        <h2>Bienvenidos a nuestra <span class="hl hl--red">COMUNIDAD</span></h2>
+        <p class="final-sub">Sumate a la comunidad donde muchos papás y mamás ya se están sumando.</p>
         <div class="final-ctas">
           <a href="#explorar" class="btn btn-primary">✨ Explorar el mundo</a>
           <button class="btn btn-ghost" id="com-open" type="button">💬 Compartir tu experiencia</button>
@@ -1677,7 +1677,7 @@
           <a href="./paginas/eventos/eventos.html" class="social-btn">🎪 Ver nuestros eventos</a>
         </div>
         <div class="quote-band final-quote">
-          <blockquote>No buscamos apagar pantallas. Buscamos <em>encender emociones</em>.</blockquote>
+          <blockquote>No buscamos apagar pantallas. Buscamos <em>Encender Emociones</em>.</blockquote>
           <p class="team-intro">Un proyecto familiar, pensado para las familias. Te presentamos al equipo completo de Alimeythor.<span class="ti-star">⭐</span></p>
           <div class="team-circles" aria-label="Equipo de Alimeythor (próximamente)">
             <span class="team-circle">👤</span>
@@ -2261,6 +2261,24 @@
         d.style.setProperty('--drift', ((Math.random() - 0.5) * 70).toFixed(0) + 'px');
         d.style.setProperty('--maxop', (0.3 + Math.random() * 0.35).toFixed(2));
         fx.appendChild(d);
+      }
+
+      // Partículas mágicas doradas brotando del piso por los COSTADOS (izq y der), subiendo sutil
+      const SIDE = 18;
+      for (let side = 0; side < 2; side++) {       // 0 = izquierda, 1 = derecha
+        for (let i = 0; i < SIDE; i++) {
+          const d = document.createElement('div');
+          d.className = 'web-dust';
+          const x = side === 0 ? (0.5 + Math.random() * 12) : (87.5 + Math.random() * 12);
+          d.style.left = x.toFixed(2) + 'vw';
+          d.style.setProperty('--sz', (3 + Math.random() * 5).toFixed(1) + 'px');
+          d.style.setProperty('--dur', (7 + Math.random() * 6).toFixed(1) + 's');
+          d.style.setProperty('--delay', (Math.random() * 9).toFixed(1) + 's');
+          d.style.setProperty('--rise', (55 + Math.random() * 42).toFixed(0) + 'vh');
+          d.style.setProperty('--drift', ((Math.random() - 0.5) * 48).toFixed(0) + 'px');
+          d.style.setProperty('--maxop', (0.32 + Math.random() * 0.4).toFixed(2));
+          fx.appendChild(d);
+        }
       }
     })();
   </script>
