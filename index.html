@@ -2251,38 +2251,7 @@
         fx.appendChild(s);
       });
 
-      // Polen dorado subiendo desde el piso — más cantidad
-      const DUST = 26;
-      for (let i = 0; i < DUST; i++) {
-        const d = document.createElement('div');
-        d.className = 'web-dust';
-        d.style.left = (Math.random() * 100).toFixed(2) + 'vw';
-        d.style.setProperty('--sz', (3 + Math.random() * 5).toFixed(1) + 'px');
-        d.style.setProperty('--dur', (7 + Math.random() * 6).toFixed(1) + 's');
-        d.style.setProperty('--delay', (Math.random() * 9).toFixed(1) + 's');
-        d.style.setProperty('--rise', (60 + Math.random() * 36).toFixed(0) + 'vh');
-        d.style.setProperty('--drift', ((Math.random() - 0.5) * 70).toFixed(0) + 'px');
-        d.style.setProperty('--maxop', (0.3 + Math.random() * 0.35).toFixed(2));
-        fx.appendChild(d);
-      }
-
-      // Partículas mágicas doradas brotando del piso por los COSTADOS (izq y der), subiendo sutil
-      const SIDE = 72;
-      for (let side = 0; side < 2; side++) {       // 0 = izquierda, 1 = derecha
-        for (let i = 0; i < SIDE; i++) {
-          const d = document.createElement('div');
-          d.className = 'web-dust web-dust--gold';
-          const x = side === 0 ? (0.5 + Math.random() * 12) : (87.5 + Math.random() * 12);
-          d.style.left = x.toFixed(2) + 'vw';
-          d.style.setProperty('--sz', (4 + Math.random() * 5).toFixed(1) + 'px');
-          d.style.setProperty('--dur', (7 + Math.random() * 6).toFixed(1) + 's');
-          d.style.setProperty('--delay', (Math.random() * 9).toFixed(1) + 's');
-          d.style.setProperty('--rise', (55 + Math.random() * 42).toFixed(0) + 'vh');
-          d.style.setProperty('--drift', ((Math.random() - 0.5) * 48).toFixed(0) + 'px');
-          d.style.setProperty('--maxop', (0.7 + Math.random() * 0.3).toFixed(2));
-          fx.appendChild(d);
-        }
-      }
+      // (Efecto de estrellas/polen subiendo desde el piso eliminado — solo quedan las titilantes)
     })();
   </script>
 </body>
