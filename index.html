@@ -662,16 +662,22 @@
       gap: clamp(12px, 2vw, 22px);
       margin-top: clamp(16px, 2.2vw, 26px);
     }
+    .team-member { display: flex; flex-direction: column; align-items: center; gap: 7px; max-width: 120px; }
     .team-circle {
-      width: clamp(54px, 7vw, 74px); height: clamp(54px, 7vw, 74px);
+      width: clamp(72px, 9vw, 98px); height: clamp(72px, 9vw, 98px);
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: clamp(24px, 3vw, 34px);
+      font-size: clamp(30px, 3.8vw, 44px);
       color: rgba(26,26,46,0.32);
       background: rgba(237,28,185,0.07);
       border: 2px dashed rgba(237,28,185,0.32);
       transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
     }
+    /* Círculos con foto real (Santiago, Luciano) */
+    .team-circle--photo { background: none; border: 2px solid rgba(237,28,185,0.40); padding: 0; overflow: hidden; }
+    .team-circle--photo img { width: 100%; height: 100%; object-fit: cover; object-position: center top; border-radius: 50%; }
+    .team-name { font-family: 'Chewy', sans-serif; font-weight: 700; font-size: clamp(13px, 1.1vw, 15.5px); color: #1a1a2e; line-height: 1.1; }
+    .team-role { font-size: clamp(11px, 0.9vw, 12.5px); color: #6a6a82; line-height: 1.2; }
     .team-circle:hover {
       transform: translateY(-4px) scale(1.05);
       background: rgba(237,28,185,0.12);
@@ -1041,6 +1047,8 @@
       /* Cartel final "No buscamos apagar pantallas…": más aire para la nubecita 💭 */
       #comunidad .final-quote { margin-top: 26px; }   /* acercar titulo al boton "Ver nuestros eventos" (mobile, 5 -> 4) */
       .quote-band { padding-top: 46px; }
+      /* Equipo en 2x2 en mobile (no entran los 4 en una fila con sus etiquetas) */
+      .quote-band.final-quote .team-circles { display: grid; grid-template-columns: repeat(2, auto); justify-content: center; justify-items: center; gap: 22px 34px; }
       .quote-band::before { top: -20px; font-size: 28px; }
 
       .com-backdrop { padding: 0; }
@@ -1701,11 +1709,19 @@
         <div class="quote-band final-quote">
           <blockquote>No buscamos apagar pantallas. Buscamos <em>Encender Emociones</em>.</blockquote>
           <p class="team-intro">Un proyecto familiar, pensado para las familias. Te presentamos al equipo completo de Alimeythor.<span class="ti-star">⭐</span></p>
-          <div class="team-circles" aria-label="Equipo de Alimeythor (próximamente)">
-            <span class="team-circle">👤</span>
-            <span class="team-circle">👤</span>
-            <span class="team-circle">👤</span>
-            <span class="team-circle">👤</span>
+          <div class="team-circles" aria-label="Equipo de Alimeythor">
+            <div class="team-member"><span class="team-circle">👤</span></div>
+            <div class="team-member"><span class="team-circle">👤</span></div>
+            <div class="team-member">
+              <span class="team-circle team-circle--photo"><img src="./evento/Santiago.png" alt="Santiago" loading="lazy"></span>
+              <span class="team-name">Santiago</span>
+              <span class="team-role">Project Manager</span>
+            </div>
+            <div class="team-member">
+              <span class="team-circle team-circle--photo"><img src="./evento/Luciano.png" alt="Luciano" loading="lazy"></span>
+              <span class="team-name">Luciano</span>
+              <span class="team-role">Marketing Manager</span>
+            </div>
           </div>
         </div>
       </div>
