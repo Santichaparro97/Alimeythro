@@ -82,6 +82,7 @@
     }
     .header.is-scrolled { box-shadow: 0 4px 24px rgba(26,26,46,0.06); }
     .header.is-hidden { transform: translateY(-105%); }
+    .flag-ar { width: 26px; height: auto; margin-left: 4px; border-radius: 3px; box-shadow: 0 1px 4px rgba(0,0,0,0.18); flex-shrink: 0; }
     .header-inner {
       display: grid;
       grid-template-columns: 1fr auto 1fr;
@@ -646,6 +647,7 @@
       line-height: 1.55; color: #5a5a72;
     }
     .quote-band .team-intro b { color: #ed1cb9; }
+    .quote-band .team-intro .ti-star { margin-left: 6px; font-size: 0.85em; opacity: 0.7; }
     .quote-band .team-circles {
       display: flex; justify-content: center; flex-wrap: wrap;
       gap: clamp(12px, 2vw, 22px);
@@ -1387,6 +1389,12 @@
       <a href="#" class="logo">
         <img class="logo-img" src="./logo-alimeythor.png" alt="Logo Alimeythor">
         <span class="logo-text">Alimeythor</span>
+        <svg class="flag-ar" viewBox="0 0 30 20" role="img" aria-label="Argentina">
+          <rect width="30" height="20" fill="#fff"/>
+          <rect width="30" height="6.667" y="0" fill="#74ACDF"/>
+          <rect width="30" height="6.667" y="13.333" fill="#74ACDF"/>
+          <circle cx="15" cy="10" r="2.1" fill="#F6B40E" stroke="#85340A" stroke-width="0.3"/>
+        </svg>
       </a>
       <nav class="nav">
         <a href="#" class="active">Inicio</a>
@@ -1634,7 +1642,7 @@
         </div>
         <div class="quote-band final-quote">
           <blockquote>No buscamos apagar pantallas. Buscamos <em>encender emociones</em>.</blockquote>
-          <p class="team-intro">Detrás de cada cuento hay una familia que cree en esto. Muy pronto vas a conocer a las personas que hacen posible <b>Mundo Alimeythor</b> 💛</p>
+          <p class="team-intro">Un proyecto familiar, pensado para las familias. Te presentamos al equipo completo de Alimeythor.<span class="ti-star">⭐</span></p>
           <div class="team-circles" aria-label="Equipo de Alimeythor (próximamente)">
             <span class="team-circle">👤</span>
             <span class="team-circle">👤</span>
