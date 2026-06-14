@@ -1271,8 +1271,8 @@
       .split, .split--compact { min-height: auto; }
       .char-stage { min-height: clamp(240px, 38vh, 360px) !important; }
       .char-stage img { width: clamp(210px, 24vw, 330px); }
-      #explorar .char-stage img { width: clamp(260px, 31vw, 415px); margin-top: clamp(10px, 3vh, 30px); }
-      #explorar .char-stage { min-height: clamp(220px, 34vh, 340px) !important; }
+      #explorar .char-stage img { width: clamp(210px, 25vw, 320px); margin-top: clamp(6px, 2vh, 20px); }
+      #explorar .char-stage { min-height: clamp(170px, 26vh, 250px) !important; }
 
       /* Títulos de sección más chicos y con menos margen */
       .section-head { margin-bottom: 18px !important; }
@@ -1282,6 +1282,8 @@
       /* EXPLORAR: cards apiladas más compactas */
       .showcase-stack { gap: 10px; }
       .showcase-stack .showcase-card { padding: 13px 16px; }
+      /* El boton Pase Magico no usa el -116 (calibrado para monitor): cerca de las cards sin encimar */
+      .pase-cta { margin-top: -6px !important; }
       .showcase-icon { width: 50px !important; height: 50px !important; font-size: 25px !important; }
       .showcase-card h3 { font-size: 18px; margin-bottom: 4px; }
       .showcase-card p { font-size: 13px; margin-bottom: 8px; }
@@ -1297,8 +1299,8 @@
       .pro-seal img { width: 44px; height: 44px; }
       .pro-seal .seal-title { font-size: 16px; }
       .pro-seal .seal-text { font-size: 12px; }
-      .quote-band { padding: 16px 26px; }
-      .quote-band::before { font-size: 26px; top: -16px; }
+      .quote-band { padding: 40px 26px 18px; }
+      .quote-band::before { font-size: 24px; top: -15px; }
       .quote-band blockquote { font-size: clamp(15px, 1.5vw, 20px); }
       .quote-band cite { margin-top: 8px; font-size: 12px; }
 
