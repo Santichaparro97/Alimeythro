@@ -124,6 +124,27 @@
 
     .plan-note { margin-top: clamp(26px, 3vw, 40px); font-size: 13px; color: #6a6a82; }
 
+    /* ===== Escritorio / notebook: SIN scroll, las 2 tarjetas entran en pantalla ===== */
+    @media (min-width: 769px) {
+      html, body { height: 100vh; overflow: hidden; }
+      .wrap {
+        height: 100vh; max-width: 1040px;
+        display: flex; flex-direction: column; justify-content: center;
+        padding-top: clamp(58px, 8vh, 84px); padding-bottom: clamp(16px, 2.5vh, 30px);
+        animation: none;
+      }
+      h1 { font-size: clamp(26px, 3.2vw, 42px); margin-bottom: 8px; }
+      .eyebrow { margin-bottom: 10px; }
+      .sub { margin: 0 auto clamp(16px, 2.4vh, 30px); font-size: clamp(13px, 0.95vw, 16px); }
+      .plan { padding: clamp(18px, 2.2vh, 30px) clamp(20px, 2.2vw, 28px); }
+      .plan-tagline { min-height: 0; margin: 4px 0 12px; }
+      .plan-price { font-size: clamp(28px, 3vw, 40px); }
+      .plan-feats { margin: 14px 0 16px; gap: clamp(6px, 1vh, 10px); }
+      .plan-feats li { font-size: clamp(12px, 0.95vw, 14px); }
+      .plan-btn { padding: 11px 22px; font-size: 16px; }
+      .plan-note { margin-top: clamp(12px, 1.8vh, 22px); }
+    }
+
     @media (max-width: 720px) {
       .plans { grid-template-columns: 1fr; gap: 26px; }
       .wrap { padding: 88px 16px 56px; }
@@ -196,6 +217,33 @@
         t.style.animationDelay = (i * 0.42) + 's';
         t.style.animationDuration = (2.6 + (i % 4) * 0.5) + 's';
         document.body.appendChild(t);
+      });
+    })();
+
+    // Efecto de las cards de "emociones": la tarjeta se inclina hacia el cursor (se hunde esa zona)
+    (function () {
+      if (!window.matchMedia || !window.matchMedia('(hover: hover)').matches) return;
+      const TILT = 8;
+      document.querySelectorAll('.plan').forEach((card) => {
+        let raf = null, oxf = 0.5, oyf = 0.5;
+        function apply() {
+          raf = null;
+          const rx = (0.5 - oyf) * TILT;
+          const ry = (oxf - 0.5) * TILT;
+          card.style.transform = 'perspective(720px) rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg) scale(1.015)';
+        }
+        card.addEventListener('mouseenter', () => { card.style.transition = 'transform 0.09s ease-out, box-shadow 0.3s ease'; });
+        card.addEventListener('mousemove', (e) => {
+          const r = card.getBoundingClientRect();
+          oxf = (e.clientX - r.left) / r.width;
+          oyf = (e.clientY - r.top) / r.height;
+          if (!raf) raf = requestAnimationFrame(apply);
+        });
+        card.addEventListener('mouseleave', () => {
+          if (raf) { cancelAnimationFrame(raf); raf = null; }
+          card.style.transform = '';
+          card.style.transition = '';
+        });
       });
     })();
 
