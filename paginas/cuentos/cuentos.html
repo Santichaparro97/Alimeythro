@@ -30,7 +30,7 @@
     @keyframes twinkleV5 { 0%,100% { opacity: 0.12; transform: scale(0.7); } 50% { opacity: 0.5; transform: scale(1.15); } }
 
     /* ===== Layout principal 20 / 80 ===== */
-    .app { display: flex; height: 100vh; position: relative; z-index: 1; }
+    .app { display: flex; height: 100vh; }
 
     /* ----- Checklist (20%) ----- */
     .sidebar {
@@ -164,21 +164,26 @@
     .ph-title .accent { color: #f8231c; }
     .ph-sub { font-size: 15px; color: #6a6a82; max-width: 420px; line-height: 1.5; }
 
-    /* ----- Botón hamburguesa (solo celular) ----- */
-    .ck-toggle {
-      display: none;
-      position: fixed; top: 16px; left: 16px; z-index: 60;
-      width: 48px; height: 48px; border: 0; cursor: pointer;
-      border-radius: 14px; background: #f8231c; color: #fff;
-      box-shadow: 0 8px 20px rgba(248,35,28,0.38);
-      align-items: center; justify-content: center;
-    }
-    .ck-toggle svg { width: 24px; height: 24px; stroke: #fff; stroke-width: 2.4; fill: none; stroke-linecap: round; }
+    /* ----- Barra superior con 2 botones de texto (solo celular) ----- */
+    .ck-mobilebar { display: none; }
     .scrim { display: none; }
 
     /* ===== Celular: checklist colapsable (off-canvas) ===== */
     @media (max-width: 768px) {
-      .ck-toggle { display: flex; }
+      /* Barra fija con 2 botones de texto, siempre tocable (por encima de todo) */
+      .ck-mobilebar {
+        display: flex; gap: 8px;
+        position: fixed; top: 12px; left: 12px; right: 12px; z-index: 80;
+      }
+      .ck-mbtn {
+        flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+        padding: 11px 12px; border: 0; cursor: pointer;
+        font-family: 'Poppins', sans-serif; font-size: 13.5px; font-weight: 700;
+        border-radius: 999px; text-decoration: none;
+      }
+      .ck-mbtn--back { background: #fff; color: #f8231c; box-shadow: 0 6px 16px rgba(0,0,0,0.14); }
+      .ck-mbtn--list { background: #f8231c; color: #fff; box-shadow: 0 6px 16px rgba(248,35,28,0.34); }
+      .sidebar .back-btn { display: none; }   /* el "volver" ya está en la barra superior */
       .reader { width: 100%; }
       .sidebar {
         position: fixed; top: 0; left: 0; z-index: 70;
@@ -207,9 +212,10 @@
   <video class="bg-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true"><source src="../../fondo.mp4" type="video/mp4" /></video>
   <div class="bg-veil" aria-hidden="true"></div>
 
-  <button class="ck-toggle" id="ck-toggle" aria-label="Abrir lista de cuentos">
-    <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-  </button>
+  <div class="ck-mobilebar">
+    <a href="../../index.html" class="ck-mbtn ck-mbtn--back" onclick="try{sessionStorage.setItem('alm_return','explorar');}catch(e){}">← Volver a la web</a>
+    <button class="ck-mbtn ck-mbtn--list" id="ck-toggle" type="button">☰ Lista de cuentos</button>
+  </div>
   <div class="scrim" id="scrim"></div>
 
   <div class="app">

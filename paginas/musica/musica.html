@@ -125,7 +125,12 @@
       min-height: 0;
     }
     @media (max-width: 880px) {
-      .music-grid { grid-template-columns: 1fr; overflow-y: auto; }
+      /* En celular/tablet la página scrollea normal para ver TODAS las canciones */
+      html, body { height: auto; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+      .wrap { height: auto; min-height: 100vh; }
+      .music-grid { grid-template-columns: 1fr; overflow: visible; align-items: start; }
+      .playlist { overflow: visible; }
+      #pl-list { overflow: visible; flex: none; min-height: 0; }
     }
 
     /* ============= NOW PLAYING CARD ============= */
