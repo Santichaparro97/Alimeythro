@@ -60,6 +60,12 @@
 
     /* ===== Planes ===== */
     .plans { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(18px, 2.6vw, 30px); align-items: stretch; }
+    /* Flotado suave (en el contenedor, así no choca con la inclinación 3D de la tarjeta) */
+    .plan-float { display: flex; animation: planFloat 4.2s ease-in-out infinite; }
+    .plan-float:nth-child(2) { animation-delay: 0.9s; }
+    .plan-float > .plan { width: 100%; }
+    @keyframes planFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+    @media (prefers-reduced-motion: reduce) { .plan-float { animation: none; } }
     .plan {
       position: relative;
       background: #fff;
@@ -168,6 +174,7 @@
 
     <div class="plans">
       <!-- ===== STANDARD ===== -->
+      <div class="plan-float">
       <div class="plan plan--standard">
         <div class="plan-icon">📦</div>
         <div class="plan-name">Standard</div>
@@ -183,8 +190,10 @@
         </ul>
         <button class="plan-btn" type="button" data-plan="Standard">Suscribirme</button>
       </div>
+      </div>
 
       <!-- ===== PREMIUM ===== -->
+      <div class="plan-float">
       <div class="plan plan--premium">
         <span class="plan-badge">⭐ Recomendado</span>
         <div class="plan-icon">✨</div>
@@ -200,6 +209,7 @@
           <li>Soporte prioritario para tu familia</li>
         </ul>
         <button class="plan-btn" type="button" data-plan="Premium">Suscribirme</button>
+      </div>
       </div>
     </div>
 
