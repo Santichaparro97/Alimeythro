@@ -875,52 +875,57 @@
       .nav-toggle { display: flex; }
       .header-inner { grid-template-columns: 1fr auto; }
 
-      .hero { padding-top: 92px; min-height: auto; }
-      .hero-grid { grid-template-columns: 1fr; gap: 18px; }
-      .hero-character { order: -1; }
-      .hero-character img { width: clamp(170px, 48vw, 240px); }
+      /* En celular se ocultan los personajes: queda solo el texto, prolijo */
+      .hero-character, .char-stage, .char-blob, .hero-blob { display: none !important; }
 
-      /* Split 50/50 → apila en mobile (personaje arriba, contenido abajo) */
-      .split, .split.reverse { grid-template-columns: 1fr; gap: 22px; min-height: auto; }
-      .split .char-stage, .split.reverse .char-stage { order: -1; min-height: clamp(220px, 42vh, 320px); margin: 0 !important; }
-      .split .split-content, .split.reverse .split-content { order: 1; }
-      .char-stage img { width: clamp(180px, 50vw, 280px); }
-      .char-blob, .split:not(.reverse) .char-blob, .split.reverse .char-blob { left: 50% !important; width: 80%; }
-      .hero-character { margin-left: 0 !important; }
-      .hero-blob { left: 50% !important; width: 86%; }
+      /* ===== HERO — solo texto, centrado ===== */
+      .hero { padding-top: 96px; padding-bottom: 28px; min-height: auto; }
+      .hero-grid { grid-template-columns: 1fr; gap: 0; }
+      .hero-text { display: flex; flex-direction: column; align-items: center; text-align: center; }
+      .hero .eyebrow { display: inline-block; margin: 0 auto 14px; }
+      .hero h1 { font-size: clamp(28px, 7.6vw, 40px); text-align: center; margin-bottom: 14px; }
+      .hero-sub { text-align: center; font-size: 15.5px; margin: 0 auto 22px; max-width: 460px; }
+      .hero-ctas { justify-content: center; gap: 12px; width: 100%; }
+      .btn-primary, .btn-ghost { width: 100%; max-width: 320px; justify-content: center; }
+      .trust-badge { margin: 22px auto 0; display: inline-flex; }
+      .scroll-hint { display: none; }
+
+      /* ===== SPLITS (Explorar / Preguntas) → una sola columna de texto ===== */
+      .split, .split.reverse { grid-template-columns: 1fr; gap: 0; min-height: auto; }
+      .split .split-content, .split.reverse .split-content { order: 0; }
       .split-content .section-head { text-align: center; }
+      #explorar .split { gap: 0; }
+      #explorar .section-head--center { transform: none; margin-bottom: 18px; }
+      #explorar .split-content { transform: none; }
+
+      /* Cards de Explorar a todo el ancho */
+      .showcase-stack { gap: 14px; }
       .showcase-stack .showcase-card,
       .showcase-stack .showcase-card:nth-child(1),
       .showcase-stack .showcase-card:nth-child(2),
       .showcase-stack .showcase-card:nth-child(3) { transform: none; }
-      .showcase-stack .showcase-card:hover { transform: translateY(-6px); }
-      .hero h1 { font-size: clamp(30px, 8.4vw, 38px); text-align: center; }
-      .hero .eyebrow { display: block; text-align: center; margin-left: auto; margin-right: auto; max-width: fit-content; }
-      .hero-sub { text-align: center; margin-left: auto; margin-right: auto; font-size: 15px; }
-      .hero-ctas { justify-content: center; }
-      .btn-primary { width: 100%; justify-content: center; }
-      .btn-ghost { width: 100%; justify-content: center; }
-      .trust-badge { margin: 0 auto; display: flex; max-width: fit-content; }
-      .hero-text { display: flex; flex-direction: column; align-items: center; }
-      .hero-phrases { justify-content: center; }
-      .phrase-pill { font-size: 13px; padding: 8px 14px; }
-      .scroll-hint { display: none; }
+      .showcase-stack .showcase-card:hover { transform: translateY(-6px) scale(1.03); }
+      .showcase-card { flex-direction: row; text-align: left; align-items: center; gap: 16px; padding: 18px; }
+      .showcase-icon { width: 56px; height: 56px; font-size: 28px; margin-bottom: 0; flex-shrink: 0; border-radius: 18px; }
+      .showcase-body { flex: 1; min-width: 0; }
+      .showcase-card h3 { font-size: 18px; margin-bottom: 4px; }
+      .showcase-card p { font-size: 13px; margin-bottom: 12px; line-height: 1.45; }
+      .showcase-cta { font-size: 14px; padding: 9px 22px; }
+      .showcase-tag { position: static; align-self: flex-start; font-size: 10px; margin-bottom: 6px; }
 
-      .showcase-grid { grid-template-columns: 1fr; gap: 14px; }
-      .showcase-card { flex-direction: row; text-align: left; align-items: center; gap: 16px; padding: 20px 18px; }
-      .showcase-icon { width: 64px; height: 64px; font-size: 32px; margin-bottom: 0; flex-shrink: 0; border-radius: 20px; }
-      .showcase-body { flex: 1; }
-      .showcase-card h3 { font-size: 19px; }
-      .showcase-card p { font-size: 13px; margin-bottom: 10px; }
-      .showcase-cta { font-size: 14px; padding: 9px 20px; }
-      .showcase-tag { top: 10px; right: 12px; font-size: 9px; }
+      /* Títulos de sección centrados */
+      .section-head { text-align: center; }
+      .section-head h2 { font-size: clamp(24px, 6.4vw, 34px); }
+      .section-head p { font-size: 14.5px; }
 
+      /* ===== POR QUÉ — 4 áreas apiladas ===== */
       .areas-grid { grid-template-columns: 1fr; gap: 14px; }
-      .area-q { font-size: 18px; }
+      .area-q { font-size: 17px; }
       .area-a { font-size: 13.5px; }
       .pro-seal { flex-direction: column; text-align: center; padding: 20px 18px; }
 
-      .story-grid { grid-template-columns: 1fr; gap: 26px; }
+      /* ===== HISTORIA — foto (real) + texto, centrado ===== */
+      .story-grid { grid-template-columns: 1fr; gap: 24px; }
       .story-photo { max-width: 300px; margin: 0 auto; }
       .story-text { text-align: center; }
       .story-block h3 { justify-content: center; }
@@ -932,7 +937,7 @@
       .com-modal { max-width: 100%; height: 100vh; max-height: 100vh; border-radius: 0; }
       .com-form .row2 { grid-template-columns: 1fr; }
 
-      .footer-grid { grid-template-columns: 1fr; text-align: center; }
+      .footer-grid { grid-template-columns: 1fr; text-align: center; gap: 20px; }
       .footer-brand { justify-content: center; }
       .footer-nav { justify-content: center; }
     }
