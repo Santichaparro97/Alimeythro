@@ -229,6 +229,26 @@
     }
     .btn-ghost:hover { transform: translateY(-2px); border-color: rgba(248,35,28,0.35); color: #f8231c; }
 
+    /* CTA "Desbloquear Pase Mágico" — centrado, estética mágica (dorado→rojo) */
+    .pase-cta { text-align: center; margin-top: clamp(20px, 3vw, 36px); }
+    .btn-pase {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-family: 'Chewy', sans-serif;
+      font-size: clamp(17px, 1.8vw, 23px);
+      color: #fff; text-decoration: none; cursor: pointer; border: none;
+      background: linear-gradient(135deg, #f8a00a 0%, #f8231c 70%);
+      padding: 15px 40px; border-radius: 999px;
+      white-space: nowrap;
+      box-shadow: 0 8px 0 #b51410, 0 16px 30px rgba(248,35,28,0.36);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      animation: pasePulse 2.6s ease-in-out infinite;
+    }
+    .btn-pase:hover { transform: translateY(-3px); box-shadow: 0 11px 0 #b51410, 0 20px 38px rgba(248,160,10,0.5); }
+    @keyframes pasePulse {
+      0%, 100% { box-shadow: 0 8px 0 #b51410, 0 16px 30px rgba(248,35,28,0.36); }
+      50%      { box-shadow: 0 8px 0 #b51410, 0 16px 42px rgba(248,160,10,0.62); }
+    }
+
     /* Badge de confianza — protagonista, no nota al pie */
     .trust-badge {
       display: inline-flex; align-items: center; gap: 12px;
@@ -1437,6 +1457,9 @@
             </a>
           </div>
         </div>
+      </div>
+      <div class="pase-cta reveal">
+        <a href="./paginas/planes/pase-magico.html" class="btn-pase">🔓 Desbloquear Pase Mágico</a>
       </div>
     </div>
   </section>
