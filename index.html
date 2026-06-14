@@ -1194,16 +1194,23 @@
       width: var(--sz, 6px); height: var(--sz, 6px);
       /* Estrellita de 5 puntas en lugar del punto redondo */
       clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-      background: radial-gradient(circle, rgba(255,248,210,1) 0%, rgba(248,205,85,0.95) 55%, rgba(248,170,20,0.7) 100%);
-      filter: brightness(1.25) drop-shadow(0 0 4px rgba(255,235,160,1)) drop-shadow(0 0 9px rgba(255,215,100,0.85)) drop-shadow(0 0 14px rgba(255,200,70,0.45));
+      /* Nucleo blanco brillante -> dorado, para que la estrella "encandile" */
+      background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,248,205,1) 38%, rgba(250,210,90,1) 70%, rgba(248,180,30,0.85) 100%);
+      filter: brightness(1.55) drop-shadow(0 0 5px rgba(255,245,190,1)) drop-shadow(0 0 11px rgba(255,225,120,0.95)) drop-shadow(0 0 20px rgba(255,205,80,0.6));
       opacity: 0;
-      animation: floatUp var(--dur, 7s) ease-in var(--delay, 0s) infinite;
+      animation: floatUp var(--dur, 7s) ease-in var(--delay, 0s) infinite,
+                 twinkle var(--tw, 1.8s) ease-in-out var(--delay, 0s) infinite;
     }
     @keyframes floatUp {
       0%   { transform: translate(0, 0) scale(0.6) rotate(0deg); opacity: 0; }
       12%  { opacity: var(--maxop, 0.8); }
       85%  { opacity: var(--maxop, 0.8); }
       100% { transform: translate(var(--drift, 0px), calc(-1 * var(--rise, 80vh))) scale(1.05) rotate(var(--spin, 90deg)); opacity: 0; }
+    }
+    /* Parpadeo (twinkle): el brillo y el halo laten para que destellen */
+    @keyframes twinkle {
+      0%, 100% { filter: brightness(1.35) drop-shadow(0 0 4px rgba(255,245,190,0.9)) drop-shadow(0 0 9px rgba(255,225,120,0.7)); }
+      50%      { filter: brightness(1.95) drop-shadow(0 0 7px rgba(255,250,210,1)) drop-shadow(0 0 16px rgba(255,230,130,1)) drop-shadow(0 0 26px rgba(255,210,90,0.7)); }
     }
 
     .splash-dots { position: relative; z-index: 2; display: flex; gap: 9px; }
@@ -2179,7 +2186,7 @@
       const PARTICLES = 68;
       for (let i = 0; i < PARTICLES; i++) {
         const p = document.createElement('b');
-        const sz = 4 + Math.random() * 7;                 // 4–11px
+        const sz = 5 + Math.random() * 8;                 // 5–13px (estrellas mas grandes)
         p.style.setProperty('--sz', sz.toFixed(1) + 'px');
         p.style.left = (Math.random() * 100).toFixed(2) + 'vw';
         p.style.setProperty('--dur', (5 + Math.random() * 5).toFixed(1) + 's');   // 5–10s
@@ -2188,6 +2195,7 @@
         p.style.setProperty('--drift', ((Math.random() - 0.5) * 80).toFixed(0) + 'px'); // deriva ±40px
         p.style.setProperty('--maxop', (0.85 + Math.random() * 0.15).toFixed(2));   // 0.85–1.0 (estrellas mas brillantes)
         p.style.setProperty('--spin', ((Math.random() - 0.5) * 220).toFixed(0) + 'deg'); // giro suave de la estrellita
+        p.style.setProperty('--tw', (1.2 + Math.random() * 1.4).toFixed(2) + 's'); // ritmo de parpadeo 1.2–2.6s
         partBox.appendChild(p);
       }
 
