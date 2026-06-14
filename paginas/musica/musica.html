@@ -134,7 +134,8 @@
       /* Controles más fáciles de tocar/arrastrar en celular */
       .player-progress { height: 12px !important; }
       .player-progress-knob { width: 20px !important; height: 20px !important; }
-      .player-volume input[type="range"] { height: 26px; }
+      .vol-bar { height: 12px; }
+      .vol-knob { width: 22px; height: 22px; }
     }
 
     /* ============= NOW PLAYING CARD ============= */
@@ -255,38 +256,42 @@
       box-shadow: 0 7px 0 #8C1010, 0 12px 22px rgba(248,35,28,0.30);
     }
     .ctrl--play:hover { transform: translateY(-3px); box-shadow: 0 11px 0 #8C1010, 0 18px 28px rgba(248,35,28,0.40); }
+    /* Íconos SVG (no emojis) — se ven limpios y el botón play queda siempre rojo */
+    .ctrl svg { width: 20px; height: 20px; fill: currentColor; pointer-events: none; display: block; }
+    .ctrl--play svg { width: 24px; height: 24px; }
 
-    /* Volumen */
+    /* Volumen — barra propia arrastrable (responde al toque) */
     .player-volume {
       display: flex;
       align-items: center;
       gap: 10px;
-      max-width: 200px;
+      width: 100%;
+      max-width: 220px;
       margin: 0 auto;
     }
-    .player-volume input[type="range"] {
+    .vol-bar {
       flex: 1;
-      -webkit-appearance: none;
-      appearance: none;
-      height: 4px;
-      background: rgba(0,0,0,0.08);
+      height: 8px;
+      background: rgba(0,0,0,0.10);
       border-radius: 999px;
-      outline: none;
-    }
-    .player-volume input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 14px; height: 14px;
-      background: #33afed;
-      border-radius: 50%;
+      position: relative;
       cursor: pointer;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      touch-action: none;            /* arrastrar sin scrollear */
     }
-    .player-volume input[type="range"]::-moz-range-thumb {
-      width: 14px; height: 14px;
-      background: #33afed;
+    .vol-fill {
+      position: absolute; top: 0; bottom: 0; left: 0;
+      width: 80%;
+      background: linear-gradient(90deg, #33afed, #ed1cb9);
+      border-radius: 999px;
+    }
+    .vol-knob {
+      position: absolute; top: 50%; left: 80%;
+      width: 16px; height: 16px;
+      background: #fff;
       border-radius: 50%;
-      border: none;
-      cursor: pointer;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+      pointer-events: none;
     }
     .player-volume span { font-size: 16px; color: #6a6a82; }
 
@@ -462,14 +467,17 @@
         </div>
 
         <div class="player-controls">
-          <button class="ctrl" id="ctrl-prev" aria-label="Anterior">⏮</button>
-          <button class="ctrl ctrl--play" id="ctrl-play" aria-label="Reproducir">▶</button>
-          <button class="ctrl" id="ctrl-next" aria-label="Siguiente">⏭</button>
+          <button class="ctrl" id="ctrl-prev" aria-label="Anterior"><svg viewBox="0 0 24 24"><path d="M7 5h2.2v14H7zM20 5v14l-9.5-7z"/></svg></button>
+          <button class="ctrl ctrl--play" id="ctrl-play" aria-label="Reproducir"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+          <button class="ctrl" id="ctrl-next" aria-label="Siguiente"><svg viewBox="0 0 24 24"><path d="M14.8 5H17v14h-2.2zM4 5v14l9.5-7z"/></svg></button>
         </div>
 
         <div class="player-volume">
           <span>🔈</span>
-          <input type="range" id="ctrl-volume" min="0" max="100" value="80" aria-label="Volumen">
+          <div class="vol-bar" id="vol-bar">
+            <div class="vol-fill" id="vol-fill"></div>
+            <div class="vol-knob" id="vol-knob"></div>
+          </div>
           <span>🔊</span>
         </div>
 
@@ -539,7 +547,13 @@
     const btnPlay     = document.getElementById('ctrl-play');
     const btnPrev     = document.getElementById('ctrl-prev');
     const btnNext     = document.getElementById('ctrl-next');
-    const volumeEl    = document.getElementById('ctrl-volume');
+    const volBar  = document.getElementById('vol-bar');
+    const volFill = document.getElementById('vol-fill');
+    const volKnob = document.getElementById('vol-knob');
+
+    // Íconos SVG (no emojis) para que el botón play se vea limpio y siempre rojo
+    const ICON_PLAY  = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+    const ICON_PAUSE = '<svg viewBox="0 0 24 24"><rect x="6" y="5" width="4.2" height="14" rx="1.2"/><rect x="13.8" y="5" width="4.2" height="14" rx="1.2"/></svg>';
     const listEl      = document.getElementById('pl-list');
     const metaEl      = document.getElementById('pl-meta');
 
@@ -594,18 +608,18 @@
       if (!audio.src) {
         // Si no hay src real, simulamos un placeholder visual
         playerEl.classList.add('is-playing');
-        btnPlay.textContent = '⏸';
+        btnPlay.innerHTML = ICON_PAUSE;
         return;
       }
       audio.play().then(() => {
         playerEl.classList.add('is-playing');
-        btnPlay.textContent = '⏸';
+        btnPlay.innerHTML = ICON_PAUSE;
       }).catch(() => {});
     }
     function pause() {
       audio.pause();
       playerEl.classList.remove('is-playing');
-      btnPlay.textContent = '▶';
+      btnPlay.innerHTML = ICON_PLAY;
     }
     function togglePlay() {
       if (currentIndex < 0) loadSong(0);
@@ -627,9 +641,25 @@
     btnPrev.addEventListener('click', prev);
     btnNext.addEventListener('click', next);
 
-    volumeEl.addEventListener('input', () => {
-      audio.volume = volumeEl.value / 100;
+    // Volumen: barra propia arrastrable (toque y mouse)
+    function setVolFromX(clientX) {
+      const rect = volBar.getBoundingClientRect();
+      let pct = (clientX - rect.left) / rect.width;
+      pct = Math.max(0, Math.min(1, pct));
+      audio.volume = pct;
+      volFill.style.width = (pct * 100) + '%';
+      volKnob.style.left  = (pct * 100) + '%';
+    }
+    let volDrag = false;
+    volBar.addEventListener('pointerdown', (e) => {
+      volDrag = true;
+      try { volBar.setPointerCapture(e.pointerId); } catch (x) {}
+      setVolFromX(e.clientX);
+      e.preventDefault();
     });
+    volBar.addEventListener('pointermove', (e) => { if (volDrag) setVolFromX(e.clientX); });
+    volBar.addEventListener('pointerup',   () => { volDrag = false; });
+    volBar.addEventListener('pointercancel', () => { volDrag = false; });
     audio.volume = 0.8;
 
     // Progreso
@@ -658,7 +688,7 @@
     audio.addEventListener('error', () => {
       subtitleEl.textContent = 'No se pudo cargar el audio · revisá el enlace';
       playerEl.classList.remove('is-playing');
-      btnPlay.textContent = '▶';
+      btnPlay.innerHTML = ICON_PLAY;
     });
     audio.addEventListener('waiting', () => {
       subtitleEl.textContent = 'Cargando…';
