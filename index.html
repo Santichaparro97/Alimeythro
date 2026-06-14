@@ -326,6 +326,8 @@
     }
     .scroll-hint.is-hidden { opacity: 0; pointer-events: none; }
     @keyframes hintBob { 0%,100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 6px); } }
+    /* Sin "Descubrí más" de 1280px de ancho para abajo (notebooks/tablets/celular) */
+    @media (max-width: 1280px) { .scroll-hint { display: none !important; } }
 
     /* ============================================================
        SECCIONES — base con reveal suave
