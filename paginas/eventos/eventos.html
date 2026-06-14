@@ -309,19 +309,17 @@
 
   <script>
     // ============================================================
-    // DATOS — 5 secciones con sus fotos
+    // DATOS — secciones con sus fotos (archivos reales de /evento)
+    // Patrón de nombre: "nombre.jpeg", "nombre (2).jpeg", "nombre (3).jpeg"...
     // ============================================================
+    const ev = (name, count) => Array.from({length: count}, (_, i) =>
+      '../../evento/' + encodeURIComponent(i === 0 ? `${name}.jpeg` : `${name} (${i + 1}).jpeg`));
+
     const SECTIONS = [
-      { id: 'fotos',          label: 'Fotos',          emoji: '📸', count: 4,
-        images: Array.from({length: 4},  (_, i) => `../../evento/fotos-${String(i+1).padStart(2,'0')}.jpeg`) },
-      { id: 'presentaciones', label: 'Presentaciones', emoji: '🎤', count: 17,
-        images: Array.from({length: 17}, (_, i) => `../../evento/presentaciones-${String(i+1).padStart(2,'0')}.jpeg`) },
-      { id: 'radio',          label: 'Radio',          emoji: '🎙️', count: 4,
-        images: Array.from({length: 4},  (_, i) => `../../evento/radio-${String(i+1).padStart(2,'0')}.jpeg`) },
-      { id: 'feria',          label: 'Feria del libro', emoji: '📚', count: 2,
-        images: Array.from({length: 2},  (_, i) => `../../evento/feria-${String(i+1).padStart(2,'0')}.jpeg`) },
-      { id: 'jardines',       label: 'Jardines',       emoji: '🌻', count: 3,
-        images: Array.from({length: 3},  (_, i) => `../../evento/jardines-${String(i+1).padStart(2,'0')}.jpeg`) }
+      { id: 'fotos',          label: 'Fotos',           emoji: '📸', count: 5,  images: ev('fotos', 5) },
+      { id: 'presentaciones', label: 'Presentaciones',  emoji: '🎤', count: 2,  images: ev('presentaciones', 2) },
+      { id: 'radio',          label: 'Radio',           emoji: '🎙️', count: 2,  images: ev('radio', 2) },
+      { id: 'feria',          label: 'Feria del libro', emoji: '📚', count: 12, images: ev('feria', 12) }
     ];
 
     let activeSection = 0;
