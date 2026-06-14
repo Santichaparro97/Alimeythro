@@ -81,14 +81,28 @@
 
     /* Standard (rojo de marca) */
     .plan--standard { --c: #f8231c; --c-soft: rgba(248,35,28,0.12); }
-    .plan--standard:hover { box-shadow: 0 14px 0 var(--c-soft), 0 28px 52px rgba(248,35,28,0.18); }
+    .plan--standard:hover {
+      border-color: #f8231c;
+      box-shadow:
+        0 0 28px rgba(248,35,28,0.65),
+        0 0 58px rgba(248,35,28,0.45),
+        0 14px 0 var(--c-soft),
+        0 24px 48px rgba(248,35,28,0.22);
+    }
     /* Premium (dorado, resaltado) */
     .plan--premium {
       --c: #d99400; --c-soft: rgba(230,160,10,0.16);
       border-color: rgba(230,160,10,0.55);
       box-shadow: 0 10px 0 rgba(230,160,10,0.28), 0 24px 48px rgba(230,160,10,0.22);
     }
-    .plan--premium:hover { box-shadow: 0 14px 0 rgba(230,160,10,0.34), 0 30px 56px rgba(230,160,10,0.30); }
+    .plan--premium:hover {
+      border-color: #f8b41e;
+      box-shadow:
+        0 0 30px rgba(248,180,40,0.72),
+        0 0 62px rgba(248,180,40,0.5),
+        0 14px 0 rgba(230,160,10,0.34),
+        0 24px 50px rgba(230,160,10,0.28);
+    }
 
     .plan-badge {
       position: absolute; top: -13px; left: 50%; transform: translateX(-50%);

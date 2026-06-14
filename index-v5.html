@@ -638,6 +638,34 @@
     }
     .quote-band blockquote em { font-style: normal; color: #ed1cb9; }
     .quote-band cite { display: block; margin-top: 12px; font-size: 13px; color: #6a6a82; font-style: normal; font-weight: 600; }
+    /* Presentación del equipo (fotos próximamente) */
+    .quote-band .team-intro {
+      margin: clamp(14px, 1.8vw, 20px) auto 0;
+      max-width: 540px;
+      font-size: clamp(13.5px, 1vw, 15.5px);
+      line-height: 1.55; color: #5a5a72;
+    }
+    .quote-band .team-intro b { color: #ed1cb9; }
+    .quote-band .team-circles {
+      display: flex; justify-content: center; flex-wrap: wrap;
+      gap: clamp(12px, 2vw, 22px);
+      margin-top: clamp(16px, 2.2vw, 26px);
+    }
+    .team-circle {
+      width: clamp(54px, 7vw, 74px); height: clamp(54px, 7vw, 74px);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: clamp(24px, 3vw, 34px);
+      color: rgba(26,26,46,0.32);
+      background: rgba(237,28,185,0.07);
+      border: 2px dashed rgba(237,28,185,0.32);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    }
+    .team-circle:hover {
+      transform: translateY(-4px) scale(1.05);
+      background: rgba(237,28,185,0.12);
+      box-shadow: 0 8px 18px rgba(237,28,185,0.22);
+    }
 
     /* ============================================================
        HISTORIA — Alicia, el ancla de confianza
@@ -1606,7 +1634,13 @@
         </div>
         <div class="quote-band final-quote">
           <blockquote>No buscamos apagar pantallas. Buscamos <em>encender emociones</em>.</blockquote>
-          <cite>La idea que guía todo lo que hacemos</cite>
+          <p class="team-intro">Detrás de cada cuento hay una familia que cree en esto. Muy pronto vas a conocer a las personas que hacen posible <b>Mundo Alimeythor</b> 💛</p>
+          <div class="team-circles" aria-label="Equipo de Alimeythor (próximamente)">
+            <span class="team-circle">👤</span>
+            <span class="team-circle">👤</span>
+            <span class="team-circle">👤</span>
+            <span class="team-circle">👤</span>
+          </div>
         </div>
       </div>
     </div>
