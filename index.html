@@ -66,6 +66,11 @@
       opacity: 0;
       animation: floatUp var(--dur, 8s) ease-in var(--delay, 0s) infinite;
     }
+    /* Polen de los costados: más dorado y más visible */
+    .web-dust--gold {
+      background: radial-gradient(circle, rgba(255,226,135,1) 0%, rgba(248,190,40,0.92) 42%, rgba(248,160,10,0) 78%);
+      box-shadow: 0 0 6px rgba(248,190,40,0.55);
+    }
 
     .container { max-width: 1140px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 40px); }
 
@@ -2268,15 +2273,15 @@
       for (let side = 0; side < 2; side++) {       // 0 = izquierda, 1 = derecha
         for (let i = 0; i < SIDE; i++) {
           const d = document.createElement('div');
-          d.className = 'web-dust';
+          d.className = 'web-dust web-dust--gold';
           const x = side === 0 ? (0.5 + Math.random() * 12) : (87.5 + Math.random() * 12);
           d.style.left = x.toFixed(2) + 'vw';
-          d.style.setProperty('--sz', (3 + Math.random() * 5).toFixed(1) + 'px');
+          d.style.setProperty('--sz', (4 + Math.random() * 5).toFixed(1) + 'px');
           d.style.setProperty('--dur', (7 + Math.random() * 6).toFixed(1) + 's');
           d.style.setProperty('--delay', (Math.random() * 9).toFixed(1) + 's');
           d.style.setProperty('--rise', (55 + Math.random() * 42).toFixed(0) + 'vh');
           d.style.setProperty('--drift', ((Math.random() - 0.5) * 48).toFixed(0) + 'px');
-          d.style.setProperty('--maxop', (0.32 + Math.random() * 0.4).toFixed(2));
+          d.style.setProperty('--maxop', (0.7 + Math.random() * 0.3).toFixed(2));
           fx.appendChild(d);
         }
       }
