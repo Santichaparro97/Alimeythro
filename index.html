@@ -230,7 +230,7 @@
     .btn-ghost:hover { transform: translateY(-2px); border-color: rgba(248,35,28,0.35); color: #f8231c; }
 
     /* CTA "Desbloquear Pase Mágico" — tarjeta blanca con relieves dorados, centrada */
-    .pase-cta { text-align: center; margin-top: -76px; }   /* subida acumulada (~15px más) */
+    .pase-cta { text-align: center; margin-top: -116px; }   /* subir ~40px más */
     .pase-card { max-width: 300px; margin: 0 auto; }
     .showcase-card.showcase-card--gold {
       --accent: #d99400;
@@ -390,25 +390,24 @@
     .section-head--center { text-align: center; max-width: 680px; margin: 0 auto clamp(14px, 2vw, 26px); }
     .section-head--center h2 { font-size: clamp(20px, 2.4vw, 33px); }
     /* Subo solo el título (transform) para aumentar la distancia a las cards */
-    #explorar .section-head--center { margin-bottom: clamp(3px, 0.6vw, 9px); transform: translateY(36px); }
-    #explorar .section-head--center h2 { font-size: clamp(18px, 2vw, 26px); }
+    #explorar .section-head--center { margin-bottom: clamp(8px, 1.3vw, 16px); transform: translateY(42px); }
     #explorar .section-head--center p { font-size: clamp(13px, 0.9vw, 15px); }
     /* Las cards y el personaje no se tocan */
     #explorar .split-content { transform: translateY(-26px); }
     /* Split comprimido — entra entero en pantalla */
     .split--compact { min-height: auto; gap: clamp(0px, 0.5vw, 10px); }
-    .split--compact .char-stage { min-height: clamp(50px, 7vh, 90px); }
+    .split--compact .char-stage { min-height: clamp(70px, 10vh, 118px); }
     /* Explorar: usa más ancho + más separación personaje/cards + personaje más grande */
     #explorar .container { max-width: 1320px; }
     #explorar .split { gap: clamp(30px, 6vw, 110px); }
     #explorar .char-stage { margin-right: 0 !important; }   /* sin solape: separados */
     #explorar .char-stage img { width: clamp(280px, 33vw, 495px); margin-top: clamp(0px, 1vh, 14px); }
-    #explorar .showcase-stack { gap: clamp(4px, 0.5vw, 7px); }
-    #explorar .showcase-stack .showcase-card { padding: clamp(5px, 0.7vw, 9px) clamp(11px, 1.2vw, 14px); gap: 10px; }
-    #explorar .showcase-icon { width: 40px; height: 40px; font-size: 20px; }
-    #explorar .showcase-card h3 { font-size: clamp(13px, 1.1vw, 16px); margin-bottom: 2px; }
-    #explorar .showcase-card p { font-size: 11px; margin-bottom: 4px; line-height: 1.3; }
-    #explorar .showcase-cta { font-size: 12px; padding: 6px 16px; }
+    #explorar .showcase-stack { gap: clamp(5px, 0.7vw, 9px); }
+    #explorar .showcase-stack .showcase-card { padding: clamp(7px, 0.9vw, 11px) clamp(12px, 1.4vw, 16px); gap: 12px; }
+    #explorar .showcase-icon { width: 50px; height: 50px; font-size: 25px; }
+    #explorar .showcase-card h3 { font-size: clamp(15px, 1.3vw, 18px); }
+    #explorar .showcase-card p { font-size: 12.5px; margin-bottom: 8px; }
+    #explorar .showcase-cta { font-size: 14px; padding: 9px 22px; }
     #explorar .showcase-tag { font-size: 9.5px; }
     /* Tarjeta del Pase Mágico: más compacta que las otras 3 */
     #explorar .pase-card { max-width: 300px; padding: 13px 16px; gap: 12px; }
@@ -417,7 +416,7 @@
     #explorar .pase-card p { font-size: 11px; margin-bottom: 7px; line-height: 1.35; }
     #explorar .pase-card .showcase-cta { font-size: 12px; padding: 6px 14px; }
     /* Explorar: padding vertical reducido para comprimir */
-    #explorar.section { padding-top: clamp(0px, 0.3vw, 4px); padding-bottom: clamp(8px, 1vw, 14px); }
+    #explorar.section { padding-top: clamp(0px, 0.4vw, 6px); padding-bottom: clamp(10px, 1.4vw, 18px); }
     /* El FAQ dentro del split ocupa toda su mitad */
     .split-content .faq-wrap { max-width: 100%; margin: 0; }
     /* Colores de panel curvo por sección */
