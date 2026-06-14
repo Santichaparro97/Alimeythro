@@ -1280,6 +1280,9 @@
       .section-head p { font-size: 14.5px; }
 
       /* EXPLORAR: cards apiladas más compactas */
+      /* Sin los translateY (calibrados para monitor) que en notebook chocan título y cards */
+      #explorar .section-head--center { transform: none; margin-bottom: 14px; }
+      #explorar .split-content { transform: none; }
       .showcase-stack { gap: 10px; }
       .showcase-stack .showcase-card { padding: 13px 16px; }
       /* El boton Pase Magico no usa el -116 (calibrado para monitor): cerca de las cards sin encimar */
