@@ -717,17 +717,19 @@
        FAQ
        ============================================================ */
     .faq-wrap { max-width: 780px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+    /* Estilo de carta de explorar (blanco + sombra repisa), sin glow/agrandado */
     .faq-item {
       background: rgba(255,255,255,0.93);
-      border: 2px solid rgba(232,237,11,0.0);
+      border: 2px solid transparent;
       border-radius: 18px;
       overflow: hidden;
-      box-shadow: 0 6px 18px rgba(26,26,46,0.06);
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 8px 0 rgba(248,35,28,0.10), 0 20px 38px rgba(26,26,46,0.09);
+      transition: transform 0.25s cubic-bezier(.2,.8,.2,1), border-color 0.3s ease, box-shadow 0.3s ease;
     }
+    .faq-item:hover { transform: translateY(-4px); }
     .faq-item.is-open {
-      border-color: rgba(196,200,0,0.55);
-      box-shadow: 0 14px 30px rgba(232,237,11,0.22);
+      border-color: rgba(248,35,28,0.18);
+      box-shadow: 0 8px 0 rgba(248,35,28,0.12), 0 22px 40px rgba(26,26,46,0.12);
     }
     .faq-q {
       width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 16px;
@@ -769,6 +771,22 @@
       transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease;
     }
     .social-btn:hover { transform: translateY(-3px); border-color: #f8231c; color: #f8231c; }
+
+    /* ===== Estilo unificado tipo "carta de explorar" para botones (sin glow ni agrandado) ===== */
+    .btn-primary, .btn-ghost, .header-cta, .social-btn {
+      background: rgba(255,255,255,0.93) !important;
+      color: #1a1a2e !important;
+      border: 2px solid transparent !important;
+      border-radius: 18px !important;
+      box-shadow: 0 8px 0 rgba(248,35,28,0.10), 0 20px 38px rgba(26,26,46,0.09) !important;
+      transition: transform 0.25s cubic-bezier(.2,.8,.2,1), box-shadow 0.3s ease !important;
+    }
+    .btn-primary:hover, .btn-ghost:hover, .header-cta:hover, .social-btn:hover {
+      transform: translateY(-4px) !important;
+      border-color: transparent !important;
+      color: #1a1a2e !important;
+      box-shadow: 0 11px 0 rgba(248,35,28,0.12), 0 24px 44px rgba(26,26,46,0.12) !important;
+    }
 
     /* ============================================================
        MODAL — Compartí tu experiencia (localStorage demo)
