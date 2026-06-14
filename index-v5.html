@@ -668,6 +668,11 @@
       background: rgba(237,28,185,0.12);
       box-shadow: 0 8px 18px rgba(237,28,185,0.22);
     }
+    /* Cartel final: sin fondo blanco, sin borde rosa ni nube — solo título, subtítulo e imágenes */
+    .quote-band.final-quote { background: none; border-color: transparent; box-shadow: none; }
+    .quote-band.final-quote::before { display: none; }
+    /* Círculos separados a lo ancho del texto (simétrico) */
+    .quote-band.final-quote .team-circles { justify-content: space-between; max-width: 100%; gap: 10px; }
 
     /* ============================================================
        HISTORIA — Alicia, el ancla de confianza
@@ -717,19 +722,24 @@
        FAQ
        ============================================================ */
     .faq-wrap { max-width: 780px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
-    /* Estilo de carta de explorar (blanco + sombra repisa), sin glow/agrandado */
+    /* Estilo de carta de explorar (blanco + sombra repisa), sin glow/agrandado — colores variados */
     .faq-item {
-      background: rgba(255,255,255,0.93);
-      border: 2px solid transparent;
+      --cardc: 51,175,237;
+      background: rgba(255,255,255,0.94);
+      border: 2px solid rgba(var(--cardc),0.30);
       border-radius: 18px;
       overflow: hidden;
-      box-shadow: 0 8px 0 rgba(248,35,28,0.10), 0 20px 38px rgba(26,26,46,0.09);
+      box-shadow: 0 8px 0 rgba(var(--cardc),0.20), 0 20px 38px rgba(26,26,46,0.09);
       transition: transform 0.25s cubic-bezier(.2,.8,.2,1), border-color 0.3s ease, box-shadow 0.3s ease;
     }
+    .faq-item:nth-child(1) { --cardc: 51,175,237; }   /* azul */
+    .faq-item:nth-child(2) { --cardc: 248,160,10; }   /* naranja */
+    .faq-item:nth-child(3) { --cardc: 63,180,17; }    /* verde */
+    .faq-item:nth-child(4) { --cardc: 237,28,185; }   /* violeta */
     .faq-item:hover { transform: translateY(-4px); }
     .faq-item.is-open {
-      border-color: rgba(248,35,28,0.18);
-      box-shadow: 0 8px 0 rgba(248,35,28,0.12), 0 22px 40px rgba(26,26,46,0.12);
+      border-color: rgba(var(--cardc),0.55);
+      box-shadow: 0 8px 0 rgba(var(--cardc),0.26), 0 22px 40px rgba(26,26,46,0.12);
     }
     .faq-q {
       width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 16px;
@@ -774,19 +784,27 @@
 
     /* ===== Estilo unificado tipo "carta de explorar" para botones (sin glow ni agrandado) ===== */
     .btn-primary, .btn-ghost, .header-cta, .social-btn {
-      background: rgba(255,255,255,0.93) !important;
+      --cardc: 248,35,28;
+      background: rgba(255,255,255,0.94) !important;
       color: #1a1a2e !important;
-      border: 2px solid transparent !important;
+      border: 2px solid rgba(var(--cardc),0.32) !important;
       border-radius: 18px !important;
-      box-shadow: 0 8px 0 rgba(248,35,28,0.10), 0 20px 38px rgba(26,26,46,0.09) !important;
+      box-shadow: 0 8px 0 rgba(var(--cardc),0.20), 0 20px 38px rgba(26,26,46,0.09) !important;
       transition: transform 0.25s cubic-bezier(.2,.8,.2,1), box-shadow 0.3s ease !important;
     }
     .btn-primary:hover, .btn-ghost:hover, .header-cta:hover, .social-btn:hover {
       transform: translateY(-4px) !important;
-      border-color: transparent !important;
       color: #1a1a2e !important;
-      box-shadow: 0 11px 0 rgba(248,35,28,0.12), 0 24px 44px rgba(26,26,46,0.12) !important;
+      box-shadow: 0 11px 0 rgba(var(--cardc),0.28), 0 24px 44px rgba(26,26,46,0.12) !important;
     }
+    /* Colores variados (paleta de la web) */
+    .btn-primary { --cardc: 248,35,28; }   /* rojo */
+    .btn-ghost  { --cardc: 51,175,237; }   /* azul */
+    .header-cta { --cardc: 248,160,10; }   /* naranja */
+    .social-row .social-btn:nth-child(1) { --cardc: 237,28,185; }  /* violeta */
+    .social-row .social-btn:nth-child(2) { --cardc: 63,180,17; }   /* verde */
+    .social-row .social-btn:nth-child(3) { --cardc: 248,35,28; }   /* rojo */
+    .social-row .social-btn:nth-child(4) { --cardc: 248,160,10; }  /* naranja */
 
     /* ============================================================
        MODAL — Compartí tu experiencia (localStorage demo)
