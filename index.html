@@ -416,8 +416,8 @@
     /* Reveal on scroll — efecto de "armado de web" más fuerte y bidireccional */
     .reveal {
       opacity: 0;
-      transform: translateY(56px) scale(0.85) rotate(-2deg);
-      filter: blur(5px);
+      transform: translateY(64px) scale(0.80) rotate(-3deg);
+      filter: blur(6px);
       transition: opacity 0.5s ease, transform 0.72s cubic-bezier(.2,.85,.25,1), filter 0.5s ease;
       will-change: transform, opacity, filter;
     }
@@ -1402,13 +1402,13 @@
         <h2>¿Qué van a encontrar <span class="hl hl--red">hoy</span>?</h2>
         <p>Todo el contenido está listo para usar. Elegí por dónde empezar:</p>
       </div>
-      <div class="split split--compact reveal">
-        <div class="char-stage">
+      <div class="split split--compact">
+        <div class="char-stage reveal">
           <img src="./inicio/explorar.png" alt="Alimeythor explorador">
         </div>
         <div class="split-content">
           <div class="showcase-stack">
-            <a href="./paginas/cuentos/cuentos.html" class="showcase-card showcase-card--blue">
+            <a href="./paginas/cuentos/cuentos.html" class="showcase-card showcase-card--blue reveal">
               <div class="showcase-icon">📖</div>
               <div class="showcase-body">
                 <span class="showcase-tag">6 cuentos</span>
@@ -1417,7 +1417,7 @@
                 <span class="showcase-cta">Leer un cuento →</span>
               </div>
             </a>
-            <a href="./paginas/musica/musica.html" class="showcase-card showcase-card--violet">
+            <a href="./paginas/musica/musica.html" class="showcase-card showcase-card--violet reveal">
               <div class="showcase-icon">🎵</div>
               <div class="showcase-body">
                 <span class="showcase-tag">9 canciones</span>
@@ -1426,7 +1426,7 @@
                 <span class="showcase-cta">Escuchar música →</span>
               </div>
             </a>
-            <a href="./paginas/juegos/juegos-descargables.html" class="showcase-card showcase-card--green">
+            <a href="./paginas/juegos/juegos-descargables.html" class="showcase-card showcase-card--green reveal">
               <div class="showcase-icon">🎮</div>
               <div class="showcase-body">
                 <span class="showcase-tag">Juego + stickers</span>
@@ -1487,21 +1487,21 @@
         <div class="story-photo reveal">
           <img src="./alicia-presentacion.png" alt="Alicia mostrando el libro de Alimeythor">
         </div>
-        <div class="story-text reveal reveal-d1">
-          <h2>Criar con intención no necesita títulos. Necesita <span class="hl hl--orange">decisión</span>.</h2>
-          <div class="story-block">
+        <div class="story-text">
+          <h2 class="reveal">Criar con intención no necesita títulos. Necesita <span class="hl hl--orange">decisión</span>.</h2>
+          <div class="story-block reveal">
             <h3>💡 Con el tiempo entendí algo…</h3>
             <p>Los niños crecen rodeados de pantallas, estímulos y contenido constante. Pero muchas veces falta algo esencial: emociones, imaginación y tiempo compartido.</p>
           </div>
-          <div class="story-block">
+          <div class="story-block reveal">
             <h3>🫧 Así nació Alimeythor</h3>
             <p>Un universo pensado para transformar cuentos, juegos y videos digitales en momentos que puedan acompañar emocionalmente a las familias.</p>
           </div>
-          <div class="story-block">
+          <div class="story-block reveal">
             <h3>🎯 Mi objetivo</h3>
             <p>Crear un espacio donde las familias puedan imaginar, sentir y crecer compartiendo experiencias reales.</p>
           </div>
-          <div class="story-sign">
+          <div class="story-sign reveal">
             <div>
               <div class="sign-name">Alicia ✍️</div>
               <div class="sign-role">CEO-FUNDER · Madre de 4 hijos · Lic. en Enfermería</div>
@@ -1515,39 +1515,39 @@
   <!-- ====================== FAQ ====================== -->
   <section class="section" id="preguntas">
     <div class="container">
-      <div class="split reverse reveal">
-        <div class="char-stage">
+      <div class="split reverse">
+        <div class="char-stage reveal">
           <div class="char-blob"></div>
           <img src="./inicio/preguntas.png" alt="Alimeythor con anteojos">
         </div>
         <div class="split-content">
-          <div class="section-head">
+          <div class="section-head reveal">
             <h2>Preguntas <span class="hl hl--blue">frecuentes</span></h2>
             <p>Lo que toda mamá y papá quiere saber antes de empezar.</p>
           </div>
           <div class="faq-wrap">
-            <div class="faq-item">
+            <div class="faq-item reveal">
               <button class="faq-q" type="button" aria-expanded="false">
                 <span>¿Para qué edades es Alimeythor?</span>
                 <span class="arrow">⌄</span>
               </button>
               <div class="faq-a"><p>Está pensado para chicos de 4 a 9 años, con contenido adaptado a cada etapa de su desarrollo emocional.</p></div>
             </div>
-            <div class="faq-item">
+            <div class="faq-item reveal">
               <button class="faq-q" type="button" aria-expanded="false">
                 <span>¿Qué es el Pase Mágico?</span>
                 <span class="arrow">⌄</span>
               </button>
               <div class="faq-a"><p>Es la llave de entrada al Mundo Alimeythor. Te da acceso a cuentos, canciones, juegos y actividades para trabajar en familia las emociones y los valores, con nuevas sorpresas todo el tiempo.</p></div>
             </div>
-            <div class="faq-item">
+            <div class="faq-item reveal">
               <button class="faq-q" type="button" aria-expanded="false">
                 <span>¿Hace cuánto existe Alimeythor?</span>
                 <span class="arrow">⌄</span>
               </button>
               <div class="faq-a"><p>El personaje nació hace 2 años y fue creciendo junto a las familias que lo acompañan, sumando herramientas para que cada experiencia se sienta cercana y real.</p></div>
             </div>
-            <div class="faq-item">
+            <div class="faq-item reveal">
               <button class="faq-q" type="button" aria-expanded="false">
                 <span>¿Por qué necesito Mundo Alimeythor?</span>
                 <span class="arrow">⌄</span>
@@ -1714,6 +1714,18 @@
        de "construcción" recién arranca cuando el usuario entra. */
     (function () {
       const els = Array.from(document.querySelectorAll('.reveal'));
+      // Escalonar: cada texto/carta aparece uno detrás del otro dentro de su grupo (mismo contenedor)
+      (function stagger() {
+        const groups = new Map();
+        els.forEach(el => {
+          const p = el.parentElement;
+          if (!groups.has(p)) groups.set(p, []);
+          groups.get(p).push(el);
+        });
+        groups.forEach(arr => {
+          arr.forEach((el, i) => { el.style.transitionDelay = Math.min(i * 0.1, 0.6) + 's'; });
+        });
+      })();
       function locked() { return document.body.classList.contains('splash-lock'); }
       function set(el, vis) { el.classList.toggle('is-visible', vis); }
       const hasIO = 'IntersectionObserver' in window;
