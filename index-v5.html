@@ -536,9 +536,9 @@
       box-shadow: 0 8px 0 var(--acc-soft), 0 18px 34px rgba(26,26,46,0.08);
       transition: transform 0.12s ease-out, box-shadow 0.35s ease, border-color 0.35s ease;
     }
-    /* Al pasar el mouse: glow de color; el hundimiento 3D lo da el JS
-       inclinando la carta hacia el cursor (esa zona se va hacia adentro) */
-    .area-card:hover {
+    /* Al pasar el mouse (desktop) o al tocar (celular, .is-lit): glow de color */
+    .area-card:hover,
+    .area-card.is-lit {
       z-index: 3;
       border-color: var(--acc);
       box-shadow:
@@ -1832,6 +1832,19 @@
         card.addEventListener('mouseleave', () => {
           if (raf) { cancelAnimationFrame(raf); raf = null; }
           card.style.transform = '';
+        });
+      });
+    })();
+
+    /* ===== Celular (sin hover): al TOCAR una carta de "emociones" se enciende el glow ===== */
+    (function () {
+      if (window.matchMedia && window.matchMedia('(hover: hover)').matches) return;  // desktop ya usa hover
+      const cards = document.querySelectorAll('.area-card');
+      cards.forEach((card) => {
+        card.addEventListener('click', () => {
+          const wasLit = card.classList.contains('is-lit');
+          cards.forEach((c) => c.classList.remove('is-lit'));  // solo una encendida a la vez
+          if (!wasLit) card.classList.add('is-lit');
         });
       });
     })();
