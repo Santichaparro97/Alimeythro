@@ -418,7 +418,7 @@
       opacity: 0;
       transform: translateY(64px) scale(0.80) rotate(-3deg);
       filter: blur(6px);
-      transition: opacity 0.5s ease, transform 0.72s cubic-bezier(.2,.85,.25,1), filter 0.5s ease;
+      transition: opacity 0.8s ease, transform 1.1s cubic-bezier(.2,.8,.25,1), filter 0.8s ease;
       will-change: transform, opacity, filter;
     }
     .reveal.is-visible {
@@ -544,7 +544,7 @@
       border-left: 6px solid var(--acc);
       padding: clamp(13px, 1.6vw, 20px) clamp(20px, 2.4vw, 30px);
       box-shadow: 0 8px 0 var(--acc-soft), 0 18px 34px rgba(26,26,46,0.08);
-      transition: transform 0.72s cubic-bezier(.2,.85,.25,1), box-shadow 0.35s ease, border-color 0.35s ease;
+      transition: transform 1.1s cubic-bezier(.2,.8,.25,1), box-shadow 0.35s ease, border-color 0.35s ease;
     }
     /* Al pasar el mouse (desktop) o al tocar (celular, .is-lit): glow de color */
     .area-card:hover,
@@ -1723,7 +1723,7 @@
           groups.get(p).push(el);
         });
         groups.forEach(arr => {
-          arr.forEach((el, i) => { el.style.transitionDelay = Math.min(i * 0.1, 0.6) + 's'; });
+          arr.forEach((el, i) => { el.style.transitionDelay = Math.min(i * 0.15, 0.9) + 's'; });
         });
       })();
       function locked() { return document.body.classList.contains('splash-lock'); }
