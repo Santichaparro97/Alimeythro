@@ -674,8 +674,14 @@
       transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
     }
     /* Círculos con foto real (Santiago, Luciano) */
-    .team-circle--photo { background: none; border: 2px solid rgba(237,28,185,0.40); padding: 0; overflow: hidden; }
-    .team-circle--photo img { width: 100%; height: 100%; object-fit: cover; object-position: center top; border-radius: 50%; }
+    .team-circle--photo { background: none; border: 2px solid rgba(237,28,185,0.40); padding: 0; overflow: hidden;
+      transition: transform 0.35s cubic-bezier(.2,.8,.2,1), box-shadow 0.35s ease, border-color 0.35s ease; }
+    .team-circle--photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 12%; border-radius: 50%;
+      transition: object-position 0.35s ease; }
+    /* Hover: la burbuja se agranda ~4x y muestra la imagen completa */
+    .team-member .team-circle--photo:hover { transform: scale(4); z-index: 30; background: #fff;
+      box-shadow: 0 22px 55px rgba(0,0,0,0.30); border-color: rgba(237,28,185,0.7); }
+    .team-member .team-circle--photo:hover img { object-fit: contain; object-position: center; background: #fff; }
     .team-name { font-family: 'Chewy', sans-serif; font-weight: 700; font-size: clamp(13px, 1.1vw, 15.5px); color: #1a1a2e; line-height: 1.1; }
     .team-role { font-size: clamp(11px, 0.9vw, 12.5px); color: #6a6a82; line-height: 1.2; }
     .team-circle:hover {
@@ -1713,12 +1719,12 @@
             <div class="team-member"><span class="team-circle">👤</span></div>
             <div class="team-member"><span class="team-circle">👤</span></div>
             <div class="team-member">
-              <span class="team-circle team-circle--photo"><img src="./evento/Santiago.png" alt="Santiago" loading="lazy"></span>
+              <span class="team-circle team-circle--photo"><img src="./evento/Santiago.png" alt="Santiago" loading="lazy" style="object-position: center top;"></span>
               <span class="team-name">Santiago</span>
               <span class="team-role">Project Manager</span>
             </div>
             <div class="team-member">
-              <span class="team-circle team-circle--photo"><img src="./evento/Luciano.png" alt="Luciano" loading="lazy"></span>
+              <span class="team-circle team-circle--photo"><img src="./evento/Luciano.png" alt="Luciano" loading="lazy" style="object-position: center 42%;"></span>
               <span class="team-name">Luciano</span>
               <span class="team-role">Marketing Manager</span>
             </div>
