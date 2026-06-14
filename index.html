@@ -1195,7 +1195,7 @@
       /* Estrellita de 5 puntas en lugar del punto redondo */
       clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
       background: radial-gradient(circle, rgba(255,248,210,1) 0%, rgba(248,205,85,0.95) 55%, rgba(248,170,20,0.7) 100%);
-      filter: drop-shadow(0 0 3px rgba(255,225,130,1)) drop-shadow(0 0 6px rgba(255,210,90,0.6));
+      filter: brightness(1.25) drop-shadow(0 0 4px rgba(255,235,160,1)) drop-shadow(0 0 9px rgba(255,215,100,0.85)) drop-shadow(0 0 14px rgba(255,200,70,0.45));
       opacity: 0;
       animation: floatUp var(--dur, 7s) ease-in var(--delay, 0s) infinite;
     }
@@ -2186,7 +2186,7 @@
         p.style.setProperty('--delay', (Math.random() * 8).toFixed(1) + 's');
         p.style.setProperty('--rise', (62 + Math.random() * 34).toFixed(0) + 'vh'); // sube 62–96vh
         p.style.setProperty('--drift', ((Math.random() - 0.5) * 80).toFixed(0) + 'px'); // deriva ±40px
-        p.style.setProperty('--maxop', (0.7 + Math.random() * 0.3).toFixed(2));   // 0.70–1.0 (estrellas mas visibles)
+        p.style.setProperty('--maxop', (0.85 + Math.random() * 0.15).toFixed(2));   // 0.85–1.0 (estrellas mas brillantes)
         p.style.setProperty('--spin', ((Math.random() - 0.5) * 220).toFixed(0) + 'deg'); // giro suave de la estrellita
         partBox.appendChild(p);
       }
