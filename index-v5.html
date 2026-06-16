@@ -1965,6 +1965,16 @@
       setTimeout(() => { if (flip) flip.classList.remove('is-on', 'is-back'); }, 1500);
     })();
 
+    /* ===== Fix iPhone: al volver con el gesto de "atrás", Safari restaura la página
+       desde su caché (bfcache) con la hoja todavía cubriendo la pantalla y queda trabada.
+       Al restaurar desde caché, destrabamos la hoja y desbloqueamos el scroll. ===== */
+    window.addEventListener('pageshow', function (e) {
+      if (!e.persisted) return;                 // solo cuando viene del bfcache (swipe-back)
+      const flip = document.getElementById('page-flip');
+      if (flip) flip.classList.remove('is-on', 'is-back', 'is-paused');
+      document.body.classList.remove('splash-lock');
+    });
+
     /* ===== Cartas de "emociones": se hunde la parte donde pasa el mouse (inclinación 3D) ===== */
     (function () {
       if (!window.matchMedia || !window.matchMedia('(hover: hover)').matches) return;
