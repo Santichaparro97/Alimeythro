@@ -2153,6 +2153,8 @@
       //  - SÍ: primera entrada (referrer externo o vacío) y recargas (F5).
       //  - NO: cuando se vuelve navegando desde una subpágina interna del sitio.
       let showSplash = true;
+      // Si ya entró en esta sesión (visita actual), no volver a mostrar la intro
+      try { if (sessionStorage.getItem('alm_entered') === '1') showSplash = false; } catch (e) {}
       try {
         const navEntry = performance.getEntriesByType('navigation')[0];
         const isReload = navEntry ? navEntry.type === 'reload' : false;
@@ -2260,6 +2262,7 @@
       function enter() {
         if (leaving) return;
         leaving = true;
+        try { sessionStorage.setItem('alm_entered', '1'); } catch (e) {}   // recordar que ya entró en esta sesión
         clearInterval(timer);
         // Fase 1: personajes/partículas se esconden + SOLO el título se expande
         splash.classList.add('is-leaving');
