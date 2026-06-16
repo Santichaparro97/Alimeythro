@@ -673,25 +673,37 @@
       border: 2px dashed rgba(237,28,185,0.32);
       transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
     }
-    /* Círculos con foto real (Santiago, Luciano) */
-    .team-circle--photo { background: none; border: 2px solid rgba(237,28,185,0.40); padding: 0; overflow: hidden;
+    /* Círculos con foto real (Alicia, Roma, Santiago, Luciano).
+       CALIDAD: el círculo se renderiza intrínsecamente en 3x (alta resolución) y se
+       muestra achicado (scale 0.3333) en reposo. Al hacer zoom vuelve a scale(1) =
+       tamaño real → la imagen se ve nítida (no se estira una textura chica). */
+    .team-photo-slot {
+      width: clamp(72px, 9vw, 98px); height: clamp(72px, 9vw, 98px);
+      flex: none; display: flex; align-items: center; justify-content: center; overflow: visible;
+    }
+    .team-circle--photo {
+      width: clamp(216px, 27vw, 294px); height: clamp(216px, 27vw, 294px); flex: none;
+      background: none; border: 6px solid rgba(237,28,185,0.40); padding: 0; overflow: hidden; border-radius: 50%;
+      transform: scale(0.3333); transform-origin: center;
       transition: transform 0.35s cubic-bezier(.2,.8,.2,1), box-shadow 0.35s ease, border-color 0.35s ease; }
-    .team-circle--photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 12%; border-radius: 50%;
-      transition: object-position 0.35s ease; }
-    /* Agrandado de la burbuja x3 (cover, sin blanco a los lados).
+    .team-circle--photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 12%; border-radius: 50%; }
+    /* Agrandado de la burbuja a tamaño real (nítido, cover sin blanco).
        Desktop: con hover del mouse. Touch: con tap (clase .is-zoomed via JS) */
-    .team-member .team-circle--photo.is-zoomed { transform: scale(3); z-index: 30;
+    .team-photo-slot .team-circle--photo.is-zoomed { transform: scale(1); z-index: 30;
       box-shadow: 0 22px 55px rgba(0,0,0,0.30); border-color: rgba(237,28,185,0.7); }
     @media (hover: hover) {
-      .team-member .team-circle--photo:hover { transform: scale(3); z-index: 30;
+      .team-photo-slot .team-circle--photo:hover { transform: scale(1); z-index: 30;
         box-shadow: 0 22px 55px rgba(0,0,0,0.30); border-color: rgba(237,28,185,0.7); }
     }
     .team-name { font-family: 'Chewy', sans-serif; font-weight: 700; font-size: clamp(13px, 1.1vw, 15.5px); color: #1a1a2e; line-height: 1.1; }
     .team-role { font-size: clamp(11px, 0.9vw, 12.5px); color: #6a6a82; line-height: 1.2; }
-    .team-circle:hover {
-      transform: translateY(-4px) scale(1.05);
-      background: rgba(237,28,185,0.12);
-      box-shadow: 0 8px 18px rgba(237,28,185,0.22);
+    /* Lift sutil solo para placeholders (no fotos) y solo con mouse */
+    @media (hover: hover) {
+      .team-circle:not(.team-circle--photo):hover {
+        transform: translateY(-4px) scale(1.05);
+        background: rgba(237,28,185,0.12);
+        box-shadow: 0 8px 18px rgba(237,28,185,0.22);
+      }
     }
     /* Cartel final: sin fondo blanco, sin borde rosa ni nube — solo título, subtítulo e imágenes */
     .quote-band.final-quote { background: none; border-color: transparent; box-shadow: none; }
@@ -1721,22 +1733,22 @@
           <p class="team-intro">Un proyecto familiar, pensado para las familias. Te presentamos al equipo completo de Alimeythor.<span class="ti-star">⭐</span></p>
           <div class="team-circles" aria-label="Equipo de Alimeythor">
             <div class="team-member">
-              <span class="team-circle team-circle--photo"><img src="./evento/Alicia.png" alt="Alicia" loading="lazy" style="object-position: center;"></span>
+              <span class="team-photo-slot"><span class="team-circle team-circle--photo"><img src="./evento/Alicia.png" alt="Alicia" loading="lazy" style="object-position: center;"></span></span>
               <span class="team-name">Alicia</span>
               <span class="team-role">CEO-Funder</span>
             </div>
             <div class="team-member">
-              <span class="team-circle team-circle--photo"><img src="./evento/Roma.png" alt="Roma" loading="lazy" style="object-position: center;"></span>
+              <span class="team-photo-slot"><span class="team-circle team-circle--photo"><img src="./evento/Roma.png" alt="Roma" loading="lazy" style="object-position: center;"></span></span>
               <span class="team-name">Roma</span>
               <span class="team-role">Directora Ejecutiva</span>
             </div>
             <div class="team-member">
-              <span class="team-circle team-circle--photo"><img src="./evento/Santiago.png" alt="Santiago" loading="lazy" style="object-position: center 30%;"></span>
+              <span class="team-photo-slot"><span class="team-circle team-circle--photo"><img src="./evento/Santiago.png" alt="Santiago" loading="lazy" style="object-position: center 30%;"></span></span>
               <span class="team-name">Santiago</span>
               <span class="team-role">Project Manager</span>
             </div>
             <div class="team-member">
-              <span class="team-circle team-circle--photo"><img src="./evento/Luciano.png" alt="Luciano" loading="lazy" style="object-position: center 40%;"></span>
+              <span class="team-photo-slot"><span class="team-circle team-circle--photo"><img src="./evento/Luciano.png" alt="Luciano" loading="lazy" style="object-position: center 40%;"></span></span>
               <span class="team-name">Luciano</span>
               <span class="team-role">Marketing Manager</span>
             </div>
