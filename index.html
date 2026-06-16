@@ -678,10 +678,14 @@
       transition: transform 0.35s cubic-bezier(.2,.8,.2,1), box-shadow 0.35s ease, border-color 0.35s ease; }
     .team-circle--photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 12%; border-radius: 50%;
       transition: object-position 0.35s ease; }
-    /* Hover: la burbuja se agranda ~4x y muestra la imagen completa */
-    .team-member .team-circle--photo:hover { transform: scale(3); z-index: 30;
+    /* Agrandado de la burbuja x3 (cover, sin blanco a los lados).
+       Desktop: con hover del mouse. Touch: con tap (clase .is-zoomed via JS) */
+    .team-member .team-circle--photo.is-zoomed { transform: scale(3); z-index: 30;
       box-shadow: 0 22px 55px rgba(0,0,0,0.30); border-color: rgba(237,28,185,0.7); }
-    /* Al agrandar se mantiene 'cover' para que el circulo se llene solo con la foto (sin blanco a los lados) */
+    @media (hover: hover) {
+      .team-member .team-circle--photo:hover { transform: scale(3); z-index: 30;
+        box-shadow: 0 22px 55px rgba(0,0,0,0.30); border-color: rgba(237,28,185,0.7); }
+    }
     .team-name { font-family: 'Chewy', sans-serif; font-weight: 700; font-size: clamp(13px, 1.1vw, 15.5px); color: #1a1a2e; line-height: 1.1; }
     .team-role { font-size: clamp(11px, 0.9vw, 12.5px); color: #6a6a82; line-height: 1.2; }
     .team-circle:hover {
@@ -1721,7 +1725,11 @@
               <span class="team-name">Alicia</span>
               <span class="team-role">CEO-Funder</span>
             </div>
-            <div class="team-member"><span class="team-circle">👤</span></div>
+            <div class="team-member">
+              <span class="team-circle team-circle--photo"><img src="./evento/Roma.png" alt="Roma" loading="lazy" style="object-position: center;"></span>
+              <span class="team-name">Roma</span>
+              <span class="team-role">Directora Ejecutiva</span>
+            </div>
             <div class="team-member">
               <span class="team-circle team-circle--photo"><img src="./evento/Santiago.png" alt="Santiago" loading="lazy" style="object-position: center 30%;"></span>
               <span class="team-name">Santiago</span>
@@ -2281,6 +2289,25 @@
       });
 
       // (Efecto de estrellas/polen subiendo desde el piso eliminado — solo quedan las titilantes)
+    })();
+
+    /* ===== Equipo: tap para agrandar la foto en celular y tap de nuevo (o en cualquier
+       parte de la pantalla) para achicarla. En desktop sigue funcionando con hover. ===== */
+    (function () {
+      const photos = document.querySelectorAll('.team-circle--photo');
+      if (!photos.length) return;
+      const cerrarTodas = () => document.querySelectorAll('.team-circle--photo.is-zoomed')
+        .forEach(p => p.classList.remove('is-zoomed'));
+      photos.forEach(p => {
+        p.addEventListener('click', (e) => {
+          const yaAbierta = p.classList.contains('is-zoomed');
+          cerrarTodas();
+          if (!yaAbierta) p.classList.add('is-zoomed');   // si ya estaba abierta, queda cerrada
+          e.stopPropagation();                            // evitar que el handler de abajo la cierre al instante
+        });
+      });
+      // Tocar/clickear en cualquier otra parte achica la imagen
+      document.addEventListener('click', cerrarTodas);
     })();
   </script>
 </body>
