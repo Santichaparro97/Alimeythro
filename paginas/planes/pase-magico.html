@@ -241,6 +241,38 @@
     .std-soon { text-align: center; padding: 40px 20px; color: #6a6a82; }
     .std-soon .soon-emoji { font-size: 44px; display: block; margin-bottom: 10px; }
     .std-soon b { color: #1a1a2e; font-size: 18px; }
+
+    /* ===== Bloqueo del contenido (candado hasta pagar) ===== */
+    .std-item { position: relative; }
+    .std-lock {
+      position: absolute; inset: 0; z-index: 3; border-radius: 18px;
+      background: rgba(26,26,46,0.58); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+      color: #fff; text-align: center; padding: 10px; cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .std-lock:hover { background: rgba(26,26,46,0.50); }
+    .std-lock .lock-ico { font-size: 32px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.45)); }
+    .std-lock .lock-txt { font-size: 12px; font-weight: 700; max-width: 92%; line-height: 1.25; }
+    .std-modal.is-unlocked .std-lock { display: none; }
+
+    /* Banner de pago arriba del contenido */
+    .std-paywall {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 14px;
+      background: linear-gradient(135deg, rgba(248,35,28,0.10), rgba(237,28,185,0.08));
+      border: 1.5px solid rgba(248,35,28,0.25); border-radius: 16px;
+      padding: 12px 16px; margin-bottom: clamp(14px, 2vw, 20px);
+      font-size: 13.5px; font-weight: 600; color: #1a1a2e; text-align: center;
+    }
+    .std-modal.is-unlocked .std-paywall { display: none; }
+    .std-pay-btn {
+      border: none; cursor: pointer; background: #f8231c; color: #fff;
+      font-family: 'Chewy', 'Poppins', sans-serif; font-size: 15px; padding: 10px 22px; border-radius: 999px;
+      box-shadow: 0 5px 0 #8C1010; transition: transform 0.2s ease, filter 0.2s ease;
+    }
+    .std-pay-btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
+    .std-unlocked-note { display: none; color: #2a8a0a; font-weight: 700; margin-bottom: 14px; }
+    .std-modal.is-unlocked .std-unlocked-note { display: block; }
   </style>
 </head>
 <body>
@@ -329,6 +361,12 @@
         <h2>Todo lo que incluye</h2>
         <p class="sub">El contenido organizado en 4 mundos emocionales para acompañar a tu familia.</p>
       </div>
+
+      <div class="std-paywall" id="std-paywall">
+        <span>🔒 Contenido bloqueado. Suscribite al Standard para desbloquear todo.</span>
+        <button class="std-pay-btn" id="std-pay" type="button">Suscribirme — $10.000</button>
+      </div>
+      <p class="std-unlocked-note">✅ ¡Acceso activo! Ya podés ver y reproducir todo el contenido.</p>
 
       <div class="std-tabs" role="tablist">
         <button class="std-tab is-active" type="button" data-tab="calma">🧘 Calma</button>
@@ -435,7 +473,50 @@
       const openBtn = document.getElementById('btn-standard');
       if (!modal || !openBtn) return;
 
+      // 🔗 PEGAR ACÁ el link de pago de Mercado Pago del Pase Standard (queda vacío hasta tenerlo)
+      const STANDARD_PAY_URL = '';
+      const UNLOCK_KEY = 'alm_std_unlocked';
+      const isUnlocked = () => { try { return localStorage.getItem(UNLOCK_KEY) === '1'; } catch (e) { return false; } };
+
+      const payBtn = document.getElementById('std-pay');
+
+      // Pone un candado encima de cada ítem (videos y PDFs) para que no se puedan usar
+      function ensureLocks() {
+        modal.querySelectorAll('.std-item').forEach(item => {
+          if (item.querySelector('.std-lock')) return;
+          const ov = document.createElement('div');
+          ov.className = 'std-lock';
+          ov.innerHTML = '<span class="lock-ico">🔒</span><span class="lock-txt">Se desbloquea al suscribirte</span>';
+          ov.addEventListener('click', goPay);
+          item.appendChild(ov);
+        });
+      }
+      function applyLockState() {
+        ensureLocks();
+        modal.classList.toggle('is-unlocked', isUnlocked());
+      }
+      function goPay() {
+        if (STANDARD_PAY_URL) { window.location.href = STANDARD_PAY_URL; return; }
+        // Sin link cargado todavía
+        if (payBtn) {
+          const t = payBtn.textContent;
+          payBtn.textContent = 'Próximamente ✨';
+          setTimeout(() => { payBtn.textContent = t; }, 2000);
+        }
+      }
+      if (payBtn) payBtn.addEventListener('click', goPay);
+
+      // Desbloqueo al volver del pago: configurar la "URL de retorno" del link de MP
+      // hacia  pase-magico.html?pago=standard  → marca el acceso en este dispositivo.
+      try {
+        const q = new URLSearchParams(location.search);
+        if (q.get('pago') === 'standard' || q.get('suscripcion') === 'standard') {
+          localStorage.setItem(UNLOCK_KEY, '1');
+        }
+      } catch (e) {}
+
       function openModal() {
+        applyLockState();
         modal.classList.add('is-open');
         modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
