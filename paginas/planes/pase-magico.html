@@ -455,16 +455,16 @@
       });
     })();
 
-    // Suscribirme → por ahora "Próximamente" (Standard abre el modal de contenido)
+    // Links de pago de Mercado Pago. Standard abre el modal (su pago está adentro).
+    const PAY_LINKS = {
+      Libro:   'https://mpago.la/2jeynto',
+      Premium: 'https://mpago.la/1cavRyq'
+    };
     document.querySelectorAll('.plan-btn').forEach((btn) => {
-      if (btn.id === 'btn-standard') return;   // el de Standard tiene su propio comportamiento
-      const original = btn.textContent;
-      btn.addEventListener('click', () => {
-        if (btn.classList.contains('is-soon')) return;
-        btn.classList.add('is-soon');
-        btn.textContent = 'Próximamente ✨';
-        setTimeout(() => { btn.classList.remove('is-soon'); btn.textContent = original; }, 2200);
-      });
+      if (btn.id === 'btn-standard') return;   // el de Standard abre el modal de contenido
+      const url = PAY_LINKS[btn.dataset.plan];
+      if (!url) return;
+      btn.addEventListener('click', () => { window.location.href = url; });
     });
 
     // ===== Modal "Todo lo que incluye el Pase Standard" =====
@@ -473,8 +473,8 @@
       const openBtn = document.getElementById('btn-standard');
       if (!modal || !openBtn) return;
 
-      // 🔗 PEGAR ACÁ el link de pago de Mercado Pago del Pase Standard (queda vacío hasta tenerlo)
-      const STANDARD_PAY_URL = '';
+      // 🔗 Link de pago de Mercado Pago del Pase Standard
+      const STANDARD_PAY_URL = 'https://mpago.la/2kUHMiM';
       const UNLOCK_KEY = 'alm_std_unlocked';
       const isUnlocked = () => { try { return localStorage.getItem(UNLOCK_KEY) === '1'; } catch (e) { return false; } };
 
