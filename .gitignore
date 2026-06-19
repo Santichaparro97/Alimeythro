@@ -7,3 +7,6 @@ Thumbs.db
 .idea/
 
 .claude/
+
+# Videos originales 4K del Pase Standard (pesados, NO subir; se usan los comprimidos de standar/web/)
+standar/*.mp4

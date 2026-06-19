@@ -189,6 +189,58 @@
       .wrap { padding: 88px 16px 56px; }
       .plan { text-align: left; }
     }
+
+    /* ===== Modal "Todo lo que incluye el Pase Standard" ===== */
+    .std-modal { position: fixed; inset: 0; z-index: 200; display: none; }
+    .std-modal.is-open { display: block; }
+    .std-modal__backdrop { position: absolute; inset: 0; background: rgba(26,26,46,0.55); backdrop-filter: blur(3px); }
+    .std-modal__panel {
+      position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+      width: min(880px, 94vw); max-height: 90vh; overflow-y: auto;
+      background: #fff8f5; border-radius: 26px; padding: clamp(20px, 3vw, 34px);
+      box-shadow: 0 30px 70px rgba(26,26,46,0.4); text-align: center;
+      animation: stdIn 0.35s cubic-bezier(.2,.8,.2,1) both;
+    }
+    @keyframes stdIn { from { opacity: 0; transform: translate(-50%, -46%) scale(0.97); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+    .std-modal__close {
+      position: absolute; top: 14px; right: 16px; width: 38px; height: 38px; border-radius: 50%;
+      border: none; cursor: pointer; background: #fff; color: #1a1a2e; font-size: 18px; line-height: 1;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12); transition: transform 0.2s ease;
+    }
+    .std-modal__close:hover { transform: rotate(90deg) scale(1.05); }
+    .std-modal__head h2 { font-size: clamp(24px, 3vw, 34px); margin: 8px 0 6px; }
+    .std-modal__head .sub { margin: 0 auto clamp(16px, 2vw, 24px); }
+
+    .std-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: clamp(16px, 2vw, 24px); }
+    .std-tab {
+      border: 2px solid rgba(0,0,0,0.08); background: #fff; cursor: pointer;
+      padding: 9px 16px; border-radius: 999px; font-size: 14px; font-weight: 700; color: #6a6a82;
+      font-family: 'Poppins', sans-serif; transition: all 0.2s ease;
+    }
+    .std-tab:hover { border-color: rgba(248,35,28,0.4); color: #1a1a2e; }
+    .std-tab.is-active { background: #f8231c; border-color: #f8231c; color: #fff; box-shadow: 0 6px 16px rgba(248,35,28,0.3); }
+
+    .std-pane { display: none; text-align: left; }
+    .std-pane.is-active { display: block; animation: stdPaneIn 0.3s ease both; }
+    @keyframes stdPaneIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .std-items { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px, 2vw, 18px); }
+    @media (max-width: 680px) { .std-items { grid-template-columns: 1fr; } }
+    .std-item { background: #fff; border-radius: 18px; padding: 12px; box-shadow: 0 6px 18px rgba(26,26,46,0.08); }
+    .std-item__label { font-weight: 700; font-size: 14px; color: #1a1a2e; margin: 4px 2px 8px; display: flex; align-items: center; gap: 7px; }
+    .std-item video { width: 100%; max-height: 52vh; border-radius: 12px; background: #000; display: block; }
+    .std-pdf {
+      display: flex; align-items: center; gap: 12px; text-decoration: none;
+      background: linear-gradient(135deg, rgba(248,35,28,0.06), rgba(237,28,185,0.06));
+      border: 1.5px dashed rgba(248,35,28,0.3); border-radius: 12px; padding: 18px 16px; color: #1a1a2e;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .std-pdf:hover { transform: translateY(-2px); border-color: #f8231c; }
+    .std-pdf .pdf-ico { font-size: 30px; flex-shrink: 0; }
+    .std-pdf .pdf-txt b { display: block; font-size: 14px; }
+    .std-pdf .pdf-txt span { font-size: 12px; color: #6a6a82; }
+    .std-soon { text-align: center; padding: 40px 20px; color: #6a6a82; }
+    .std-soon .soon-emoji { font-size: 44px; display: block; margin-bottom: 10px; }
+    .std-soon b { color: #1a1a2e; font-size: 18px; }
   </style>
 </head>
 <body>
@@ -221,7 +273,7 @@
           <li class="off">Contenido exclusivo y estrenos anticipados</li>
           <li class="off">Material imprimible premium</li>
         </ul>
-        <button class="plan-btn" type="button" data-plan="Standard">Suscribirme</button>
+        <button class="plan-btn" type="button" id="btn-standard" data-plan="Standard">Suscribirme</button>
       </div>
       </div>
 
@@ -267,6 +319,63 @@
     <p class="plan-note">💛 Podés cambiar o cancelar tu plan cuando quieras.</p>
   </div>
 
+  <!-- ===== Modal: todo lo que incluye el Pase Standard ===== -->
+  <div class="std-modal" id="std-modal" aria-hidden="true">
+    <div class="std-modal__backdrop" data-close></div>
+    <div class="std-modal__panel" role="dialog" aria-modal="true" aria-label="Contenido del Pase Standard">
+      <button class="std-modal__close" data-close type="button" aria-label="Cerrar">✕</button>
+      <div class="std-modal__head">
+        <span class="eyebrow">Pase Standard</span>
+        <h2>Todo lo que incluye</h2>
+        <p class="sub">El contenido organizado en 4 mundos emocionales para acompañar a tu familia.</p>
+      </div>
+
+      <div class="std-tabs" role="tablist">
+        <button class="std-tab is-active" type="button" data-tab="calma">🧘 Calma</button>
+        <button class="std-tab" type="button" data-tab="valentia">🦁 Valentía</button>
+        <button class="std-tab" type="button" data-tab="empatia">💞 Empatía</button>
+        <button class="std-tab" type="button" data-tab="curiosidad">🔭 Curiosidad</button>
+      </div>
+
+      <!-- CALMA -->
+      <div class="std-pane is-active" data-pane="calma">
+        <div class="std-items">
+          <div class="std-item"><div class="std-item__label">🧘 Calma · Video 1</div><video controls preload="none" playsinline src="../../standar/web/calma.mp4"></video></div>
+          <div class="std-item"><div class="std-item__label">🧘 Calma · Video 2</div><video controls preload="none" playsinline src="../../standar/web/calma1.mp4"></video></div>
+          <div class="std-item"><div class="std-item__label">🧘 Calma · Video 3</div><video controls preload="none" playsinline src="../../standar/web/calma2.mp4"></video></div>
+          <div class="std-item"><div class="std-item__label">🧘 Calma · Video 4</div><video controls preload="none" playsinline src="../../standar/web/calma3.mp4"></video></div>
+        </div>
+      </div>
+
+      <!-- VALENTÍA -->
+      <div class="std-pane" data-pane="valentia">
+        <div class="std-items">
+          <div class="std-item"><div class="std-item__label">🦁 Valentía · Video 1</div><video controls preload="none" playsinline src="../../standar/web/valentia.mp4"></video></div>
+          <div class="std-item"><a class="std-pdf" href="../../standar/valentia1.pdf" target="_blank" rel="noopener"><span class="pdf-ico">📄</span><span class="pdf-txt"><b>Valentía · Material (PDF)</b><span>Abrir en una pestaña nueva</span></span></a></div>
+          <div class="std-item"><div class="std-item__label">🦁 Valentía · Video 2</div><video controls preload="none" playsinline src="../../standar/web/valentia2.mp4"></video></div>
+        </div>
+      </div>
+
+      <!-- EMPATÍA -->
+      <div class="std-pane" data-pane="empatia">
+        <div class="std-items">
+          <div class="std-item"><a class="std-pdf" href="../../standar/empatia.pdf" target="_blank" rel="noopener"><span class="pdf-ico">📄</span><span class="pdf-txt"><b>Empatía · Material 1 (PDF)</b><span>Abrir en una pestaña nueva</span></span></a></div>
+          <div class="std-item"><a class="std-pdf" href="../../standar/empatia1.pdf" target="_blank" rel="noopener"><span class="pdf-ico">📄</span><span class="pdf-txt"><b>Empatía · Material 2 (PDF)</b><span>Abrir en una pestaña nueva</span></span></a></div>
+        </div>
+      </div>
+
+      <!-- CURIOSIDAD -->
+      <div class="std-pane" data-pane="curiosidad">
+        <div class="std-soon">
+          <span class="soon-emoji">🔭</span>
+          <b>Curiosidad — Próximamente</b>
+          <p>Estamos preparando el contenido de este mundo. ¡Muy pronto!</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <script>
     // Estrellitas del fondo
     (function () {
@@ -308,8 +417,9 @@
       });
     })();
 
-    // Suscribirme → por ahora "Próximamente"
+    // Suscribirme → por ahora "Próximamente" (Standard abre el modal de contenido)
     document.querySelectorAll('.plan-btn').forEach((btn) => {
+      if (btn.id === 'btn-standard') return;   // el de Standard tiene su propio comportamiento
       const original = btn.textContent;
       btn.addEventListener('click', () => {
         if (btn.classList.contains('is-soon')) return;
@@ -318,6 +428,41 @@
         setTimeout(() => { btn.classList.remove('is-soon'); btn.textContent = original; }, 2200);
       });
     });
+
+    // ===== Modal "Todo lo que incluye el Pase Standard" =====
+    (function () {
+      const modal = document.getElementById('std-modal');
+      const openBtn = document.getElementById('btn-standard');
+      if (!modal || !openBtn) return;
+
+      function openModal() {
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeModal() {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        // pausar cualquier video que esté sonando
+        modal.querySelectorAll('video').forEach(v => { try { v.pause(); } catch (e) {} });
+      }
+
+      openBtn.addEventListener('click', openModal);
+      modal.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', closeModal));
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal(); });
+
+      // Pestañas
+      const tabs  = modal.querySelectorAll('.std-tab');
+      const panes = modal.querySelectorAll('.std-pane');
+      tabs.forEach(tab => tab.addEventListener('click', () => {
+        const name = tab.dataset.tab;
+        tabs.forEach(t => t.classList.toggle('is-active', t === tab));
+        panes.forEach(p => p.classList.toggle('is-active', p.dataset.pane === name));
+        // al cambiar de pestaña, pausar videos de la anterior
+        modal.querySelectorAll('video').forEach(v => { try { v.pause(); } catch (e) {} });
+      }));
+    })();
   </script>
 </body>
 </html>
