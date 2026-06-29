@@ -32,6 +32,9 @@ h2{font-size:20px;color:var(--mint-d);text-align:center;margin-bottom:4px;}
 #points{background:#fff;border:2px solid var(--amber);border-radius:999px;padding:5px 14px;font-weight:bold;color:#C8771A;font-size:15px;box-shadow:0 3px 0 rgba(200,119,26,.18);}
 #mute{background:#fff;border:2px solid var(--mint);border-radius:50%;width:38px;height:38px;font-size:17px;color:var(--mint-d);cursor:pointer;box-shadow:0 3px 0 rgba(31,140,137,.18);}
 #mute:active{transform:translateY(2px);box-shadow:none;}
+.topbar-left{display:flex;align-items:center;gap:8px;}
+#back{background:#fff;border:2px solid var(--mint);border-radius:999px;padding:5px 13px;font-weight:bold;color:var(--mint-d);font-size:15px;text-decoration:none;box-shadow:0 3px 0 rgba(31,140,137,.18);display:inline-flex;align-items:center;gap:4px;line-height:1;}
+#back:active{transform:translateY(2px);box-shadow:none;}
 
 /* personaje */
 .ali{width:150px;height:auto;display:block;filter:drop-shadow(0 8px 12px rgba(40,90,90,.22));}
@@ -113,7 +116,10 @@ h2{font-size:20px;color:var(--mint-d);text-align:center;margin-bottom:4px;}
 <body>
 <div id="app">
   <div id="topbar">
-    <div id="points">⭐ <span id="pcount">0</span></div>
+    <div class="topbar-left">
+      <a id="back" href="./juegos-descargables.html" title="Volver" aria-label="Volver a juegos">← Volver</a>
+      <div id="points">⭐ <span id="pcount">0</span></div>
+    </div>
     <button id="mute" onclick="toggleMute()" title="Música">🔊</button>
   </div>
 

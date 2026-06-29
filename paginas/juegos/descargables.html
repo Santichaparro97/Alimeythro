@@ -109,7 +109,7 @@
     /* ============= LAYOUT HERO + THUMBS — fullscreen ============= */
     .stk-grid {
       display: grid;
-      grid-template-columns: minmax(140px, 180px) 1fr;
+      grid-template-columns: minmax(220px, 320px) 1fr;
       gap: clamp(18px, 2vw, 28px);
       align-items: stretch;
       text-align: left;
@@ -122,15 +122,16 @@
 
     /* ============= THUMBNAILS — scrollables internamente ============= */
     .stk-thumbs {
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 12px;
+      align-content: start;
       overflow-y: auto;
       padding: 4px;
       min-height: 0;
     }
     @media (max-width: 760px) {
-      .stk-thumbs { flex-direction: row; flex-wrap: wrap; justify-content: center; overflow: visible; }
+      .stk-thumbs { grid-template-columns: 1fr 1fr; overflow: visible; }
     }
     .stk-thumb {
       background: #fff;
