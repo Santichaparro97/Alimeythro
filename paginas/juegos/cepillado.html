@@ -96,6 +96,15 @@ h2{font-size:20px;color:var(--mint-d);text-align:center;margin-bottom:4px;}
   .bano{padding:10px;} .item{font-size:34px;}
   .mirror{width:150px;}
 }
+
+/* ===== Fase 1: game feel del cepillado ===== */
+#brush{width:60px;height:60px;font-size:0;transition:none;will-change:transform;z-index:45;
+  filter:drop-shadow(0 3px 4px rgba(40,90,90,.30));}
+#fxlayer{position:fixed;inset:0;pointer-events:none;z-index:42;overflow:hidden;}
+.fxp{position:absolute;left:0;top:0;line-height:1;will-change:transform,opacity;}
+#teeth-up rect,#teeth-low rect{transition:fill .3s ease;}
+#foam ellipse{transition:opacity .5s ease;}
+@media (prefers-reduced-motion: reduce){ .scene{animation:none;} #brush{transition:none;} }
 </style>
 </head>
 <body>
@@ -148,15 +157,25 @@ h2{font-size:20px;color:var(--mint-d);text-align:center;margin-bottom:4px;}
         <ellipse cx="150" cy="206" rx="42" ry="18" fill="#C75660"/>
         <g id="teeth-up"></g>
         <g id="teeth-low"></g>
+        <g id="foam"></g>
         <g id="shine" opacity="0"></g>
       </svg>
-      <div id="brush">🪥</div>
+      <svg id="brush" viewBox="0 0 64 64" width="60" height="60" aria-hidden="true">
+        <rect x="29" y="30" width="6" height="30" rx="3" fill="#2FB4B0"/>
+        <rect x="27.5" y="56" width="9" height="6" rx="3" fill="#1E8C89"/>
+        <rect x="24" y="18" width="16" height="16" rx="6" fill="#5BC0EB"/>
+        <g fill="#EAF7F8">
+          <rect x="25" y="6" width="3.4" height="12" rx="1.7"/>
+          <rect x="30.3" y="4" width="3.4" height="14" rx="1.7"/>
+          <rect x="35.6" y="6" width="3.4" height="12" rx="1.7"/>
+        </g>
+      </svg>
     </div>
     <div class="meterwrap">
       <div class="meter"><div class="meterfill" id="brushfill"></div></div>
       <div class="meterlabel" id="brushlabel">Seguí la rima y frotá 🎵🫧</div>
     </div>
-    <button class="btn2" onclick="endBrushing()">✅ Ya terminé</button>
+    <button class="btn2" onclick="tryEndBrushing()">✅ Ya terminé</button>
   </div>
 
   <!-- ENJUAGAR -->
@@ -285,26 +304,67 @@ function putPaste(){ beep(660,0.12);
   document.getElementById('paste-btn').style.display='none';
   document.getElementById('toBrush').style.display='block'; }
 
-/* ===== CEPILLAR ===== */
-let brushProgress=0, brushing=false, brushTimer=null;
+/* ===== CEPILLAR — motor con requestAnimationFrame + partículas ===== */
+const RM = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+/* AudioManager: suma sonidos nuevos reutilizando tone()/beep() ya existentes */
+const AUDIO = {
+  ding(){ beep(1180,0.07); },
+  zone(){ if(!musicOn) return; ensureCtx(); if(!actx) return; const t=actx.currentTime; [784,1046].forEach((f,i)=>tone(f,t+i*0.09,0.3,'triangle',0.16)); },
+  win(){ playPrize(); },
+  scrub(v){ if(!musicOn) return; ensureCtx(); if(!actx) return; const t=actx.currentTime, dur=0.085;
+    const buf=actx.createBuffer(1,Math.max(1,Math.floor(actx.sampleRate*dur)),actx.sampleRate); const d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1);
+    const s=actx.createBufferSource(); s.buffer=buf;
+    const bp=actx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=1700+v*1300; bp.Q.value=0.8;
+    const g=actx.createGain(); const vol=0.035+v*0.05; g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+    s.connect(bp); bp.connect(g); g.connect(actx.destination); s.start(t); s.stop(t+dur); }
+};
+
 const TEETH=[];
+const DIRTY=[0xEF,0xE6,0xC9], CLEAN=[0xFF,0xFF,0xFF];
+function lerpColor(p){ const r=Math.round(DIRTY[0]+(CLEAN[0]-DIRTY[0])*p), g=Math.round(DIRTY[1]+(CLEAN[1]-DIRTY[1])*p), b=Math.round(DIRTY[2]+(CLEAN[2]-DIRTY[2])*p); return 'rgb('+r+','+g+','+b+')'; }
 function buildTeeth(){
   const up=document.getElementById('teeth-up'), lo=document.getElementById('teeth-low');
-  up.innerHTML=''; lo.innerHTML=''; TEETH.length=0;
-  for(let i=0;i<8;i++){
-    const x=64+i*24.6, dy=Math.pow((i-3.5)/3.5,2)*16;
+  up.innerHTML=''; lo.innerHTML=''; TEETH.length=0; document.getElementById('foam').innerHTML='';
+  for(let i=0;i<8;i++){ const x=64+i*24.6, dy=Math.pow((i-3.5)/3.5,2)*16;
     const zone=(i<2||i>5)?'muelas':((i===3||i===4)?'afuera':'media');
-    mkTooth(up, x, 56+dy, 'arriba', zone);
-    mkTooth(lo, x, 150-dy, 'abajo', zone);
-  }
+    mkTooth(up, x, 56+dy, 'arriba', zone); mkTooth(lo, x, 150-dy, 'abajo', zone); }
 }
 function mkTooth(parent,x,y,row,zone){
   const r=document.createElementNS('http://www.w3.org/2000/svg','rect');
   r.setAttribute('x',x-11); r.setAttribute('y',y); r.setAttribute('width',22); r.setAttribute('height',30);
-  r.setAttribute('rx',7); r.setAttribute('fill','#EFE6C9'); r.setAttribute('stroke','none'); r.setAttribute('stroke-width','3');
+  r.setAttribute('rx',8); r.setAttribute('fill',lerpColor(0)); r.setAttribute('stroke','none'); r.setAttribute('stroke-width','3');
   parent.appendChild(r);
-  TEETH.push({el:r, x:x, y:y+15, row:row, zone:zone, clean:false});
+  TEETH.push({el:r, x:x, y:y+15, row:row, zone:zone, progress:0, clean:false, foam:0});
 }
+
+/* --- Partículas con pool (burbujas/destellos DOM reutilizados) --- */
+const FX = (function(){
+  let layer=null; const pool=[], live=[];
+  function L(){ if(!layer){ layer=document.createElement('div'); layer.id='fxlayer'; document.body.appendChild(layer);} return layer; }
+  function node(){ let n=pool.pop(); if(!n){ n=document.createElement('div'); n.className='fxp'; L().appendChild(n);} n.style.display='block'; return n; }
+  function bubble(x,y,vx,vy){ if(RM) return; const n=node(); n.textContent='🫧'; n.style.fontSize=(12+Math.random()*12).toFixed(0)+'px';
+    live.push({n,x,y,vx:vx*0.16+(Math.random()-0.5)*1.2, vy:vy*0.16-1-Math.random()*1.2, g:0.03, life:0, max:0.8+Math.random()*0.6, kind:'b'}); }
+  function sparkle(x,y){ const n=node(); n.textContent='✨'; n.style.fontSize='18px';
+    live.push({n,x,y,vx:0,vy:-0.5,g:0,life:0,max:0.5,kind:'s'}); }
+  function update(dt){ for(let i=live.length-1;i>=0;i--){ const p=live[i]; p.life+=dt; p.x+=p.vx; p.y+=p.vy; p.vy+=p.g;
+      const t=p.life/p.max; if(t>=1){ p.n.style.display='none'; pool.push(p.n); live.splice(i,1); continue; }
+      const sc=p.kind==='s'?(1+t*0.6):(0.5+t*0.9);
+      p.n.style.transform='translate('+p.x.toFixed(1)+'px,'+p.y.toFixed(1)+'px) scale('+sc.toFixed(2)+')';
+      p.n.style.opacity=(p.kind==='s'?(1-t):(t<0.25?t*4:1-t)).toFixed(2); } }
+  function reset(){ live.forEach(p=>{p.n.style.display='none'; pool.push(p.n);}); live.length=0; }
+  return {bubble, sparkle, update, reset};
+})();
+
+/* --- Espuma acumulada sobre los dientes (SVG, máx 3 por diente) --- */
+function addFoam(t){ if(RM||t.foam>=3) return; t.foam++;
+  const c=document.createElementNS('http://www.w3.org/2000/svg','ellipse');
+  c.setAttribute('cx',(t.x+(Math.random()*14-7)).toFixed(1)); c.setAttribute('cy',(t.y-9+(Math.random()*10-5)).toFixed(1));
+  c.setAttribute('rx',(5+Math.random()*4).toFixed(1)); c.setAttribute('ry',(4+Math.random()*3).toFixed(1));
+  c.setAttribute('fill','rgba(255,255,255,0.85)'); c.setAttribute('opacity','0.9');
+  document.getElementById('foam').appendChild(c); }
+
 const ZONEMAP={'⬆️ Arriba':t=>t.row==='arriba','⬇️ Abajo':t=>t.row==='abajo','😬 Adentro':t=>t.zone==='muelas','😁 Afuera':t=>t.zone==='afuera','🦷 Las muelas':t=>t.zone==='muelas','🌀 En círculos':t=>true};
 function highlightZone(label){ const pred=ZONEMAP[label]||(()=>false);
   TEETH.forEach(t=> t.el.setAttribute('stroke', pred(t)?'#FFB23E':'none')); }
@@ -314,21 +374,68 @@ function updateTimerDisplay(){ const m=Math.floor(brushSecs/60), s=brushSecs%60;
   document.getElementById('brush-timer').textContent='⏱️ '+m+':'+String(s).padStart(2,'0'); }
 function showRhyme(){ const el=document.getElementById('rhyme'); el.textContent=RHYMES[rhymeIdx];
   el.style.animation='none'; void el.offsetWidth; el.style.animation='rhymePop .5s ease'; highlightZone(RHYMES[rhymeIdx]); }
+
 let allCleanFlag=false;
 function updateMeter(){ const cleaned=TEETH.filter(t=>t.clean).length, total=TEETH.length||1;
-  const pct=Math.round(cleaned/total*100); document.getElementById('brushfill').style.width=pct+'%';
+  document.getElementById('brushfill').style.width=Math.round(cleaned/total*100)+'%';
   if(cleaned>=total) allClean(); }
 function allClean(){ if(allCleanFlag) return; allCleanFlag=true;
   const sh=document.getElementById('shine'); sh.innerHTML='<text x="150" y="34" font-size="24" text-anchor="middle">✨</text>'; sh.setAttribute('opacity','1');
   document.getElementById('brushlabel').textContent='¡Todos limpios! ✨';
-  beep(990,0.16); setTimeout(()=>beep(1240,0.2),130); setTimeout(endBrushing,1100); }
-function markAllClean(){ TEETH.forEach(t=>{t.clean=true; t.el.setAttribute('fill','#FFFFFF');});
+  AUDIO.win(); zonePop(); setTimeout(endBrushing,1100); }
+function markAllClean(){ TEETH.forEach(t=>{t.clean=true; t.progress=1; t.el.setAttribute('fill','#FFFFFF');});
   const sh=document.getElementById('shine'); sh.innerHTML='<text x="150" y="34" font-size="24" text-anchor="middle">✨</text>'; sh.setAttribute('opacity','1'); }
+
+/* satisfacción: rebote de la boca + sonido al completar una zona */
+function zonePop(){ if(RM) return; const m=document.getElementById('mouth');
+  try{ m.animate([{transform:'scale(1)'},{transform:'scale(1.07)'},{transform:'scale(1)'}],{duration:460,easing:'ease-out'}); }catch(e){} }
+function flashLabel(txt){ const el=document.getElementById('brushlabel'); const prev=el.textContent; el.textContent=txt;
+  setTimeout(()=>{ if(el.textContent===txt) el.textContent=prev; }, 1000); }
+const doneZones={};
+function checkZoneComplete(){ const label=RHYMES[rhymeIdx]; const pred=ZONEMAP[label]; if(!pred||doneZones[label]) return;
+  const zt=TEETH.filter(pred); if(zt.length && zt.every(t=>t.clean)){ doneZones[label]=true; zonePop(); AUDIO.zone(); flashLabel('¡'+label+' listo! 👏'); } }
+
+/* --- estado del cepillo + bucle RAF (inercia/rotación/escala) --- */
+const brush={x:150,y:110,angle:35,target:35,scale:1};
+let rafId=null, _lastTS=0, brushing=false, brushedAny=false, _scrubT=0;
+function renderBrush(){ const mouth=document.getElementById('mouth'); const r=mouth.getBoundingClientRect();
+  const el=document.getElementById('brush'); const sx=r.width/300, sy=r.height/230;
+  el.style.left=(r.left+brush.x*sx)+'px'; el.style.top=(r.top+brush.y*sy)+'px';
+  el.style.transform='translate(-50%,-50%) rotate('+brush.angle.toFixed(1)+'deg) scale('+brush.scale.toFixed(3)+')'; }
+function brushFrame(ts){ if(!_lastTS)_lastTS=ts; const dt=Math.min(0.05,(ts-_lastTS)/1000); _lastTS=ts;
+  brush.angle += (brush.target-brush.angle)*Math.min(1,dt*14);   // inercia de giro
+  brush.scale += (1-brush.scale)*Math.min(1,dt*9);               // resorte de escala
+  renderBrush(); FX.update(dt); rafId=requestAnimationFrame(brushFrame); }
+function startLoop(){ if(rafId) cancelAnimationFrame(rafId); _lastTS=0; rafId=requestAnimationFrame(brushFrame); }
+function stopLoop(){ if(rafId){ cancelAnimationFrame(rafId); rafId=null; } }
+
+function brushAt(clientX,clientY){
+  const mouth=document.getElementById('mouth'); const r=mouth.getBoundingClientRect();
+  const vx=Math.max(40,Math.min(260,(clientX-r.left)/r.width*300));
+  const vy=Math.max(50,Math.min(200,(clientY-r.top)/r.height*230));
+  const dx=vx-brush.x, dy=vy-brush.y, speed=Math.hypot(dx,dy);
+  brush.x=vx; brush.y=vy;
+  brush.target=35 + Math.max(-30,Math.min(30, dx*1.4));  // se inclina hacia donde arrastrás
+  if(speed>2) brush.scale=1.12;                          // "rebote" al frotar
+  // limpieza progresiva de los dientes cercanos
+  TEETH.forEach(t=>{ if(t.clean) return; const d=Math.hypot(vx-t.x, vy-t.y); if(d<30){
+    t.progress=Math.min(1, t.progress+(speed>1?0.18:0.06));
+    t.el.setAttribute('fill', lerpColor(t.progress));
+    if(t.progress>0.3) addFoam(t);
+    if(t.progress>=1){ t.clean=true; t.el.setAttribute('fill','#FFFFFF'); FX.sparkle(clientX,clientY); AUDIO.ding(); updateMeter(); checkZoneComplete(); }
+  }});
+  brushedAny=true;
+  if(speed>3 && Math.random()<0.7) FX.bubble(clientX,clientY,dx,dy);     // burbujas según el movimiento
+  const now=performance.now(); if(speed>3 && now-_scrubT>70){ _scrubT=now; AUDIO.scrub(Math.min(1,speed/40)); }
+}
+
 function startBrush(){
-  brushProgress=0; brushing=false; allCleanFlag=false; buildTeeth();
+  brushing=false; allCleanFlag=false; brushedAny=false; for(const k in doneZones) delete doneZones[k];
+  buildTeeth();
   document.getElementById('brushfill').style.width='0%';
   document.getElementById('shine').setAttribute('opacity','0');
-  positionBrush(150,110);
+  brush.x=150; brush.y=110; brush.angle=35; brush.target=35; brush.scale=1;
+  startLoop();
   brushSecs=120; updateTimerDisplay(); rhymeIdx=0; showRhyme();
   bgm.pause(); brushSongOn = musicOn; if(musicOn){ ensureCtx(); playMelodyLoop(); }
   if(brushInt) clearInterval(brushInt); brushInt=setInterval(brushTick,1000);
@@ -336,43 +443,30 @@ function startBrush(){
   rhymeInt=setInterval(()=>{ rhymeIdx=(rhymeIdx+1)%RHYMES.length; showRhyme(); beep(700,0.08); }, 6000);
 }
 function brushTick(){ brushSecs--; if(brushSecs<0) brushSecs=0; updateTimerDisplay(); if(brushSecs<=0) endBrushing(); }
+/* el botón "Ya terminé" no deja saltear sin haber cepillado nada */
+function tryEndBrushing(){ if(!brushedAny){ flashLabel('¡Frotá un poquito primero! 🪥'); zonePop(); return; } endBrushing(); }
 function endBrushing(){
   if(brushInt){clearInterval(brushInt); brushInt=null;}
   if(rhymeInt){clearInterval(rhymeInt); rhymeInt=null;}
   brushSongOn=false; if(songTimer){clearTimeout(songTimer); songTimer=null;}
+  stopLoop(); brushing=false;
   markAllClean(); show('enjuagar');
 }
-function positionBrush(px,py){ // coords en viewBox 0..300 -> a pantalla
-  const mouth=document.getElementById('mouth'); const r=mouth.getBoundingClientRect();
-  const brush=document.getElementById('brush');
-  const sx=r.width/300, sy=r.height/230;
-  brush.style.left=(r.left+px*sx)+'px'; brush.style.top=(r.top+py*sy)+'px';
-}
-function brushAt(clientX,clientY){
-  const mouth=document.getElementById('mouth'); const r=mouth.getBoundingClientRect();
-  const vx=(clientX-r.left)/r.width*300, vy=(clientY-r.top)/r.height*230;
-  positionBrush(Math.max(40,Math.min(260,vx)), Math.max(50,Math.min(200,vy)));
-  let hit=null, best=1e9;
-  TEETH.forEach(t=>{ const d=Math.hypot(vx-t.x, vy-t.y); if(d<28 && d<best){best=d; hit=t;} });
-  if(hit && !hit.clean){ hit.clean=true; hit.el.setAttribute('fill','#FFFFFF'); updateMeter(); }
-  if(Math.random()<0.6) spawnBubble(clientX,clientY);
-}
-function spawnBubble(x,y){ const b=document.createElement('div'); b.className='bubble'; b.textContent='🫧';
-  b.style.left=(x-10+(Math.random()*20-10))+'px'; b.style.top=(y-10)+'px'; document.body.appendChild(b);
-  setTimeout(()=>b.remove(),1200); }
-let brushDoneFlag=false;
-// input cepillado
+
+/* input de cepillado (Pointer Events; touch-action:none en #mouth evita el scroll) */
 const mouthEl=document.getElementById('mouth');
-function onMove(e){ if(!brushing) return; const t=e.touches?e.touches[0]:e; brushAt(t.clientX,t.clientY); e.preventDefault(); }
-mouthEl.addEventListener('pointerdown', e=>{ brushing=true; brushDoneFlag=false; brushAt(e.clientX,e.clientY); });
+function onMove(e){ if(!brushing) return; brushAt(e.clientX,e.clientY); e.preventDefault(); }
+mouthEl.addEventListener('pointerdown', e=>{ brushing=true; brushAt(e.clientX,e.clientY); e.preventDefault(); });
 mouthEl.addEventListener('pointermove', onMove);
 window.addEventListener('pointerup', ()=>{ brushing=false; });
-mouthEl.addEventListener('touchstart', e=>{ brushing=true; const t=e.touches[0]; brushAt(t.clientX,t.clientY); e.preventDefault(); }, {passive:false});
-mouthEl.addEventListener('touchmove', onMove, {passive:false});
-window.addEventListener('touchend', ()=>{ brushing=false; });
+window.addEventListener('pointercancel', ()=>{ brushing=false; });
 
 /* ===== ENJUAGAR + FESTEJO ===== */
 function finishBrush(){ playRinse();
+  // enjuague: la espuma se va y los dientes quedan brillando
+  const fg=document.getElementById('foam'); if(fg){ [...fg.children].forEach(c=>c.setAttribute('opacity','0')); setTimeout(()=>{ fg.innerHTML=''; }, 600); }
+  FX.reset();
+  const sh=document.getElementById('shine'); if(sh){ sh.innerHTML='<text x="150" y="34" font-size="24" text-anchor="middle">✨</text>'; sh.setAttribute('opacity','1'); }
   setTimeout(()=>{ points++; try{ localStorage.setItem('ali_brush_points', points);}catch(e){}
     renderPoints(); renderFestejo(); show('festejo'); celebrate(); playPrize(); }, 750); }
 function renderFestejo(){
@@ -382,7 +476,7 @@ function renderFestejo(){
   const vis=Math.min(points,30); row.textContent='⭐'.repeat(vis)+(points>30?' +'+(points-30):'');
   const tr=Math.floor(points/5); document.getElementById('trophyrow').textContent = tr>0 ? '🏆'.repeat(Math.min(tr,8))+(tr>0?' ¡Premios!':'') : '';
 }
-function resetRoutine(){ brushProgress=0; brushDoneFlag=false; }
+function resetRoutine(){ brushedAny=false; allCleanFlag=false; }
 
 /* confeti estrellas/corazones */
 function celebrate(){
