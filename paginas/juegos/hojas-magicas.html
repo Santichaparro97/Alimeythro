@@ -2,13 +2,15 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Alimeythor y las hojas magicas</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html,body { background: #fdf6e9; font-family: 'Trebuchet MS','Segoe UI',sans-serif; }
-  #game-wrap { position: relative; width: 100%; max-width: 700px; margin: 0 auto; user-select: none; touch-action: manipulation; }
-  canvas { display: block; width: 100%; border-radius: 18px; box-shadow: 0 10px 30px rgba(90,60,20,.18); cursor: pointer; }
+  html,body { height:100%; background:#fdf6e9; font-family:'Trebuchet MS','Segoe UI',sans-serif; }
+  body { margin:0; min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden;
+         padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+  #game-wrap { position:relative; width:min(100vw, calc((100vh - 52px) * 1.75)); max-width:700px; margin:0; user-select:none; touch-action:manipulation; }
+  canvas { display: block; width: 100%; height:auto; border-radius: 18px; box-shadow: 0 10px 30px rgba(90,60,20,.18); cursor: pointer; }
   #ui { position: absolute; top: 14px; left: 14px; right: 14px; display: flex; justify-content: space-between; align-items: flex-start; pointer-events: none; }
   #score-box { background: rgba(255,255,255,.85); border: 2px solid #ffd45e; border-radius: 22px; padding: 7px 18px; font-size: 17px; font-weight: bold; color: #e0792b; box-shadow: 0 3px 0 rgba(224,121,43,.18); }
   #score-box #count { display: inline-block; min-width: 14px; text-align: center; }
@@ -22,10 +24,15 @@
   #start-overlay .play { margin-top: 16px; background: #ffd45e; color: #b85c12; font-weight: bold; font-size: 18px; padding: 12px 32px; border-radius: 30px; box-shadow: 0 6px 0 #d9a83e; animation: bob 1s ease-in-out infinite; }
   @keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
   .hidden { display: none !important; }
+  #rotate-hint { position:fixed; left:12px; right:12px; bottom:calc(14px + env(safe-area-inset-bottom)); text-align:center; font-size:15px; font-weight:bold; color:#b08850; pointer-events:none; }
+  #rotate-hint span { display:inline-block; animation: rh 1.4s ease-in-out infinite; }
+  @keyframes rh { 0%,100%{transform:rotate(-12deg);} 50%{transform:rotate(12deg);} }
+  @media (orientation:landscape) { #rotate-hint { display:none; } }
+  @media (orientation:portrait) { #instructions { display:none; } }
+  @media (orientation:landscape) and (max-height:520px) { #instructions { display:none; } }
 </style>
 </head>
 <body>
-<a href="../../index.html" id="back-to-alimeythor" onclick="try{sessionStorage.setItem('alm_return','explorar');}catch(e){}" style="position:fixed; top:18px; left:18px; z-index:9999; display:inline-flex; align-items:center; gap:8px; padding:10px 18px; background:#f8231c; color:#fff; font-family:'Poppins',sans-serif; font-weight:700; font-size:14px; text-decoration:none; border-radius:999px; box-shadow:0 8px 20px rgba(248, 35, 28,0.35); transition:transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 24px rgba(248, 35, 28,0.45)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 8px 20px rgba(248, 35, 28,0.35)';">← Volver a Alimeythor</a>
 <div id="game-wrap">
   <canvas id="c" width="700" height="400"></canvas>
   <div id="ui">
@@ -40,6 +47,7 @@
   </div>
 </div>
 <p id="instructions">Toca las hojas del suelo &#128072; cada una vuela solita a la cesta de Alimeythor.</p>
+<div id="rotate-hint"><span>🔄</span> Girá el teléfono para jugar en grande</div>
 
 <script>
 const SPR = {
@@ -110,18 +118,16 @@ const LEAF_COLORS = ['#ff4d3d','#ff8a1e','#ffd21e','#ff5fa2','#b069ff','#ff6f3c'
 const char = { x: 150, targetX: 150, dir: 1, walking:false, walkPhase:0, breath:0,
                state:'idle', stateTimer:0 };
 const basket = { leaves: 0 };
-let leaves = [], confetti = [], sparkles = [], bgLeaves = [], clouds = [], motes = [], creatures = [];
-let collected = 0, spawnCooldown = 0, creatureCD = 140, gTime = 0;
+let leaves = [], confetti = [], sparkles = [], bgLeaves = [], clouds = [], motes = [];
+let collected = 0, spawnCooldown = 0;
 let started = false;
 
 function rnd(a,b){ return a + Math.random()*(b-a); }
 
 function newLeaf(){
-  let special = null;
-  if(Math.random() < 0.13){ special = ['gold','rainbow','shiny'][(Math.random()*3)|0]; }
   return { x: rnd(150, W-120), y: rnd(GY-14, GY+8),
-    color: LEAF_COLORS[(Math.random()*LEAF_COLORS.length)|0], special,
-    size: special ? rnd(15,19) : rnd(11,17), angle: rnd(0,Math.PI*2), wob: rnd(0,Math.PI*2),
+    color: LEAF_COLORS[(Math.random()*LEAF_COLORS.length)|0],
+    size: rnd(11,17), angle: rnd(0,Math.PI*2), wob: rnd(0,Math.PI*2),
     state:'ground', t:0, sx:0, sy:0, cx:0, cy:0, glow:0 };
 }
 for(let i=0;i<6;i++) leaves.push(newLeaf());
@@ -251,144 +257,32 @@ function drawTree(tx,ty,h,trunk,time,ph,pal){
 }
 
 /* ---------- hoja ---------- */
-function drawStar(x,y,r){
-  ctx.save(); ctx.translate(x,y); ctx.beginPath();
-  for(let i=0;i<5;i++){ const a=i*2*Math.PI/5 - Math.PI/2;
-    ctx.lineTo(Math.cos(a)*r, Math.sin(a)*r);
-    const a2=a+Math.PI/5; ctx.lineTo(Math.cos(a2)*r*0.45, Math.sin(a2)*r*0.45); }
-  ctx.closePath(); ctx.fill(); ctx.restore();
-}
 function drawLeaf(l){
   if(l.state==='done') return;
   ctx.save(); ctx.translate(l.x,l.y);
   // halo magico que despega la hoja del fondo (solo en el suelo)
   if(l.state==='ground'){
     const pul = 0.6 + Math.sin(l.wob*2)*0.18;
-    const hr = l.special ? l.size*3.1 : l.size*2.6;
-    const hcol = l.special==='gold' ? '255,225,120'
-               : l.special==='rainbow' ? '255,170,225'
-               : l.special==='shiny' ? '205,255,255' : '255,255,225';
-    const hg = ctx.createRadialGradient(0,0,0, 0,0, hr);
-    hg.addColorStop(0,'rgba('+hcol+','+((l.special?0.8:0.55)*pul)+')');
-    hg.addColorStop(0.55,'rgba('+hcol+',0.15)');
-    hg.addColorStop(1,'rgba('+hcol+',0)');
+    const hg = ctx.createRadialGradient(0,0,0, 0,0, l.size*2.6);
+    hg.addColorStop(0,'rgba(255,255,225,'+(0.55*pul)+')');
+    hg.addColorStop(0.55,'rgba(255,248,180,0.15)');
+    hg.addColorStop(1,'rgba(255,248,180,0)');
     ctx.fillStyle=hg;
-    ctx.beginPath(); ctx.arc(0,0,hr,0,7); ctx.fill();
+    ctx.beginPath(); ctx.arc(0,0,l.size*2.6,0,7); ctx.fill();
   }
   ctx.rotate(l.angle + Math.sin(l.wob)*0.25);
-  if(l.glow>0 || l.special){
-    ctx.shadowColor = l.special==='gold' ? 'rgba(255,210,60,0.95)'
-                    : l.special==='rainbow' ? 'rgba(255,120,200,0.9)'
-                    : l.special==='shiny' ? 'rgba(180,255,255,0.95)'
-                    : 'rgba(255,240,150,0.95)';
-    ctx.shadowBlur = l.special ? 20 : 16;
-  }
-  // relleno (normal o especial)
-  if(l.special==='rainbow'){
-    const h = (gTime*0.06) % 360;
-    const g = ctx.createLinearGradient(-l.size,0,l.size,0);
-    for(let s=0;s<=4;s++) g.addColorStop(s/4, 'hsl('+((h+s*70)%360)+',92%,60%)');
-    ctx.fillStyle = g;
-  } else if(l.special==='gold'){
-    ctx.fillStyle = '#ffd23a';
-  } else if(l.special==='shiny'){
-    ctx.fillStyle = 'hsl(190,45%,'+(82+Math.sin(gTime*0.01)*12)+'%)';
-  } else {
-    ctx.fillStyle = l.color;
-  }
+  if(l.glow>0){ ctx.shadowColor='rgba(255,240,150,0.95)'; ctx.shadowBlur=16; }
+  // cuerpo con borde blanco para que resalte
+  ctx.fillStyle=l.color;
   ctx.strokeStyle='rgba(255,255,255,0.92)'; ctx.lineWidth=2.4; ctx.lineJoin='round';
   ctx.beginPath(); ctx.ellipse(0,0,l.size,l.size*0.58,0,0,7); ctx.fill(); ctx.stroke();
   // vena central
-  ctx.strokeStyle='rgba(60,25,10,0.28)'; ctx.lineWidth=1.1;
+  ctx.strokeStyle='rgba(60,25,10,0.32)'; ctx.lineWidth=1.1;
   ctx.beginPath(); ctx.moveTo(-l.size*0.8,0); ctx.lineTo(l.size*0.8,0); ctx.stroke();
   // brillo
-  ctx.fillStyle='rgba(255,255,255,0.5)';
+  ctx.fillStyle='rgba(255,255,255,0.45)';
   ctx.beginPath(); ctx.ellipse(-l.size*0.3,-l.size*0.18, l.size*0.3, l.size*0.15, -0.4, 0,7); ctx.fill();
-  // estrellita para las especiales
-  if(l.special){
-    ctx.shadowBlur=0;
-    ctx.fillStyle = l.special==='shiny' ? '#ffffff' : '#fff6c8';
-    drawStar(l.size*0.6, -l.size*0.55, 3.4);
-  }
   ctx.restore();
-}
-
-/* ---------- criaturas ocultas (decorativas) ---------- */
-function newCreature(){
-  const r = Math.random();
-  if(r < 0.42){ const dir = Math.random()<0.5?1:-1;
-    return { type:'butterfly', x: dir>0?-20:W+20, y: rnd(80, GY-70), dir,
-      vx: dir*rnd(0.7,1.3), t: rnd(0,7), hue: rnd(0,360) }; }
-  if(r < 0.74){
-    return { type:'firefly', x: rnd(90,W-90), y: rnd(110, GY-30), t: rnd(0,7),
-      vx: rnd(-0.4,0.4), vy: rnd(-0.3,0.3), age:0, ttl: rnd(320,560) }; }
-  const dir = Math.random()<0.5?1:-1;
-  return { type:'squirrel', x: dir>0?-30:W+30, y: GY, dir, vx: dir*rnd(1.2,1.8), t:0 };
-}
-function drawButterfly(c){
-  const flap = Math.sin(c.t*0.5), wx = 1 - Math.abs(flap)*0.55;
-  ctx.save(); ctx.translate(c.x, c.y + Math.sin(c.t*0.15)*8); ctx.scale(c.dir,1);
-  ctx.fillStyle='hsl('+c.hue+',85%,64%)';
-  ctx.beginPath(); ctx.ellipse(-3,-4, 6*wx,7, -0.3,0,7); ctx.fill();
-  ctx.beginPath(); ctx.ellipse(-3, 4, 5*wx,6,  0.3,0,7); ctx.fill();
-  ctx.fillStyle='hsl('+((c.hue+45)%360)+',85%,70%)';
-  ctx.beginPath(); ctx.ellipse(3,-4, 6*wx,7,  0.3,0,7); ctx.fill();
-  ctx.beginPath(); ctx.ellipse(3, 4, 5*wx,6, -0.3,0,7); ctx.fill();
-  ctx.fillStyle='#4a3326'; ctx.beginPath(); ctx.ellipse(0,0,1.6,7,0,0,7); ctx.fill();
-  ctx.restore();
-}
-function drawFirefly(c){
-  const fade = c.age < 40 ? c.age/40 : (c.age > c.ttl-40 ? (c.ttl-c.age)/40 : 1);
-  const glow = 0.45 + Math.sin(c.t*0.4)*0.45;
-  ctx.save(); ctx.globalAlpha = Math.max(0, glow*fade);
-  ctx.fillStyle='#fff7a0'; ctx.shadowColor='#ffe24a'; ctx.shadowBlur=12;
-  ctx.beginPath(); ctx.arc(c.x, c.y, 3, 0,7); ctx.fill();
-  ctx.globalAlpha = Math.max(0, 0.4*fade); ctx.shadowBlur=0;
-  ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(c.x, c.y, 1.3, 0,7); ctx.fill();
-  ctx.restore();
-}
-function drawSquirrel(c){
-  const hop = Math.abs(Math.sin(c.t*0.3))*4;
-  ctx.save(); ctx.translate(c.x, c.y - hop); ctx.scale(c.dir,1);
-  ctx.fillStyle='#a5652f';
-  ctx.beginPath(); ctx.moveTo(-7,-2); ctx.quadraticCurveTo(-22,-2,-15,-18);
-  ctx.quadraticCurveTo(-11,-7,-5,-4); ctx.fill();
-  ctx.fillStyle='#b9763a';
-  ctx.beginPath(); ctx.ellipse(0,-7,9,7,0,0,7); ctx.fill();
-  ctx.beginPath(); ctx.arc(8,-12,5,0,7); ctx.fill();
-  ctx.beginPath(); ctx.arc(7,-17,2.2,0,7); ctx.fill();
-  ctx.fillStyle='#2a1a08'; ctx.beginPath(); ctx.arc(10,-13,1,0,7); ctx.fill();
-  ctx.fillStyle='#9a5f2c'; ctx.fillRect(-3,-2,2.6,5); ctx.fillRect(4,-2,2.6,5);
-  ctx.restore();
-}
-function updateCreatures(dt){
-  creatures.forEach(c=>{ c.t += dt;
-    if(c.type==='butterfly'){ c.x += c.vx*dt; }
-    else if(c.type==='firefly'){ c.age += dt;
-      c.x += (c.vx + Math.sin(c.t*0.10)*0.3)*dt;
-      c.y += (c.vy + Math.cos(c.t*0.13)*0.2)*dt;
-      if(c.x<70||c.x>W-70) c.vx*=-1;
-      if(c.y<90||c.y>GY-15) c.vy*=-1; }
-    else { c.x += c.vx*dt; }
-  });
-  creatures.forEach(c=>{
-    if(c.type==='butterfly') drawButterfly(c);
-    else if(c.type==='firefly') drawFirefly(c);
-    else drawSquirrel(c);
-  });
-  creatures = creatures.filter(c=>
-    c.type==='firefly' ? c.age < c.ttl : (c.x>-45 && c.x<W+45));
-}
-function specialSound(){
-  ensureAudio(); if(!actx) return;
-  const t0=actx.currentTime;
-  [659,784,988,1319,1568].forEach((f,i)=>{
-    const o=actx.createOscillator(), g=actx.createGain();
-    o.type='triangle'; o.frequency.value=f; const st=t0+i*0.07;
-    g.gain.setValueAtTime(0.0001,st); g.gain.linearRampToValueAtTime(0.14,st+0.02);
-    g.gain.exponentialRampToValueAtTime(0.0005,st+0.5);
-    o.connect(g).connect(actx.destination); o.start(st); o.stop(st+0.55);
-  });
 }
 
 /* ---------- cesta ---------- */
@@ -512,11 +406,7 @@ function collect(l){
   magicSound();
   const p = basketPos();
   burst(p.x, p.y-6);
-  if(l.special){
-    char.state='flower'; char.stateTimer=0;
-    burst(p.x, p.y-6); specialSound();
-    showPhrase('Que hoja tan especial! &#10024;');
-  } else if(collected % 10 === 0){
+  if(collected % 10 === 0){
     char.state='flower'; char.stateTimer=0;
     showPhrase('Nivel '+(collected/10)+'! Una flor para ti &#127804;');
   } else {
@@ -528,14 +418,9 @@ function collect(l){
 /* ---------- loop ---------- */
 let last=0;
 function loop(ts){
-  const dt = Math.min((ts-last)/16.67, 2.5); last=ts; gTime=ts;
+  const dt = Math.min((ts-last)/16.67, 2.5); last=ts;
   ctx.clearRect(0,0,W,H);
   drawBG(ts);
-
-  // criaturas ocultas (aparecen cada tanto, no hacen nada)
-  creatureCD -= dt;
-  if(creatureCD<=0 && creatures.length<3){ creatures.push(newCreature()); creatureCD = rnd(260,520); }
-  updateCreatures(dt);
 
   // mover hacia objetivo
   const dx = char.targetX - char.x;
