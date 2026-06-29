@@ -17,9 +17,12 @@ body{font-family:var(--font); background:linear-gradient(180deg,#DFF4F5,#EAF7F8)
   min-height:100vh; min-height:100dvh; overflow-x:hidden; user-select:none;
   padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);}
 #app{max-width:560px; margin:0 auto; padding:1rem 1rem 2rem; position:relative; min-height:100dvh;}
-.scene{display:none; animation:fade .4s ease;}
-.scene.active{display:flex; flex-direction:column; align-items:center;}
-@keyframes fade{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+.scene{display:none;}
+.scene.active{display:flex; flex-direction:column; align-items:center; animation:sceneIn .4s cubic-bezier(.2,.8,.2,1);}
+.scene.leaving{animation:sceneOut .22s ease forwards;}
+@keyframes sceneIn{from{opacity:0;transform:translateY(14px) scale(.985);}to{opacity:1;transform:none;}}
+@keyframes sceneOut{from{opacity:1;transform:none;}to{opacity:0;transform:translateY(-10px) scale(.98);}}
+@media (prefers-reduced-motion: reduce){ .scene.active,.scene.leaving{animation:none;} }
 h1{font-size:24px;color:var(--mint-d);text-align:center;line-height:1.2;margin-bottom:6px;}
 h2{font-size:20px;color:var(--mint-d);text-align:center;margin-bottom:4px;}
 .sub{font-size:14.5px;color:var(--t2);text-align:center;line-height:1.55;margin-bottom:1rem;max-width:30em;}
@@ -141,7 +144,7 @@ h2{font-size:20px;color:var(--mint-d);text-align:center;margin-bottom:4px;}
     <div class="mirror"><img class="ali small" id="ali-mirror" alt="Alimeythor en el espejo"/></div>
     <div class="stool">🪑</div>
     <button class="btn amber" id="paste-btn" onclick="putPaste()">🧴 Poné la pasta en el cepillo</button>
-    <button class="btn" id="toBrush" style="display:none" onclick="show('cepillar'); startBrush();">🪥 ¡A cepillar!</button>
+    <button class="btn" id="toBrush" style="display:none" onclick="show('cepillar')">🪥 ¡A cepillar!</button>
   </div>
 
   <!-- CEPILLAR -->
@@ -252,8 +255,34 @@ renderPoints();
 
 /* ===== NAVEGACIÓN ===== */
 const SCENES=['portada','buscar','espejo','cepillar','enjuagar','festejo'];
-function show(name){ currentScene=name; SCENES.forEach(s=>document.getElementById('s-'+s).classList.remove('active'));
-  document.getElementById('s-'+name).classList.add('active'); window.scrollTo({top:0,behavior:'smooth'}); }
+function show(name){
+  currentScene=name;
+  const next=document.getElementById('s-'+name);
+  const cur=document.querySelector('.scene.active');
+  const reduced = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  if(!reduced && cur && cur!==next){
+    // la escena actual se va con animación y recién ahí entra la nueva
+    cur.classList.add('leaving');
+    setTimeout(()=>{ cur.classList.remove('active','leaving'); _activate(next,name,reduced); }, 210);
+  }else{
+    SCENES.forEach(s=>{const e=document.getElementById('s-'+s); e.classList.remove('active','leaving');});
+    _activate(next,name,reduced);
+  }
+}
+function _activate(next,name,reduced){
+  next.classList.add('active');
+  window.scrollTo({top:0, behavior: reduced?'auto':'smooth'});
+  staggerIn(next,reduced);
+  if(name==='cepillar') startBrush();   // arranca el motor recién con la escena ya visible
+}
+/* aparición escalonada de los elementos de la escena (sin pisar animaciones propias como el bob) */
+function staggerIn(scene,reduced){
+  if(reduced) return;
+  const kids=[...scene.children];
+  kids.forEach(el=>{ el.style.transition='none'; el.style.transform='translateY(14px)'; });
+  void scene.offsetWidth;
+  kids.forEach((el,i)=>{ el.style.transition='transform .45s cubic-bezier(.2,.9,.3,1) '+(i*0.06).toFixed(2)+'s'; el.style.transform=''; });
+}
 
 function startGame(){ ensureCtx(); ensureBgm(); renderBuscar(); show('buscar'); }
 
@@ -287,14 +316,41 @@ function tapItem(el,c){
   const want=NEEDED[findIndex];
   if(c.ok && c.id===want.id){
     el.classList.add('found'); beep(880,0.12); collected.push(want.icon);
-    const cd=document.getElementById('collected'); const s=document.createElement('span'); s.textContent=want.icon; cd.appendChild(s);
+    const last=(findIndex+1>=NEEDED.length);
+    flyToTray(el, want.icon, ()=>{
+      const cd=document.getElementById('collected'); const s=document.createElement('span'); s.textContent=want.icon; cd.appendChild(s);
+    });
     findIndex++;
-    if(findIndex>=NEEDED.length){ setTimeout(()=>{ show('espejo'); resetPaste(); }, 450); }
+    if(last){ setTimeout(()=>{ resetPaste(); show('espejo'); }, 720); }
     else updateAsk();
   } else {
     el.classList.remove('wrong'); void el.offsetWidth; el.classList.add('wrong'); beep(180,0.18);
     const ask=document.getElementById('askbar'); ask.style.color='#E0792b'; setTimeout(()=>ask.style.color='',500);
   }
+}
+/* el elemento juntado vuela desde el estante hasta la bandeja de recolectados */
+function flyToTray(fromEl, icon, onLand){
+  const reduced = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const tray=document.getElementById('collected');
+  if(reduced || !fromEl || !tray){ onLand(); return; }
+  const fr=fromEl.getBoundingClientRect(), tr=tray.getBoundingClientRect();
+  const fx=fr.left+fr.width/2, fy=fr.top+fr.height/2;
+  const txp=tr.left+Math.min(tr.width-16, 16+tray.children.length*28), typ=tr.top+tr.height/2;
+  const flier=document.createElement('div');
+  flier.textContent=icon;
+  flier.style.cssText='position:fixed;z-index:80;pointer-events:none;font-size:40px;line-height:1;left:'+(fx-20)+'px;top:'+(fy-20)+'px;';
+  document.body.appendChild(flier);
+  const tx=txp-fx, ty=typ-fy; let landed=false;
+  const done=()=>{ if(landed) return; landed=true; flier.remove(); onLand(); beep(1040,0.10); };
+  try{
+    const a=flier.animate([
+      {transform:'translate(0,0) scale(1)', opacity:1},
+      {transform:'translate('+(tx*0.5)+'px,'+(ty*0.4-46)+'px) scale(1.35)', opacity:1, offset:.5},
+      {transform:'translate('+tx+'px,'+ty+'px) scale(.55)', opacity:.85}
+    ], {duration:560, easing:'cubic-bezier(.4,.1,.3,1)'});
+    a.onfinish=done;
+  }catch(e){ done(); }
+  setTimeout(done, 760); // fallback por si no dispara onfinish
 }
 
 /* ===== ESPEJO / PASTA ===== */
