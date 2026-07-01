@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Panel de tráfico — Mundo Alimeythor</title>
+<link rel="icon" href="./favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chewy&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Poppins',sans-serif;color:#1a1a2e;background:#f6f7fb;min-height:100vh;-webkit-font-smoothing:antialiased;}
+  h1,h2,.brandname{font-family:'Chewy','Poppins',sans-serif;font-weight:400;letter-spacing:.4px;}
+  a{color:#f8231c;text-decoration:none;}
+
+  header.top{background:#fff;border-bottom:1px solid #eceef4;position:sticky;top:0;z-index:10;}
+  .top-in{max-width:1120px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand img{height:34px;width:auto;}
+  .brandname{font-size:22px;color:#1a1a2e;}
+  .brandname small{display:block;font-family:'Poppins';font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#8a8aa0;font-weight:700;}
+  .spacer{flex:1;}
+  .ranges{display:flex;gap:6px;background:#f0f1f6;border-radius:999px;padding:4px;}
+  .range{border:none;background:transparent;font-family:'Poppins';font-weight:600;font-size:13px;color:#6a6a82;padding:7px 14px;border-radius:999px;cursor:pointer;}
+  .range.sel{background:#f8231c;color:#fff;box-shadow:0 4px 10px rgba(248,35,28,.28);}
+  .refresh{border:2px solid #e6e7ef;background:#fff;border-radius:999px;font-size:13px;font-weight:600;color:#3a3a52;padding:7px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+  .refresh:hover{border-color:#f8231c;color:#f8231c;}
+
+  main{max-width:1120px;margin:0 auto;padding:22px 20px 70px;}
+  .updated{font-size:12.5px;color:#8a8aa0;margin-bottom:16px;}
+  .updated b{color:#3a3a52;}
+
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+  .kpi{background:#fff;border-radius:18px;padding:18px 20px;box-shadow:0 10px 26px rgba(30,30,60,.06);border:1px solid #eff0f6;}
+  .kpi .lbl{font-size:12.5px;color:#8a8aa0;font-weight:600;display:flex;align-items:center;gap:6px;}
+  .kpi .val{font-size:34px;font-weight:800;color:#1a1a2e;line-height:1.1;margin-top:6px;font-variant-numeric:tabular-nums;}
+  .kpi .sub{font-size:12px;color:#a0a0b4;margin-top:2px;}
+
+  .grid2{display:grid;grid-template-columns:1.55fr 1fr;gap:16px;}
+  .card{background:#fff;border-radius:18px;padding:20px;box-shadow:0 10px 26px rgba(30,30,60,.06);border:1px solid #eff0f6;}
+  .card h2{font-size:17px;color:#1a1a2e;margin-bottom:2px;}
+  .card .desc{font-size:12.5px;color:#8a8aa0;margin-bottom:14px;}
+  .legend{display:flex;gap:16px;font-size:12px;color:#6a6a82;margin-bottom:8px;}
+  .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;margin-right:5px;}
+
+  .chart{width:100%;height:auto;display:block;}
+  .chart .grid-line{stroke:#eef0f5;stroke-width:1;}
+  .chart .bar{fill:#f8231c;opacity:.85;}
+  .chart .axis{fill:#a0a0b4;font-size:10px;font-family:'Poppins';}
+  .chart .vline{fill:none;stroke:#2aa4e0;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round;}
+  .chart .vdot{fill:#2aa4e0;}
+
+  .pages{list-style:none;display:flex;flex-direction:column;gap:11px;}
+  .pg{display:grid;grid-template-columns:1fr auto;gap:4px;}
+  .pg-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
+  .pg-name{font-size:13.5px;color:#3a3a52;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .pg-path{font-size:11px;color:#a0a0b4;font-weight:400;}
+  .pg-count{font-size:13.5px;font-weight:700;color:#1a1a2e;font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .pg-bar{grid-column:1/-1;height:8px;border-radius:999px;background:#f0f1f6;overflow:hidden;}
+  .pg-bar i{display:block;height:100%;background:linear-gradient(90deg,#ff8a65,#f8231c);border-radius:999px;}
+
+  .state{background:#fff;border-radius:18px;padding:40px 26px;text-align:center;box-shadow:0 10px 26px rgba(30,30,60,.06);border:1px solid #eff0f6;}
+  .state .em{font-size:40px;}
+  .state h2{margin:12px 0 8px;color:#1a1a2e;}
+  .state p{color:#6a6a82;font-size:14px;line-height:1.6;max-width:520px;margin:0 auto 6px;}
+  .state code{background:#f0f1f6;border-radius:6px;padding:2px 7px;font-size:12.5px;color:#c02a22;}
+  .muted{color:#a0a0b4;font-size:12px;margin-top:14px;}
+
+  @media (max-width:820px){
+    .kpis{grid-template-columns:repeat(2,1fr);}
+    .grid2{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="./index.html">
+      <img src="./logo-alimeythor.png" alt="">
+      <span class="brandname">Alimeythor<small>Panel de tráfico</small></span>
+    </a>
+    <div class="spacer"></div>
+    <div class="ranges" id="ranges" role="group" aria-label="Rango de fechas">
+      <button class="range" data-days="7">7 días</button>
+      <button class="range sel" data-days="30">30 días</button>
+      <button class="range" data-days="90">90 días</button>
+    </div>
+    <button class="refresh" id="refresh" title="Actualizar">🔄 Actualizar</button>
+  </div>
+</header>
+
+<main>
+  <div class="updated" id="updated">&nbsp;</div>
+  <div id="content"><!-- render dinámico --></div>
+</main>
+
+<script src="./analytics-config.js"></script>
+<script>
+(function () {
+  var CFG = window.ALM_ANALYTICS || {};
+  var configured = CFG.url && CFG.anonKey && CFG.url.indexOf("TU-") === -1 && CFG.anonKey.indexOf("TU-") === -1;
+
+  var content = document.getElementById("content");
+  var updated = document.getElementById("updated");
+  var rangesEl = document.getElementById("ranges");
+  var refreshBtn = document.getElementById("refresh");
+  var days = 30;
+
+  // ---- utilidades ----
+  function fmt(n){ return (n||0).toLocaleString("es-AR"); }
+  function pad(n){ return n<10 ? "0"+n : ""+n; }
+  function dayKey(d){ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+  function shortDay(k){ var p=k.split("-"); return p[2]+"/"+p[1]; }
+
+  // Nombre lindo para cada ruta
+  function prettyPath(path){
+    var p = (path||"/").split("?")[0];
+    try { p = decodeURIComponent(p); } catch(e){}
+    var MAP = {
+      "/":"Inicio","/index.html":"Inicio","/admin.html":"Panel",
+      "/paginas/planes/pase-magico.html":"Pase Mágico",
+      "/paginas/cuentos/cuentos.html":"Cuentos","/paginas/cuentos/biblioteca.html":"Biblioteca",
+      "/paginas/musica/musica.html":"Música","/paginas/eventos/eventos.html":"Eventos",
+      "/paginas/juegos/juegos-descargables.html":"Juegos y descargables",
+      "/paginas/juegos/descargables.html":"Descargables",
+      "/paginas/juegos/cepillado.html":"Juego · Cepillado",
+      "/paginas/juegos/hojas-magicas.html":"Juego · Hojas mágicas",
+      "/paginas/legal/terminos.html":"Términos y Condiciones",
+      "/paginas/legal/privacidad.html":"Política de Privacidad"
+    };
+    if (MAP[p]) return MAP[p];
+    var m = p.match(/\/cuento-([a-z0-9-]+)\.html/i);
+    if (m) return "Cuento · " + m[1].replace(/-/g," ").replace(/\b\w/g,function(c){return c.toUpperCase();});
+    // fallback: último segmento
+    var seg = p.replace(/\/$/,"").split("/").pop() || "Inicio";
+    return seg.replace(/\.html$/,"").replace(/[-_]/g," ");
+  }
+
+  // ---- data ----
+  function fetchRows(sinceIso){
+    var u = CFG.url.replace(/\/+$/,"") + "/rest/v1/pageviews"
+          + "?select=path,visitor_id,created_at"
+          + "&created_at=gte." + encodeURIComponent(sinceIso)
+          + "&order=created_at.desc&limit=50000";
+    return fetch(u, { headers: { apikey: CFG.anonKey, Authorization: "Bearer " + CFG.anonKey } })
+      .then(function(r){ if(!r.ok) return r.text().then(function(t){ throw new Error("HTTP "+r.status+" · "+t.slice(0,120)); }); return r.json(); });
+  }
+
+  function aggregate(rows){
+    var now = new Date();
+    var todayKey = dayKey(now);
+    var buckets = {};           // key -> {pv, vis:Set}
+    var order = [];
+    for (var i=days-1;i>=0;i--){
+      var d = new Date(now); d.setDate(now.getDate()-i);
+      var k = dayKey(d); buckets[k] = { pv:0, vis:{} }; order.push(k);
+    }
+    var totalVis = {};          // visitantes únicos del rango
+    var pages = {};             // path -> {pv, vis:Set}
+    var todayPv = 0, todayVis = {};
+
+    rows.forEach(function(r){
+      var d = new Date(r.created_at); var k = dayKey(d);
+      if (buckets[k]) { buckets[k].pv++; if(r.visitor_id) buckets[k].vis[r.visitor_id]=1; }
+      if (r.visitor_id) totalVis[r.visitor_id]=1;
+      var pp = (r.path||"/").split("?")[0];
+      if(!pages[pp]) pages[pp]={pv:0,vis:{}};
+      pages[pp].pv++; if(r.visitor_id) pages[pp].vis[r.visitor_id]=1;
+      if (k===todayKey){ todayPv++; if(r.visitor_id) todayVis[r.visitor_id]=1; }
+    });
+
+    var series = order.map(function(k){ return { k:k, pv:buckets[k].pv, vis:Object.keys(buckets[k].vis).length }; });
+    var topPages = Object.keys(pages).map(function(p){ return { path:p, pv:pages[p].pv, vis:Object.keys(pages[p].vis).length }; })
+                    .sort(function(a,b){ return b.pv-a.pv; }).slice(0,15);
+
+    return {
+      totalPv: rows.length,
+      totalVis: Object.keys(totalVis).length,
+      todayPv: todayPv,
+      todayVis: Object.keys(todayVis).length,
+      series: series,
+      topPages: topPages
+    };
+  }
+
+  // ---- gráfico (SVG, sin librerías): barras = visitas, línea = visitantes ----
+  function chartSVG(series){
+    var W=680, H=240, padL=34, padR=14, padT=16, padB=26;
+    var iw = W-padL-padR, ih = H-padT-padB;
+    var maxPv = Math.max(1, series.reduce(function(m,s){ return Math.max(m,s.pv); },0));
+    var n = series.length;
+    var bw = iw/n;
+    var g = "";
+    // líneas guía + labels Y (0, mid, max)
+    [0,0.5,1].forEach(function(f){
+      var y = padT + ih*(1-f); var v = Math.round(maxPv*f);
+      g += '<line class="grid-line" x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+y.toFixed(1)+'"/>';
+      g += '<text class="axis" x="'+(padL-6)+'" y="'+(y+3).toFixed(1)+'" text-anchor="end">'+v+'</text>';
+    });
+    // barras (visitas)
+    series.forEach(function(s,i){
+      var bh = ih*(s.pv/maxPv); var x = padL + i*bw + bw*0.16; var y = padT+ih-bh;
+      g += '<rect class="bar" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+(bw*0.68).toFixed(1)+'" height="'+Math.max(0,bh).toFixed(1)+'" rx="2.5"><title>'+shortDay(s.k)+': '+s.pv+' visitas</title></rect>';
+    });
+    // línea (visitantes)
+    var pts = series.map(function(s,i){ var x=padL+i*bw+bw*0.5; var y=padT+ih-ih*(s.vis/maxPv); return x.toFixed(1)+","+y.toFixed(1); });
+    g += '<polyline class="vline" points="'+pts.join(" ")+'"/>';
+    series.forEach(function(s,i){ var x=padL+i*bw+bw*0.5; var y=padT+ih-ih*(s.vis/maxPv);
+      g += '<circle class="vdot" cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="2.6"><title>'+shortDay(s.k)+': '+s.vis+' visitantes</title></circle>'; });
+    // labels X (algunos, para no saturar)
+    var step = Math.ceil(n/8);
+    series.forEach(function(s,i){ if(i%step!==0 && i!==n-1) return; var x=padL+i*bw+bw*0.5;
+      g += '<text class="axis" x="'+x.toFixed(1)+'" y="'+(H-8)+'" text-anchor="middle">'+shortDay(s.k)+'</text>'; });
+    return '<svg class="chart" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Visitas y visitantes por día">'+g+'</svg>';
+  }
+
+  function render(data){
+    var maxPage = data.topPages.length ? data.topPages[0].pv : 1;
+    var pagesHtml = data.topPages.length ? data.topPages.map(function(p){
+      var w = Math.max(3, Math.round(p.pv/maxPage*100));
+      return '<li class="pg"><div class="pg-top"><div class="pg-name">'+escapeHtml(prettyPath(p.path))
+        +' <span class="pg-path">'+escapeHtml(p.path)+'</span></div><div class="pg-count">'+fmt(p.pv)+'</div></div>'
+        +'<div class="pg-bar"><i style="width:'+w+'%"></i></div></li>';
+    }).join("") : '<li class="muted">Todavía no hay visitas registradas en este rango.</li>';
+
+    content.innerHTML =
+      '<div class="kpis">'
+      + kpi("👁️ Visitas","("+days+" días)",fmt(data.totalPv))
+      + kpi("🧑 Visitantes únicos","("+days+" días)",fmt(data.totalVis))
+      + kpi("📅 Visitas hoy","",fmt(data.todayPv))
+      + kpi("🧑 Visitantes hoy","",fmt(data.todayVis))
+      + '</div>'
+      + '<div class="grid2">'
+        + '<div class="card"><h2>Visitas por día</h2><div class="desc">Evolución en los últimos '+days+' días.</div>'
+          + '<div class="legend"><span><i style="background:#f8231c"></i>Visitas</span><span><i style="background:#2aa4e0"></i>Visitantes únicos</span></div>'
+          + chartSVG(data.series)
+        + '</div>'
+        + '<div class="card"><h2>Páginas más vistas</h2><div class="desc">Ranking por cantidad de visitas.</div>'
+          + '<ul class="pages">'+pagesHtml+'</ul>'
+        + '</div>'
+      + '</div>';
+  }
+  function kpi(lbl,sub,val){
+    return '<div class="kpi"><div class="lbl">'+lbl+'</div><div class="val">'+val+'</div><div class="sub">'+sub+'</div></div>';
+  }
+  function escapeHtml(s){ return (s||"").replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+  function stateBox(html){ content.innerHTML = '<div class="state">'+html+'</div>'; }
+
+  function load(){
+    if (!configured){
+      updated.innerHTML = "&nbsp;";
+      stateBox('<div class="em">⚙️</div><h2>Falta conectar Supabase</h2>'
+        + '<p>Editá el archivo <code>analytics-config.js</code> y completá tu <b>Project URL</b> y <b>anon key</b> de Supabase. '
+        + 'Después corré el script <code>supabase-analytics.sql</code> en el SQL Editor de Supabase para crear la tabla.</p>'
+        + '<p class="muted">Cuando esté configurado, este panel muestra el tráfico real de la web automáticamente.</p>');
+      return;
+    }
+    updated.innerHTML = "Cargando datos…";
+    var since = new Date(); since.setDate(since.getDate()-(days-1)); since.setHours(0,0,0,0);
+    fetchRows(since.toISOString())
+      .then(function(rows){
+        render(aggregate(rows));
+        var now = new Date();
+        updated.innerHTML = "Actualizado: <b>"+now.toLocaleString("es-AR")+"</b> · "+fmt(rows.length)+" registros leídos";
+      })
+      .catch(function(err){
+        updated.innerHTML = "&nbsp;";
+        stateBox('<div class="em">⚠️</div><h2>No se pudieron leer los datos</h2>'
+          + '<p>'+escapeHtml(err.message||String(err))+'</p>'
+          + '<p class="muted">Revisá que la tabla <code>pageviews</code> exista y que las políticas de lectura anónima estén activas (script <code>supabase-analytics.sql</code>).</p>');
+      });
+  }
+
+  // ---- eventos ----
+  rangesEl.addEventListener("click", function(e){
+    var b = e.target.closest(".range"); if(!b) return;
+    days = parseInt(b.dataset.days,10)||30;
+    rangesEl.querySelectorAll(".range").forEach(function(x){ x.classList.toggle("sel", x===b); });
+    load();
+  });
+  refreshBtn.addEventListener("click", load);
+
+  load();
+})();
+</script>
+</body>
+</html>
